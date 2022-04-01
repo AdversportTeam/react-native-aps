@@ -1,4 +1,5 @@
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
+import NativeAPSModule from './turbomodules/NativeAPSModule';
 
 const LINKING_ERROR =
   `The package 'react-native-aps' doesn't seem to be linked. Make sure: \n\n` +
@@ -6,17 +7,15 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo managed workflow\n';
 
-const Aps = NativeModules.Aps
-  ? NativeModules.Aps
-  : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error(LINKING_ERROR);
-        },
-      }
-    );
+const ApsModule =
+  NativeAPSModule ||
+  (new Proxy(
+    {},
+    {
+      get() {
+        throw new Error(LINKING_ERROR);
+      },
+    }
+  ) as unknown);
 
-export function multiply(a: number, b: number): Promise<number> {
-  return Aps.multiply(a, b);
-}
+export default ApsModule;

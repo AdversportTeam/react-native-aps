@@ -272,7 +272,7 @@ dependencies {
         implementation jscFlavor
     }
 
-    implementation project(':reactnativeaps')
+    implementation project(':react-native-aps')
 }
 
 

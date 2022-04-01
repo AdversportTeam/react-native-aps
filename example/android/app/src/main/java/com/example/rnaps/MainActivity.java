@@ -1,4 +1,4 @@
-package com.example.reactnativeaps;
+package com.example.rnaps;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

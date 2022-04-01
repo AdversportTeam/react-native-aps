@@ -1,4 +1,4 @@
-package com.example.reactnativeaps.newarchitecture.modules;
+package com.example.rnaps.newarchitecture.modules;
 
 import com.facebook.jni.HybridData;
 import com.facebook.react.ReactPackage;
