@@ -1,5 +1,6 @@
 import { NativeModules, Platform } from 'react-native';
-import type { AdLoaderInterface } from './AdLoader.interface';
+
+import type { AdLoaderOptions } from '../types/AdLoaderOptions';
 
 const { RNAPSAdLoaderModule } = NativeModules;
 
@@ -13,4 +14,8 @@ if (RNAPSAdLoaderModule == null) {
   console.error(LINKING_ERROR);
 }
 
-export default RNAPSAdLoaderModule as AdLoaderInterface;
+export interface AdLoaderModule {
+  loadAd: (options: AdLoaderOptions) => Promise<{ [key: string]: string }>;
+}
+
+export default RNAPSAdLoaderModule as AdLoaderModule;

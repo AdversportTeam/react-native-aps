@@ -1,4 +1,4 @@
-import type { AdSlot } from '../AdSlot';
+import type { AdSlot } from './AdSlot';
 
 export interface AdLoaderOptions {
   slots: AdSlot[];
