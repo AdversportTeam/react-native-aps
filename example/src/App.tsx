@@ -1,31 +1,18 @@
-import * as React from 'react';
+import React, { useEffect } from 'react';
+import { View } from 'react-native';
+import MobileAds from 'react-native-google-mobile-ads';
 
-import { StyleSheet, View, Text } from 'react-native';
-import { multiply } from 'react-native-aps';
+import Banner from './Banner/Banner.component';
+import Interstitial from './Interstitial/Interstitial.component';
 
 export default function App() {
-  const [result, setResult] = React.useState<number | undefined>();
-
-  React.useEffect(() => {
-    multiply(3, 7).then(setResult);
+  useEffect(() => {
+    MobileAds().initialize();
   }, []);
-
   return (
-    <View style={styles.container}>
-      <Text>Result: {result}</Text>
+    <View>
+      <Banner />
+      <Interstitial />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  box: {
-    width: 60,
-    height: 60,
-    marginVertical: 20,
-  },
-});
