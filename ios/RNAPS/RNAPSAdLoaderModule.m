@@ -1,6 +1,6 @@
 #import <React/RCTBridgeModule.h>
 
-@interface RCT_EXTERN_MODULE(Aps, NSObject)
+@interface RCT_EXTERN_MODULE(RNAPSAdLoaderModule, NSObject)
 
 RCT_EXTERN_METHOD(loadAd:(NSDictionary)options
                   withResolver:(RCTPromiseResolveBlock)resolve

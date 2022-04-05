@@ -1,12 +1,11 @@
 import { AdError } from '../AdError';
-import type { AdLoaderInterface } from './AdLoader.interface';
 import type { AdLoaderOptions } from './AdLoaderOptions';
 import RNAPSAdLoaderModule from './RNAPSAdLoaderModule';
 
-export class AdLoader implements AdLoaderInterface {
+export class AdLoader {
   protected static _nativeModule = RNAPSAdLoaderModule;
 
-  async loadAd(options: AdLoaderOptions) {
+  static async loadAd(options: AdLoaderOptions) {
     try {
       const keyValuePairs = await AdLoader._nativeModule.loadAd(options);
       return keyValuePairs;

@@ -11,5 +11,5 @@ export class AdError extends Error {
 }
 
 export function isAdError(error: unknown): error is AdError {
-  return !!error && (error as Error).name === 'AdError';
+  return error instanceof AdError;
 }
