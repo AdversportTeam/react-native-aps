@@ -4,8 +4,12 @@ import Foundation
 @objc(RNAPSAdsModule)
 class RNAPSAdsModule: NSObject {
   
+  @objc static func requiresMainQueueSetup() -> Bool {
+    return false
+  }
+  
   @objc(initialize:withResolver:withRejecter:)
-  func initialize(appKey: String, resolve:@escaping RCTPromiseResolveBlock,reject:@escaping RCTPromiseRejectBlock) -> Void {
+  func initialize(appKey: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
     DTBAds.sharedInstance().setAppKey(appKey)
     resolve(nil)
   }

@@ -2,7 +2,7 @@
 
 @interface RCT_EXTERN_MODULE(RNAPSAdsModule, NSObject)
 
-RCT_EXTERN_METHOD(initialize:(NSDictionary)appKey
+RCT_EXTERN_METHOD(initialize:(NSString)appKey
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 

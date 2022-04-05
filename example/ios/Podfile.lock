@@ -1,8 +1,8 @@
 PODS:
-  - AmazonPublisherServicesAdMobAdapter (2.1.0):
+  - AmazonPublisherServicesAdMobAdapter (2.1.1):
     - AmazonPublisherServicesSDK
     - Google-Mobile-Ads-SDK
-  - AmazonPublisherServicesSDK (4.4.1)
+  - AmazonPublisherServicesSDK (4.4.2)
   - boost (1.76.0)
   - CocoaAsyncSocket (7.6.5)
   - DoubleConversion (1.1.6)
@@ -565,11 +565,11 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  AmazonPublisherServicesAdMobAdapter: 0c9afc9674a4f207e25d3cbed09350cc71bf40a8
-  AmazonPublisherServicesSDK: 1fcbee95498e72450fc27b1ec1fe145c85785ae3
+  AmazonPublisherServicesAdMobAdapter: aaa5be118a844ee7c244bc2ac018fbcf29efbb20
+  AmazonPublisherServicesSDK: a651a865321a1240937f9b0a426eaf2bcc59fe76
   boost: a7c83b31436843459a1961bfd74b96033dc77234
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
-  DoubleConversion: cde416483dac037923206447da6e1454df403714
+  DoubleConversion: 831926d9b8bf8166fd87886c4abab286c2422662
   FBLazyVector: d2fd875e2b24bbc350722df0df9d383cb891b9f2
   FBReactNativeSpec: 7493e074a31512df3253160059295264a84b8149
   Flipper: 26fc4b7382499f1281eb8cb921e5c3ad6de91fe0
@@ -582,7 +582,7 @@ SPEC CHECKSUMS:
   Flipper-RSocket: d9d9ade67cbecf6ac10730304bf5607266dd2541
   FlipperKit: cbdee19bdd4e7f05472a66ce290f1b729ba3cb86
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
+  glog: 476ee3e89abb49e07f822b48323c51c57124b572
   Google-Mobile-Ads-SDK: 05e5d68bb42a61b2e5bef336a52789785605aa22
   GoogleAppMeasurement: 71156240babd3cc6ced03e0d54816f01a880c730
   GoogleUserMessagingPlatform: ab890ce5f6620f293a21b6bdd82e416a2c73aeca

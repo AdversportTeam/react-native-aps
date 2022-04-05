@@ -7,8 +7,12 @@ class RNAPSAdLoaderModule: NSObject {
   static let AD_TYPE_INTERSTITIAL = "interstitial"
   static let ERROR_DOMAIN = "RNAPS"
   
+  @objc static func requiresMainQueueSetup() -> Bool {
+    return false
+  }
+  
   @objc(loadAd:withResolver:withRejecter:)
-  func loadAd(options: Dictionary<String, Any>, resolve:@escaping RCTPromiseResolveBlock,reject:@escaping RCTPromiseRejectBlock) -> Void {
+  func loadAd(options: Dictionary<String, Any>, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
     let adLoader = DTBAdLoader()
     
     guard let slots = options["slots"] as? Array<Dictionary<String, String>> else {
@@ -48,8 +52,6 @@ class RNAPSAdLoaderModule: NSObject {
     }
     
     adLoader.loadAd(AdLoadCallback(resolve: resolve, reject: reject))
-    
-    resolve(nil)
   }
   
   class AdLoadCallback: DTBAdCallback {
