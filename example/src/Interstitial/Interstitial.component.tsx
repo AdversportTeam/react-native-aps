@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View, Button } from 'react-native';
 import {
   AdLoader,
@@ -23,7 +23,7 @@ export default function Interstitial() {
   const [interstitialAd, setInterstitialAd] = useState<InterstitialAd>();
   const [isLoaded, setLoaded] = useState(false);
 
-  useEffect(() => {
+  const loadApsBid = useCallback(() => {
     AdLoader.loadAd(apsOptions)
       .then((result) => {
         setApsBidResult(result);
@@ -45,12 +45,24 @@ export default function Interstitial() {
   }, []);
 
   useEffect(() => {
+    loadApsBid();
+  }, []);
+
+  useEffect(() => {
     if (!interstitialAd) {
       return;
     }
     const unsubscribe = interstitialAd.onAdEvent((type) => {
-      if (type === AdEventType.LOADED) {
-        setLoaded(true);
+      switch (type) {
+        case AdEventType.LOADED:
+          setLoaded(true);
+          break;
+        case AdEventType.OPENED:
+          setLoaded(false);
+          break;
+        case AdEventType.CLOSED:
+          loadApsBid();
+          break;
       }
     });
     interstitialAd.load();

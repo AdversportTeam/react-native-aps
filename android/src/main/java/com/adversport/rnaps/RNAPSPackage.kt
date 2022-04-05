@@ -7,7 +7,7 @@ import com.facebook.react.uimanager.ViewManager
 
 class RNAPSPackage : ReactPackage {
     override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-        return listOf(RNAPSAdLoaderModule(reactContext))
+        return listOf(RNAPSAdsModule(reactContext), RNAPSAdLoaderModule(reactContext))
     }
 
     override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {

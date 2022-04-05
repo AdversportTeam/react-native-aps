@@ -1,6 +1,6 @@
 import { AdError } from './AdError';
-import type { AdLoaderOptions } from './types/AdLoaderOptions';
-import RNAPSAdLoaderModule from './internal/RNAPSAdLoaderModule';
+import RNAPSAdLoaderModule from './internal/AdLoaderModule';
+import type { AdLoaderOptions } from './types';
 
 export class AdLoader {
   protected static _nativeModule = RNAPSAdLoaderModule;

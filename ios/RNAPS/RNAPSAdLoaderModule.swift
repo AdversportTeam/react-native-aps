@@ -37,8 +37,8 @@ class RNAPSAdLoaderModule: NSObject {
     }
     adLoader.setAdSizes(sizes as [Any])
     
-    if let customTargeting = options["customTargeting"] {
-      for (key, value) in (customTargeting as! Dictionary<String, String>) {
+    if let customTargeting = options["customTargeting"] as? Dictionary<String, String> {
+      for (key, value) in (customTargeting) {
         adLoader.putCustomTarget(value, withKey: key)
       }
     }
