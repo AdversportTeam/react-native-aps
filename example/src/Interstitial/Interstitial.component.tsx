@@ -52,7 +52,7 @@ export default function Interstitial() {
     if (!interstitialAd) {
       return;
     }
-    const unsubscribe = interstitialAd.onAdEvent((type) => {
+    const unsubscribe = interstitialAd.onAdEvent((type, error) => {
       switch (type) {
         case AdEventType.LOADED:
           setLoaded(true);
@@ -63,6 +63,8 @@ export default function Interstitial() {
         case AdEventType.CLOSED:
           loadApsBid();
           break;
+        case AdEventType.ERROR:
+          console.debug(error);
       }
     });
     interstitialAd.load();

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import APSAds, { AdNetwork, TestIds } from 'react-native-aps';
 import MobileAds from 'react-native-google-mobile-ads';
 
@@ -15,12 +15,13 @@ export default function App() {
       APSAds.initialize(TestIds.APS_APP_KEY),
     ]).then(() => {
       APSAds.setAdNetworkInfo({ adNetwork: AdNetwork.GOOGLE_AD_MANAGER });
+      APSAds.setTestMode(true);
       setInitialized(true);
     });
   }, []);
 
   return (
-    <View>
+    <View style={styles.container}>
       {initialized && (
         <>
           <Banner />
@@ -30,3 +31,9 @@ export default function App() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

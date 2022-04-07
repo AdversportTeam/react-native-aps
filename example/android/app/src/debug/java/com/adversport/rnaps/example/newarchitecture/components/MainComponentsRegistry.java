@@ -1,4 +1,4 @@
-package com.example.rnaps.newarchitecture.components;
+package com.adversport.rnaps.example.newarchitecture.components;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;

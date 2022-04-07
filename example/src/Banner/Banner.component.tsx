@@ -45,6 +45,7 @@ export default function Banner() {
           unitId={TestIds.GAM_BANNER}
           size={BannerAdSize.BANNER}
           requestOptions={{ customTargeting: apsBidResult }}
+          onAdFailedToLoad={(error) => console.debug(error)}
         />
       )}
     </View>

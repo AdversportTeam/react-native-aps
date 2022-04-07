@@ -1,7 +1,10 @@
-package com.example.rnaps.newarchitecture;
+package com.adversport.rnaps.example.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
+
+import com.adversport.rnaps.example.BuildConfig;
+import com.adversport.rnaps.example.newarchitecture.components.MainComponentsRegistry;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
@@ -19,9 +22,7 @@ import com.facebook.react.fabric.CoreComponentsRegistry;
 import com.facebook.react.fabric.EmptyReactNativeConfig;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.example.rnaps.BuildConfig;
-import com.example.rnaps.newarchitecture.components.MainComponentsRegistry;
-import com.example.rnaps.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import com.adversport.rnaps.example.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 
