@@ -5,7 +5,7 @@ new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED']
 package = JSON.parse(File.read(File.join(__dir__, "package.json")))
 
 Pod::Spec.new do |s|
-  s.name         = "react-native-aps"
+  s.name         = "RNAmazonPublisherServices"
   s.version      = package["version"]
   s.summary      = package["description"]
   s.homepage     = package["homepage"]
