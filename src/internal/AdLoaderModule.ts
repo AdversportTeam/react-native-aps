@@ -1,6 +1,6 @@
 import { NativeModules, Platform } from 'react-native';
 
-import type { AdLoaderOptions } from '../types/AdLoaderOptions';
+import type { AdLoaderOptions } from '../types';
 
 const { RNAPSAdLoaderModule } = NativeModules;
 
