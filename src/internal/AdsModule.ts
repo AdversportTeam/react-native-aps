@@ -22,6 +22,10 @@ export interface AdsModule {
   setTestMode: (enabled: boolean) => void;
 
   setUseGeoLocation: (enabled: boolean) => void;
+
+  addCustomAttribute: (key: string, value: string) => void;
+
+  removeCustomAttribute: (key: string) => void;
 }
 
 export default RNAPSAdsModule as AdsModule;

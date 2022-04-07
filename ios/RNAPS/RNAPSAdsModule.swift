@@ -60,5 +60,15 @@ class RNAPSAdsModule: NSObject {
   func setUseGeoLocation(enabled: Bool) -> Void {
     DTBAds.sharedInstance().useGeoLocation = enabled
   }
+    
+  @objc(addCustomAttribute:value:)
+  func addCustomAttribute(key: String, value: String) {
+    DTBAds.sharedInstance().addCustomAttribute(key, value: value)
+  }
+  
+  @objc(removeCustomAttribute:)
+  func removeCustomAttribute(key: String) {
+    DTBAds.sharedInstance().removeCustomAttribute(key)
+  }
   
 }

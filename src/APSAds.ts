@@ -19,4 +19,12 @@ export default class APSAds {
   static setUseGeoLocation(enabled: boolean) {
     return this._nativeModule.setUseGeoLocation(enabled);
   }
+
+  static addCustomAttribute(key: string, value: string) {
+    return this._nativeModule.addCustomAttribute(key, value);
+  }
+
+  static removeCustomAttribute(key: string) {
+    return this._nativeModule.removeCustomAttribute(key);
+  }
 }

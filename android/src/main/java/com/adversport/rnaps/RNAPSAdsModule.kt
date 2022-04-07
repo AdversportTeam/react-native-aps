@@ -56,6 +56,16 @@ class RNAPSAdsModule(reactContext: ReactApplicationContext) :
     AdRegistration.useGeoLocation(enabled)
   }
 
+  @ReactMethod
+  fun addCustomAttribute(key: String, value: String) {
+    AdRegistration.addCustomAttribute(key, value)
+  }
+
+  @ReactMethod
+  fun removeCustomAttribute(key: String) {
+    AdRegistration.removeCustomAttribute(key)
+  }
+
   companion object {
     const val MODULE_NAME = "RNAPSAdsModule"
   }

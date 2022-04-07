@@ -12,4 +12,9 @@ RCT_EXTERN_METHOD(setTestMode:(BOOL)enabled)
 
 RCT_EXTERN_METHOD(setUseGeoLocation:(BOOL)enabled)
 
+RCT_EXTERN_METHOD(addCustomAttribute:(NSString)key
+                  value:(NSString)value)
+
+RCT_EXTERN_METHOD(removeCustomAttribute:(NSString)key)
+
 @end
