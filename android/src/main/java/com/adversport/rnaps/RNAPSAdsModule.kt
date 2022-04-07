@@ -7,7 +7,8 @@ import com.facebook.react.bridge.*
 import com.facebook.react.module.annotations.ReactModule
 
 @ReactModule(name = RNAPSAdsModule.MODULE_NAME)
-class RNAPSAdsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
+class RNAPSAdsModule(reactContext: ReactApplicationContext) :
+  ReactContextBaseJavaModule(reactContext) {
 
   override fun getName() = MODULE_NAME
 

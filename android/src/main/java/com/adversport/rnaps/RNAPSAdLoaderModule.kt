@@ -6,9 +6,9 @@ import com.facebook.react.module.annotations.ReactModule
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-
 @ReactModule(name = RNAPSAdLoaderModule.MODULE_NAME)
-class RNAPSAdLoaderModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
+class RNAPSAdLoaderModule(reactContext: ReactApplicationContext) :
+  ReactContextBaseJavaModule(reactContext) {
 
   override fun getName() = MODULE_NAME
 
@@ -17,7 +17,11 @@ class RNAPSAdLoaderModule(reactContext: ReactApplicationContext) : ReactContextB
     val adLoader = DTBAdRequest()
 
     val slots = options.getArray("slots")?.toArrayList()
-            ?: return rejectPromiseWithCodeAndMessage(promise, "invalid_slots", "The slots argument is invalid.")
+      ?: return rejectPromiseWithCodeAndMessage(
+        promise,
+        "invalid_slots",
+        "The slots argument is invalid."
+      )
 
     val sizes = slots.map {
       val slot = it as Map<*, *>
@@ -35,11 +39,19 @@ class RNAPSAdLoaderModule(reactContext: ReactApplicationContext) : ReactContextB
             val height = matcher.group(2)?.toInt() ?: 0
             DTBAdSize(width, height, slotUUID)
           } else {
-            return rejectPromiseWithCodeAndMessage(promise, "invalid_size", "The size argument is invalid.")
+            return rejectPromiseWithCodeAndMessage(
+              promise,
+              "invalid_size",
+              "The size argument is invalid."
+            )
           }
         }
         AD_TYPE_INTERSTITIAL -> DTBAdSize.DTBInterstitialAdSize(slotUUID)
-        else -> return rejectPromiseWithCodeAndMessage(promise, "invalid_type", "The type argument is invalid.")
+        else -> return rejectPromiseWithCodeAndMessage(
+          promise,
+          "invalid_type",
+          "The type argument is invalid."
+        )
       }
     }
     adLoader.setSizes(*sizes.toTypedArray())
