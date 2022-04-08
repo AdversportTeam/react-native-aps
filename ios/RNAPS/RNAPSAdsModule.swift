@@ -58,6 +58,30 @@ class RNAPSAdsModule: NSObject {
     DTBAds.sharedInstance().setAdNetworkInfo(adNetworkInfo)
   }
   
+  @objc(setMRAIDSupportedVersions:)
+  func setMRAIDSupportedVersions(versions: Array<String>) -> Void {
+    DTBAds.sharedInstance().mraidCustomVersions = versions
+  }
+  
+  @objc(setMRAIDPolicy:)
+  func setMRAIDPolicy(policy: String) -> Void {
+    var mraidPolicy: DTBMRAIDPolicy
+    switch (policy) {
+    case "NONE":
+      mraidPolicy = NONE_MRAID
+      break;
+    case "AUTO_DETECT":
+      mraidPolicy = AUTO_DETECT_MRAID
+      break;
+    case "DFP":
+      mraidPolicy = DFP_MRAID
+      break;
+    default:
+      mraidPolicy = CUSTOM_MRAID
+    }
+    DTBAds.sharedInstance().mraidPolicy = mraidPolicy
+  }
+  
   @objc(setTestMode:)
   func setTestMode(enabled: Bool) -> Void {
     DTBAds.sharedInstance().testMode = enabled
@@ -67,7 +91,7 @@ class RNAPSAdsModule: NSObject {
   func setUseGeoLocation(enabled: Bool) -> Void {
     DTBAds.sharedInstance().useGeoLocation = enabled
   }
-    
+  
   @objc(addCustomAttribute:value:)
   func addCustomAttribute(key: String, value: String) {
     DTBAds.sharedInstance().addCustomAttribute(key, value: value)

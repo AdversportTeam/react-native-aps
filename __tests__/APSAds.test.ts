@@ -1,4 +1,4 @@
-import APSAds from '../src/APSAds';
+import { APSAds } from '../src/APSAds';
 import { AdNetwork } from '../src/types';
 
 describe('APSAds', function () {
@@ -43,6 +43,22 @@ describe('APSAds', function () {
       expect(
         APSAds.setAdNetworkInfo({ adNetwork: AdNetwork.ADMOB })
       ).toBeUndefined();
+    });
+  });
+  describe('setMRAIDSupportedVersions', function () {
+    it('throws if supportedVersions is invalid', function () {
+      // @ts-ignore
+      expect(() => APSAds.setMRAIDSupportedVersions(123)).toThrowError(
+        "APSAds.setMRAIDSupportedVersions(*) 'versions' expected an array of string values"
+      );
+    });
+  });
+  describe('setMRAIDPolicy', function () {
+    it('throws if policy is invalid', function () {
+      // @ts-ignore
+      expect(() => APSAds.setMRAIDPolicy(123)).toThrowError(
+        "APSAds.setMRAIDPolicy(*) 'policy' expected one of MRAIDPolicy values"
+      );
     });
   });
   describe('setTestMode', function () {

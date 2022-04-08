@@ -7,8 +7,9 @@
 
 import AdsModule from './internal/AdsModule';
 import { AdNetworkInfo, validateAdNetworkInfo } from './types/AdNetworkInfo';
+import { isMRAIDPolicy, MRAIDPolicy } from './types/MRAIDPolicy';
 
-export default class APSAds {
+export class APSAds {
   protected static _nativeModule = AdsModule;
 
   static initialize(appKey: string) {
@@ -27,6 +28,27 @@ export default class APSAds {
       }
     }
     return this._nativeModule.setAdNetworkInfo(adNetworkInfo);
+  }
+
+  static setMRAIDSupportedVersions(versions: string[]) {
+    if (
+      !Array.isArray(versions) ||
+      !versions.every((v) => typeof v === 'string')
+    ) {
+      throw new Error(
+        "APSAds.setMRAIDSupportedVersions(*) 'versions' expected an array of string values"
+      );
+    }
+    return this._nativeModule.setMRAIDSupportedVersions(versions);
+  }
+
+  static setMRAIDPolicy(policy: MRAIDPolicy) {
+    if (!isMRAIDPolicy(policy)) {
+      throw new Error(
+        "APSAds.setMRAIDPolicy(*) 'policy' expected one of MRAIDPolicy values"
+      );
+    }
+    return this._nativeModule.setMRAIDPolicy(policy);
   }
 
   static setTestMode(enabled: boolean) {

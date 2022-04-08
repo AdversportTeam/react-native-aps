@@ -10,6 +10,7 @@ package com.adversport.rnaps
 import com.amazon.device.ads.AdRegistration
 import com.amazon.device.ads.DTBAdNetwork
 import com.amazon.device.ads.DTBAdNetworkInfo
+import com.amazon.device.ads.MRAIDPolicy
 import com.facebook.react.bridge.*
 import com.facebook.react.module.annotations.ReactModule
 
@@ -27,10 +28,6 @@ class RNAPSAdsModule(reactContext: ReactApplicationContext) :
 
   @ReactMethod
   fun setAdNetworkInfo(adNetworkInfoMap: ReadableMap) {
-    if (!adNetworkInfoMap.hasKey("adNetwork")) {
-      throw Error()
-    }
-
     val adNetwork = when (adNetworkInfoMap.getString("adNetwork")) {
       "GOOGLE_AD_MANAGER" -> DTBAdNetwork.GOOGLE_AD_MANAGER
       "ADMOB" -> DTBAdNetwork.ADMOB
@@ -42,8 +39,8 @@ class RNAPSAdsModule(reactContext: ReactApplicationContext) :
     }
     val adNetworkInfo = DTBAdNetworkInfo(adNetwork)
 
-    if (adNetworkInfoMap.hasKey("adNetworkProperties")) {
-      val properties = adNetworkInfoMap.getMap("adNetworkProperties")!!.toHashMap()
+    adNetworkInfoMap.getMap("adNetworkProperties")?.let {
+      val properties = it.toHashMap()
 
       for ((key, value) in properties) {
         adNetworkInfo.setAdNetworkProperties(key, value as String)
@@ -51,6 +48,23 @@ class RNAPSAdsModule(reactContext: ReactApplicationContext) :
     }
 
     AdRegistration.setAdNetworkInfo(adNetworkInfo)
+  }
+
+  @ReactMethod
+  fun setMRAIDSupportedVersions(versions: ReadableArray) {
+    AdRegistration.setMRAIDSupportedVersions((versions.toArrayList() as List<String>).toTypedArray())
+  }
+
+  @ReactMethod
+  fun setMRAIDPolicy(policy: String) {
+    AdRegistration.setMRAIDPolicy(
+      when (policy) {
+        "NONE" -> MRAIDPolicy.NONE
+        "AUTO_DETECT" -> MRAIDPolicy.AUTO_DETECT
+        "DFP" -> MRAIDPolicy.DFP
+        else -> MRAIDPolicy.CUSTOM
+      }
+    )
   }
 
   @ReactMethod

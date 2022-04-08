@@ -23,13 +23,7 @@ class RNAPSAdLoaderModule(reactContext: ReactApplicationContext) :
   fun loadAd(options: ReadableMap, promise: Promise) {
     val adLoader = DTBAdRequest()
 
-    val slots = options.getArray("slots")?.toArrayList()
-      ?: return rejectPromiseWithCodeAndMessage(
-        promise,
-        "invalid_slots",
-        "The slots argument is invalid."
-      )
-
+    val slots = options.getArray("slots")!!.toArrayList()
     val sizes = slots.map {
       val slot = it as Map<*, *>
       val slotUUID = slot["slotUUID"] as String?
@@ -63,17 +57,14 @@ class RNAPSAdLoaderModule(reactContext: ReactApplicationContext) :
     }
     adLoader.setSizes(*sizes.toTypedArray())
 
-    if (options.hasKey("customTargeting")) {
-      val customTargeting = options.getMap("customTargeting")!!.toHashMap()
-
-      for ((key, value) in customTargeting) {
+    options.getMap("customTargeting")?.let {
+      for ((key, value) in it.toHashMap()) {
         adLoader.putCustomTarget(key, value as String)
       }
     }
 
-    if (options.hasKey("slotGroupName")) {
-      val slotGroupName = options.getString("slotGroupName")
-      adLoader.setSlotGroup(slotGroupName)
+    options.getString("slotGroupName")?.let {
+      adLoader.setSlotGroup(it)
     }
 
     adLoader.loadAd(object : DTBAdCallback {
