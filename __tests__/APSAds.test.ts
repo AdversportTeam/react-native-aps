@@ -1,4 +1,4 @@
-import APSAds from '../src/APSAds';
+import { APSAds } from '../src/APSAds';
 import { AdNetwork } from '../src/types';
 
 describe('APSAds', function () {

@@ -8,7 +8,7 @@
 import AdsModule from './internal/AdsModule';
 import { AdNetworkInfo, validateAdNetworkInfo } from './types/AdNetworkInfo';
 
-export default class APSAds {
+export class APSAds {
   protected static _nativeModule = AdsModule;
 
   static initialize(appKey: string) {
