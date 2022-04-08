@@ -9,6 +9,9 @@ describe('APSAds', function () {
         "APSAds.initialze(*) 'appKey' expected a string value"
       );
     });
+    it('returns Promise of void', function () {
+      expect(APSAds.initialize('appKey')).resolves.toBeUndefined();
+    });
   });
   describe('setAdNetworkInfo', function () {
     it('throws if adNetworkInfo is invalid', function () {
@@ -36,6 +39,11 @@ describe('APSAds', function () {
         "APSAds.setAdNetworkInfo(*) 'adNetworkInfo.adNetworkProperties' expected an object value"
       );
     });
+    it('returns nothing', function () {
+      expect(
+        APSAds.setAdNetworkInfo({ adNetwork: AdNetwork.ADMOB })
+      ).toBeUndefined();
+    });
   });
   describe('setTestMode', function () {
     it('throws if enabled is invalid', function () {
@@ -44,6 +52,9 @@ describe('APSAds', function () {
         "APSAds.setTestMode(*) 'enabled' expected a boolean value"
       );
     });
+    it('returns nothing', function () {
+      expect(APSAds.setTestMode(true)).toBeUndefined();
+    });
   });
   describe('setUseGeoLocation', function () {
     it('throws if enabled is invalid', function () {
@@ -51,6 +62,9 @@ describe('APSAds', function () {
       expect(() => APSAds.setUseGeoLocation(123)).toThrowError(
         "APSAds.setUseGeoLocation(*) 'enabled' expected a boolean value"
       );
+    });
+    it('returns nothing', function () {
+      expect(APSAds.setUseGeoLocation(true)).toBeUndefined();
     });
   });
   describe('addCustomAttribute', function () {
@@ -66,6 +80,9 @@ describe('APSAds', function () {
         "APSAds.addCustomAttribute(_, *) 'value' expected a string value"
       );
     });
+    it('returns nothing', function () {
+      expect(APSAds.addCustomAttribute('key', 'value')).toBeUndefined();
+    });
   });
   describe('removeCustomAttribute', function () {
     it('throws if key is invalid', function () {
@@ -73,6 +90,9 @@ describe('APSAds', function () {
       expect(() => APSAds.removeCustomAttribute(123)).toThrowError(
         "APSAds.removeCustomAttribute(*) 'key' expected a string value"
       );
+    });
+    it('returns nothing', function () {
+      expect(APSAds.removeCustomAttribute('key')).toBeUndefined();
     });
   });
 });

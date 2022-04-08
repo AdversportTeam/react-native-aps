@@ -25,10 +25,7 @@ export class AdLoader {
     }
 
     try {
-      const keyValuePairs = await AdLoader._nativeModule.loadAd(
-        adLoaderOptions
-      );
-      return keyValuePairs;
+      return await AdLoader._nativeModule.loadAd(adLoaderOptions);
     } catch (error) {
       if ((error as any).userInfo) {
         throw AdError.fromNativeError(error);
