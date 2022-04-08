@@ -1,6 +1,13 @@
+/*
+ * Copyright (c) 2022-present Adversport & Contributors
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 import { NativeModules, Platform } from 'react-native';
 
-import type { AdLoaderOptions } from '../types';
+import type { AdLoaderModuleSpec } from '../turbomodules/NativeRNAPSAdLoaderModule';
 
 const { RNAPSAdLoaderModule } = NativeModules;
 
@@ -14,8 +21,4 @@ if (RNAPSAdLoaderModule == null) {
   console.error(LINKING_ERROR);
 }
 
-export interface AdLoaderModule {
-  loadAd: (options: AdLoaderOptions) => Promise<{ [key: string]: string }>;
-}
-
-export default RNAPSAdLoaderModule as AdLoaderModule;
+export default RNAPSAdLoaderModule as AdLoaderModuleSpec;

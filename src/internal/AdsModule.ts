@@ -1,6 +1,13 @@
+/*
+ * Copyright (c) 2022-present Adversport & Contributors
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 import { NativeModules, Platform } from 'react-native';
 
-import type { AdNetworkInfo } from '../types';
+import type { AdsModuleSpec } from '../turbomodules/NativeRNAPSAdsModule';
 
 const { RNAPSAdsModule } = NativeModules;
 
@@ -14,18 +21,4 @@ if (RNAPSAdsModule == null) {
   console.error(LINKING_ERROR);
 }
 
-export interface AdsModule {
-  initialize: (appKey: string) => Promise<void>;
-
-  setAdNetworkInfo: (adNetworkInfo: AdNetworkInfo) => void;
-
-  setTestMode: (enabled: boolean) => void;
-
-  setUseGeoLocation: (enabled: boolean) => void;
-
-  addCustomAttribute: (key: string, value: string) => void;
-
-  removeCustomAttribute: (key: string) => void;
-}
-
-export default RNAPSAdsModule as AdsModule;
+export default RNAPSAdsModule as AdsModuleSpec;

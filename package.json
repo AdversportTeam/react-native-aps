@@ -76,7 +76,8 @@
     "modulePathIgnorePatterns": [
       "<rootDir>/example/node_modules",
       "<rootDir>/lib/"
-    ]
+    ],
+    "setupFiles": ["./jest.setup.ts"]
   },
   "commitlint": {
     "extends": [
