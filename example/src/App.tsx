@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import APSAds, { AdNetwork, TestIds } from 'react-native-aps';
+import APSAds, { AdNetwork, MRAIDPolicy, TestIds } from 'react-native-aps';
 import MobileAds from 'react-native-google-mobile-ads';
 
 import Banner from './Banner/Banner.component';
@@ -15,6 +15,7 @@ export default function App() {
       APSAds.initialize(TestIds.APS_APP_KEY),
     ]).then(() => {
       APSAds.setAdNetworkInfo({ adNetwork: AdNetwork.GOOGLE_AD_MANAGER });
+      APSAds.setMRAIDPolicy(MRAIDPolicy.DFP);
       APSAds.setTestMode(true);
       setInitialized(true);
     });

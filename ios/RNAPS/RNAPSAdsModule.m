@@ -15,6 +15,10 @@ RCT_EXTERN_METHOD(initialize:(NSString)appKey
 
 RCT_EXTERN_METHOD(setAdNetworkInfo:(NSDictionary)adNetworkInfoDic)
 
+RCT_EXTERN_METHOD(setMRAIDSupportedVersions:(NSArray)versions)
+
+RCT_EXTERN_METHOD(setMRAIDPolicy:(NSString)policy)
+
 RCT_EXTERN_METHOD(setTestMode:(BOOL)enabled)
 
 RCT_EXTERN_METHOD(setUseGeoLocation:(BOOL)enabled)
