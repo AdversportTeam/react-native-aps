@@ -1,7 +1,7 @@
-import { AdError } from '../AdError';
-import { AdLoader } from '../AdLoader';
-import { AdType } from '../types';
-import { TestIds } from '../TestIds';
+import { AdError } from '../src/AdError';
+import { AdLoader } from '../src/AdLoader';
+import { AdType } from '../src/types';
+import { TestIds } from '../src/TestIds';
 
 describe('AdLoader', function () {
   describe('loadAd', function () {
