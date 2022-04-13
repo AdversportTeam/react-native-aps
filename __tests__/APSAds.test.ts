@@ -1,5 +1,5 @@
 import { APSAds } from '../src/APSAds';
-import { AdNetwork } from '../src/types';
+import { AdNetwork, MRAIDPolicy } from '../src/types';
 
 describe('APSAds', function () {
   describe('initialize', function () {
@@ -52,6 +52,9 @@ describe('APSAds', function () {
         "APSAds.setMRAIDSupportedVersions(*) 'versions' expected an array of string values"
       );
     });
+    it('returns nothing', function () {
+      expect(APSAds.setMRAIDSupportedVersions(['1.0'])).toBeUndefined();
+    });
   });
   describe('setMRAIDPolicy', function () {
     it('throws if policy is invalid', function () {
@@ -59,6 +62,9 @@ describe('APSAds', function () {
       expect(() => APSAds.setMRAIDPolicy(123)).toThrowError(
         "APSAds.setMRAIDPolicy(*) 'policy' expected one of MRAIDPolicy values"
       );
+    });
+    it('returns nothing', function () {
+      expect(APSAds.setMRAIDPolicy(MRAIDPolicy.DFP)).toBeUndefined();
     });
   });
   describe('setTestMode', function () {
