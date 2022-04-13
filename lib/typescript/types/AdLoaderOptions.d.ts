@@ -1,7 +1,8 @@
-import { AdSlot } from './AdSlot';
+import { AdType } from './AdType';
 export interface AdLoaderOptions {
-    slots: AdSlot[];
-    slotGroupName?: string;
+    slotUUID: string;
+    type: AdType;
+    size?: string;
     customTargeting?: {
         [key: string]: string;
     };
