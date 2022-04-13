@@ -10,8 +10,6 @@ package com.adversport.rnaps
 import com.amazon.device.ads.*
 import com.facebook.react.bridge.*
 import com.facebook.react.module.annotations.ReactModule
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 @ReactModule(name = RNAPSAdLoaderModule.MODULE_NAME)
 class RNAPSAdLoaderModule(reactContext: ReactApplicationContext) :
@@ -23,48 +21,24 @@ class RNAPSAdLoaderModule(reactContext: ReactApplicationContext) :
   fun loadAd(options: ReadableMap, promise: Promise) {
     val adLoader = DTBAdRequest()
 
-    val slots = options.getArray("slots")!!.toArrayList()
-    val sizes = slots.map {
-      val slot = it as Map<*, *>
-      val slotUUID = slot["slotUUID"] as String?
-      val type = slot["type"] as String?
-      val size = slot["size"] as String? ?: ""
-
-      when (type) {
-        AD_TYPE_BANNER -> {
-          val pattern: Pattern = Pattern.compile("([0-9]+)x([0-9]+)")
-          val matcher: Matcher = pattern.matcher(size)
-
-          if (matcher.find()) {
-            val width = matcher.group(1)?.toInt() ?: 0
-            val height = matcher.group(2)?.toInt() ?: 0
-            DTBAdSize(width, height, slotUUID)
-          } else {
-            return rejectPromiseWithCodeAndMessage(
-              promise,
-              "invalid_size",
-              "The size argument is invalid."
-            )
-          }
+    val slotUUID = options.getString("slotUUID")!!
+    val type = options.getString("type")!!
+    val size = options.getString("size")
+    val adSize = when (type) {
+      AD_TYPE_BANNER -> {
+        size!!.split("x").let {
+          DTBAdSize(it[0].toInt(), it[1].toInt(), slotUUID)
         }
-        AD_TYPE_INTERSTITIAL -> DTBAdSize.DTBInterstitialAdSize(slotUUID)
-        else -> return rejectPromiseWithCodeAndMessage(
-          promise,
-          "invalid_type",
-          "The type argument is invalid."
-        )
       }
+      AD_TYPE_INTERSTITIAL -> DTBAdSize.DTBInterstitialAdSize(slotUUID)
+      else -> return
     }
-    adLoader.setSizes(*sizes.toTypedArray())
+    adLoader.setSizes(adSize)
 
     options.getMap("customTargeting")?.let {
       for ((key, value) in it.toHashMap()) {
         adLoader.putCustomTarget(key, value as String)
       }
-    }
-
-    options.getString("slotGroupName")?.let {
-      adLoader.setSlotGroup(it)
     }
 
     adLoader.loadAd(object : DTBAdCallback {

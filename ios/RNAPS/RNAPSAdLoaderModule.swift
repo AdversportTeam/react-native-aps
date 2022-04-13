@@ -22,40 +22,29 @@ class RNAPSAdLoaderModule: NSObject {
   func loadAd(options: Dictionary<String, Any>, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
     let adLoader = DTBAdLoader()
     
-    guard let slots = options["slots"] as? Array<Dictionary<String, String>> else {
-      RNAPSAdLoaderModule.rejectPromise(reject: reject, code: "invalid_slots", message: "The slots argument is invalid.")
+    let slotUUID = options["slotUUID"] as! String
+    let type = options["type"] as! String
+    let size = options["size"] as? String
+    let adSize: DTBAdSize
+    switch type {
+    case RNAPSAdLoaderModule.AD_TYPE_BANNER:
+      let values = size!.split(separator: "x")
+      let width = Int(values[0])!
+      let height = Int(values[1])!
+      adSize = DTBAdSize(bannerAdSizeWithWidth: width, height: height, andSlotUUID: slotUUID)
+      break
+    case RNAPSAdLoaderModule.AD_TYPE_INTERSTITIAL:
+      adSize = DTBAdSize(interstitialAdSizeWithSlotUUID: slotUUID)
+      break
+    default:
       return
     }
-    let sizes = slots.compactMap { (slot) -> DTBAdSize? in
-      let slotUUID = slot["slotUUID"]
-      let type = slot["type"]
-      let size = slot["size"] ?? ""
-      
-      switch type {
-      case RNAPSAdLoaderModule.AD_TYPE_BANNER:
-        guard let _ = size.range(of: "^([0-9]+)x([0-9]+)$", options: .regularExpression) else {
-          return nil
-        }
-        let values = size.split(separator: "x")
-        let width = Int(values[0])!
-        let height = Int(values[1])!
-        return DTBAdSize(bannerAdSizeWithWidth: width, height: height, andSlotUUID: slotUUID)
-      case RNAPSAdLoaderModule.AD_TYPE_INTERSTITIAL:
-        return DTBAdSize(interstitialAdSizeWithSlotUUID: slotUUID)
-      default:
-        return nil
-      }
-    }
-    adLoader.setAdSizes(sizes as [Any])
+    adLoader.setAdSizes([adSize])
     
     if let customTargeting = options["customTargeting"] as? Dictionary<String, String> {
       for (key, value) in (customTargeting) {
         adLoader.putCustomTarget(value, withKey: key)
       }
-    }
-    
-    if let slotGroupName = options["slotGroupName"] {
-      adLoader.slotGroup = slotGroupName as? String
     }
     
     adLoader.loadAd(AdLoadCallback(resolve: resolve, reject: reject))

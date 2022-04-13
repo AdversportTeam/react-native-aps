@@ -13,11 +13,7 @@ jest.doMock('react-native', () => {
         ...ReactNative.NativeModules,
         RNAPSAdLoaderModule: {
           loadAd: jest.fn((options: AdLoaderOptions) => {
-            if (
-              options.slots.some(
-                (slot) => slot.slotUUID === 'ad-error-throwing-slot-uuid'
-              )
-            ) {
+            if (options.slotUUID === 'ad-error-throwing-slot-uuid') {
               throw {
                 code: 'mock_ad_error',
                 message: 'AdError mocked successfully.',

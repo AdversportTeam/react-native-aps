@@ -5,32 +5,31 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { AdSlot, validateAdSlot } from './AdSlot';
+import { AdType, isAdType } from './AdType';
 
 export interface AdLoaderOptions {
-  slots: AdSlot[];
-  slotGroupName?: string;
+  slotUUID: string;
+  type: AdType;
+  size?: string;
   customTargeting?: { [key: string]: string };
 }
+
+const sizeRegex = /([0-9]+)x([0-9]+)/;
 
 export function validateAdLoaderOptions(adLoaderOptions: AdLoaderOptions) {
   if (typeof adLoaderOptions !== 'object') {
     throw new Error("'adLoaderOptions' expected an object value");
   }
-  if (!Array.isArray(adLoaderOptions.slots)) {
-    throw new Error(
-      "'adLoaderOptions.slots' expected an array of AdSlot values"
-    );
+  if (typeof adLoaderOptions.slotUUID !== 'string') {
+    throw new Error("'adLoaderOptions.slotUUID' expected a string value");
   }
-  adLoaderOptions.slots.forEach((adSlot, index) => {
-    try {
-      validateAdSlot(adSlot);
-    } catch (e) {
-      if (e instanceof Error) {
-        throw new Error(
-          `'adLoaderOptions.slots[${index}]${e.message.substring(7)}`
-        );
-      }
-    }
-  });
+  if (!isAdType(adLoaderOptions.type)) {
+    throw new Error("'adLoaderOptions.type' expected one of AdType values");
+  }
+  if (
+    adLoaderOptions.type === AdType.BANNER &&
+    (!adLoaderOptions.size || !sizeRegex.test(adLoaderOptions.size))
+  ) {
+    throw new Error("'adLoaderOptions.size' expected a valid size string.");
+  }
 }

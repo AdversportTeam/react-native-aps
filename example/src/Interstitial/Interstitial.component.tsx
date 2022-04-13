@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Button } from 'react-native';
 import {
   AdLoader,
@@ -10,39 +10,35 @@ import {
 import { AdEventType, InterstitialAd } from 'react-native-google-mobile-ads';
 
 const apsOptions: AdLoaderOptions = {
-  slots: [
-    {
-      slotUUID: TestIds.APS_SLOT_INTERSTITIAL,
-      type: AdType.INTERSTITIAL,
-    },
-  ],
+  slotUUID: TestIds.APS_SLOT_INTERSTITIAL,
+  type: AdType.INTERSTITIAL,
 };
 
 export default function Interstitial() {
-  const [apsBidResult, setApsBidResult] = useState<{ [key: string]: string }>();
   const [interstitialAd, setInterstitialAd] = useState<InterstitialAd>();
   const [isLoaded, setLoaded] = useState(false);
 
-  const loadApsBid = useCallback(() => {
+  const loadApsBid = () => {
     AdLoader.loadAd(apsOptions)
       .then((result) => {
-        setApsBidResult(result);
+        const interstitial = InterstitialAd.createForAdRequest(
+          TestIds.GAM_INTERSTITIAL,
+          {
+            customTargeting: result,
+          }
+        );
+        setInterstitialAd(interstitial);
       })
       .catch((error) => {
         if (isAdError(error)) {
           console.debug(error);
         }
-      })
-      .finally(() => {
         const interstitial = InterstitialAd.createForAdRequest(
-          TestIds.GAM_INTERSTITIAL,
-          {
-            customTargeting: apsBidResult,
-          }
+          TestIds.GAM_INTERSTITIAL
         );
         setInterstitialAd(interstitial);
       });
-  }, []);
+  };
 
   useEffect(() => {
     loadApsBid();

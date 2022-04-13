@@ -21,10 +21,19 @@
     "!**/__mocks__"
   ],
   "scripts": {
-    "test": "jest",
-    "typescript": "tsc --noEmit",
-    "lint": "eslint \"**/*.{js,ts,tsx}\"",
-    "_prepare": "bob build",
+    "_prepare": "yarn build",
+    "build": "bob build",
+    "build:clean": "rimraf android/build && rimraf ios/build && rimraf lib",
+    "lint:code": "yarn lint:js && yarn lint:android && yarn lint:ios:check",
+    "lint:js": "eslint src/ --ext .js,.jsx,.ts,.tsx --max-warnings=0",
+    "lint:android": "google-java-format --set-exit-if-changed --replace --glob=\"android/**/*.java\"",
+    "lint:ios:check": "clang-format --glob=\"ios/**/*.{h,cpp,m,mm}\" --style=Google -n -Werror",
+    "lint:ios:fix": "clang-format -i --glob=\"ios/**/*.{h,cpp,m,mm}\" --style=Google",
+    "tsc:compile": "tsc --noEmit",
+    "lint": "yarn lint:code && yarn tsc:compile",
+    "test:jest": "jest",
+    "test:jest-watch": "jest --watch",
+    "test:jest-coverage": "jest --coverage",
     "release": "release-it",
     "example": "yarn --cwd example",
     "pods": "cd example && pod-install --quiet",
@@ -46,16 +55,20 @@
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
+    "@babel/core": "^7.17.9",
+    "@babel/preset-env": "^7.16.11",
     "@commitlint/config-conventional": "^16.2.1",
     "@react-native-community/eslint-config": "^3.0.1",
     "@release-it/conventional-changelog": "^4.2.2",
     "@types/jest": "^27.4.1",
     "@types/react": "^17.0.43",
-    "@types/react-native": "0.67.3",
+    "@types/react-native": "0.67.4",
+    "clang-format": "^1.7.0",
     "commitlint": "^16.2.3",
-    "eslint": "^8.12.0",
+    "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "google-java-format": "^1.0.1",
     "husky": "^7.0.4",
     "jest": "^27.5.1",
     "pod-install": "^0.1.32",
@@ -76,7 +89,9 @@
       "<rootDir>/example/node_modules",
       "<rootDir>/lib/"
     ],
-    "setupFiles": ["./jest.setup.ts"]
+    "setupFiles": [
+      "./jest.setup.ts"
+    ]
   },
   "commitlint": {
     "extends": [
@@ -106,6 +121,10 @@
       "@react-native-community",
       "prettier"
     ],
+    "plugins": ["jest"],
+    "env": {
+      "jest/globals": true
+    },
     "rules": {
       "prettier/prettier": [
         "error",
@@ -152,6 +171,5 @@
         "jsSrcsDir": "./src/turbomodules"
       }
     ]
-  },
-  "dependencies": {}
+  }
 }
