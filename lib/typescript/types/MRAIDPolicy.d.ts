@@ -1,6 +1,5 @@
 export declare const MRAIDPolicy: {
     readonly NONE: "NONE";
-    readonly AUTO_DETECT: "AUTO_DETECT";
     readonly DFP: "DFP";
     readonly CUSTOM: "CUSTOM";
 };
