@@ -6,6 +6,7 @@ Amazon Publisher Services SDK for React Native
 
 ```sh
 npm install react-native-aps
+cd ios && bundle exec pod install
 ```
 
 ## Usage
