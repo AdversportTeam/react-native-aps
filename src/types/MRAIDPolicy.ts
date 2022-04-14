@@ -7,7 +7,6 @@
 
 export const MRAIDPolicy = {
   NONE: 'NONE',
-  AUTO_DETECT: 'AUTO_DETECT',
   DFP: 'DFP',
   CUSTOM: 'CUSTOM',
 } as const;

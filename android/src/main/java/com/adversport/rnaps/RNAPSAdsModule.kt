@@ -60,7 +60,6 @@ class RNAPSAdsModule(reactContext: ReactApplicationContext) :
     AdRegistration.setMRAIDPolicy(
       when (policy) {
         "NONE" -> MRAIDPolicy.NONE
-        "AUTO_DETECT" -> MRAIDPolicy.AUTO_DETECT
         "DFP" -> MRAIDPolicy.DFP
         else -> MRAIDPolicy.CUSTOM
       }

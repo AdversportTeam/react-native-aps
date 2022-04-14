@@ -15,6 +15,11 @@ import {
 export class AdLoader {
   protected static _nativeModule = RNAPSAdLoaderModule;
 
+  /**
+   * Request APS for a bid. Only a single ad size and slotUUID is supported per bid request.
+   * @param adLoaderOptions `AdLoaderOptions` object used to configure the bid request.
+   * @returns Key value pairs of returned bid response.
+   */
   static async loadAd(adLoaderOptions: AdLoaderOptions) {
     try {
       validateAdLoaderOptions(adLoaderOptions);
