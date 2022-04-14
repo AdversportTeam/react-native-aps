@@ -12,6 +12,10 @@ import { isMRAIDPolicy, MRAIDPolicy } from './types/MRAIDPolicy';
 export class APSAds {
   protected static _nativeModule = AdsModule;
 
+  /**
+   * Initializes the APSAds SDK.
+   * @param appKey Generated APS app key from the APS portal
+   */
   static initialize(appKey: string) {
     if (typeof appKey !== 'string') {
       throw new Error("APSAds.initialze(*) 'appKey' expected a string value");
@@ -19,6 +23,10 @@ export class APSAds {
     return this._nativeModule.initialize(appKey);
   }
 
+  /**
+   * Sets the primary ad server or mediator.
+   * @param adNetworkInfo `AdNetworkInfo` object containing the primary ad network and its properties
+   */
   static setAdNetworkInfo(adNetworkInfo: AdNetworkInfo) {
     try {
       validateAdNetworkInfo(adNetworkInfo);
@@ -30,6 +38,10 @@ export class APSAds {
     return this._nativeModule.setAdNetworkInfo(adNetworkInfo);
   }
 
+  /**
+   * Sets the MRAID versions supported by user ad server.
+   * @param versions Array of supported versions
+   */
   static setMRAIDSupportedVersions(versions: string[]) {
     if (
       !Array.isArray(versions) ||
@@ -42,6 +54,10 @@ export class APSAds {
     return this._nativeModule.setMRAIDSupportedVersions(versions);
   }
 
+  /**
+   * Sets the MRAID policy.
+   * @param policy MRAIDPolicy value. `MRAIDPolicy.DFP` for Google Ad Manager and `MRAIDPolicy.CUSTOM` for other ad server / mediation.
+   */
   static setMRAIDPolicy(policy: MRAIDPolicy) {
     if (!isMRAIDPolicy(policy)) {
       throw new Error(
@@ -51,6 +67,10 @@ export class APSAds {
     return this._nativeModule.setMRAIDPolicy(policy);
   }
 
+  /**
+   * Enable / disable the test mode for APSAds.
+   * @param enabled Whether to enable or disable the test mode.
+   */
   static setTestMode(enabled: boolean) {
     if (typeof enabled !== 'boolean') {
       throw new Error(
@@ -60,6 +80,10 @@ export class APSAds {
     return this._nativeModule.setTestMode(enabled);
   }
 
+  /**
+   * Enable / disable the geo location tracking for APSAds.
+   * @param enabled Whether to enable or disable the geo location tracking.
+   */
   static setUseGeoLocation(enabled: boolean) {
     if (typeof enabled !== 'boolean') {
       throw new Error(
@@ -69,6 +93,11 @@ export class APSAds {
     return this._nativeModule.setUseGeoLocation(enabled);
   }
 
+  /**
+   * Adds a custom attribute to the APSAds SDK.
+   * @param key The key of the custom attribute
+   * @param value The value of the custom attribute
+   */
   static addCustomAttribute(key: string, value: string) {
     if (typeof key !== 'string') {
       throw new Error(
@@ -83,6 +112,10 @@ export class APSAds {
     return this._nativeModule.addCustomAttribute(key, value);
   }
 
+  /**
+   * Removes a custom attribute from the APSAds SDK.
+   * @param key The key of the custom attribute
+   */
   static removeCustomAttribute(key: string) {
     if (typeof key !== 'string') {
       throw new Error(

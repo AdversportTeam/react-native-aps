@@ -70,9 +70,6 @@ class RNAPSAdsModule: NSObject {
     case "NONE":
       mraidPolicy = NONE_MRAID
       break;
-    case "AUTO_DETECT":
-      mraidPolicy = AUTO_DETECT_MRAID
-      break;
     case "DFP":
       mraidPolicy = DFP_MRAID
       break;

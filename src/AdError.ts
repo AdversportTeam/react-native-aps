@@ -17,6 +17,11 @@ export class AdError extends Error {
   }
 }
 
+/**
+ * Type guard for AdError.
+ * @param error Uknown error object
+ * @returns Whether the error is an AdError
+ */
 export function isAdError(error: unknown): error is AdError {
   return error instanceof AdError;
 }
