@@ -77,7 +77,7 @@ import com.android.build.OutputFile
 
 project.ext.react = [
     enableHermes: false,  // clean and rebuild if changing
-    entryFile: "index.tsx",
+    entryFile: "index.js",
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
@@ -159,6 +159,9 @@ android {
                 }
             }
         }
+
+        testBuildType System.getProperty('testBuildType', 'debug')
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
     if (isNewArchitectureEnabled()) {
@@ -271,6 +274,9 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    //noinspection GradleDynamicVersion
+    implementation('com.wix:detox:+')
 }
 
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Button } from 'react-native';
+import { StyleSheet, Text, View, Button } from 'react-native';
 import {
+  AdError,
   AdLoader,
   AdLoaderOptions,
   AdType,
@@ -15,12 +16,18 @@ const apsOptions: AdLoaderOptions = {
 };
 
 export default function Interstitial() {
+  const [apsBidResult, setApsBidResult] = useState<{ [key: string]: string }>(
+    {}
+  );
+  const [apsBidError, setApsBidError] = useState<AdError>();
+  const [apsBidDone, setApsBidDone] = useState(false);
   const [interstitialAd, setInterstitialAd] = useState<InterstitialAd>();
   const [isLoaded, setLoaded] = useState(false);
 
   const loadApsBid = () => {
     AdLoader.loadAd(apsOptions)
       .then((result) => {
+        setApsBidResult(result);
         const interstitial = InterstitialAd.createForAdRequest(
           TestIds.GAM_INTERSTITIAL,
           {
@@ -31,12 +38,15 @@ export default function Interstitial() {
       })
       .catch((error) => {
         if (isAdError(error)) {
-          console.debug(error);
+          setApsBidError(error);
         }
         const interstitial = InterstitialAd.createForAdRequest(
           TestIds.GAM_INTERSTITIAL
         );
         setInterstitialAd(interstitial);
+      })
+      .finally(() => {
+        setApsBidDone(true);
       });
   };
 
@@ -76,6 +86,20 @@ export default function Interstitial() {
         disabled={!isLoaded}
         onPress={() => interstitialAd?.show()}
       />
+      <View style={styles.bidResponseContainer}>
+        <Text style={styles.title}>Bid status</Text>
+        <Text testID="status_text" style={styles.description}>
+          {apsBidDone ? (apsBidError ? 'fail' : 'success') : 'loading'}
+        </Text>
+        <Text style={styles.title}>Bid response Key-Values</Text>
+        <Text testID="kvs_text" style={styles.description}>
+          {JSON.stringify(apsBidResult)}
+        </Text>
+        <Text style={styles.title}>Bid error code</Text>
+        <Text testID="error_text" style={styles.description}>
+          {apsBidError?.code || '-'}
+        </Text>
+      </View>
     </View>
   );
 }
@@ -85,5 +109,16 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  bidResponseContainer: {
+    paddingTop: 10,
+    width: '100%',
+  },
+  title: {
+    fontSize: 18,
+  },
+  description: {
+    color: '#333333',
+    marginBottom: 16,
   },
 });
