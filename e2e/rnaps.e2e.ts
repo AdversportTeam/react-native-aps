@@ -24,9 +24,54 @@ describe('React Native APS Example app', () => {
     });
   });
 
-  describe('Banner test', () => {
-    jest.retryTimes(3);
+  const tryLoadBid = async (
+    type: 'banner' | 'interstitial',
+    retries = 0
+  ): Promise<boolean> => {
+    const statusText = element(by.id('status_text'));
+    const kvsText = element(by.id('kvs_text'));
+    const errorText = element(by.id('error_text'));
 
+    await waitFor(statusText).not.toHaveText('loading').withTimeout(10000);
+
+    const statusAttrs =
+      (await statusText.getAttributes()) as Detox.ElementAttributes;
+    const bidStatus = statusAttrs.text;
+
+    jestExpect(bidStatus).toMatch(/success|fail/);
+
+    if (bidStatus === 'success') {
+      const kvsAttrs =
+        (await kvsText.getAttributes()) as Detox.ElementAttributes;
+      const kvs = JSON.parse(kvsAttrs.text);
+
+      jestExpect(kvs.amzn_b).toBeDefined();
+      jestExpect(kvs.amzn_h).toBeDefined();
+      jestExpect(kvs.amznslots).toBeDefined();
+      jestExpect(kvs.amznp).toBeDefined();
+      jestExpect(kvs.dc).toBeDefined();
+
+      return true;
+    } else {
+      const errorAttrs =
+        (await errorText.getAttributes()) as Detox.ElementAttributes;
+      const errorCode = errorAttrs.text;
+
+      jestExpect(errorCode).toMatch(
+        /network_error|network_timeout|no_fill|internal_error|request_error/
+      );
+
+      if (retries < 3) {
+        await new Promise((resolve) => setTimeout(resolve, 10000));
+        await element(by.id(`test_${type}`)).tap();
+        return await tryLoadBid(type, retries + 1);
+      }
+
+      return false;
+    }
+  };
+
+  describe('Banner test', () => {
     beforeAll(async () => {
       await element(by.id('test_banner')).tap();
     });
@@ -38,44 +83,12 @@ describe('React Native APS Example app', () => {
     });
 
     it('should load bid', async () => {
-      const statusText = element(by.id('status_text'));
-      const kvsText = element(by.id('kvs_text'));
-      const errorText = element(by.id('error_text'));
-
-      await waitFor(statusText).not.toHaveText('loading').withTimeout(10000);
-
-      const statusAttrs =
-        (await statusText.getAttributes()) as Detox.ElementAttributes;
-      const bidStatus = statusAttrs.text;
-
-      jestExpect(bidStatus).toMatch(/success|fail/);
-
-      if (bidStatus === 'success') {
-        const kvsAttrs =
-          (await kvsText.getAttributes()) as Detox.ElementAttributes;
-        const kvs = JSON.parse(kvsAttrs.text);
-
-        jestExpect(kvs.amzn_b).toBeDefined();
-        jestExpect(kvs.amzn_h).toBeDefined();
-        jestExpect(kvs.amznslots).toBeDefined();
-        jestExpect(kvs.amznp).toBeDefined();
-      } else {
-        const errorAttrs =
-          (await errorText.getAttributes()) as Detox.ElementAttributes;
-        const errorCode = errorAttrs.text;
-
-        jestExpect(errorCode).toMatch(
-          /network_error|network_timeout|no_fill|internal_error|request_error/
-        );
-      }
-
-      jestExpect(bidStatus).toBe('success');
+      const bidSuccess = await tryLoadBid('banner');
+      jestExpect(bidSuccess).toBe(true);
     });
   });
 
   describe('Interstitial test', () => {
-    jest.retryTimes(3);
-
     beforeAll(async () => {
       await element(by.id('test_interstitial')).tap();
     });
@@ -86,38 +99,8 @@ describe('React Native APS Example app', () => {
     });
 
     it('should load bid', async () => {
-      const statusText = element(by.id('status_text'));
-      const kvsText = element(by.id('kvs_text'));
-      const errorText = element(by.id('error_text'));
-
-      await waitFor(statusText).not.toHaveText('loading').withTimeout(10000);
-
-      const statusAttrs =
-        (await statusText.getAttributes()) as Detox.ElementAttributes;
-      const bidStatus = statusAttrs.text;
-
-      jestExpect(bidStatus).toMatch(/success|fail/);
-
-      if (bidStatus === 'success') {
-        const kvsAttrs =
-          (await kvsText.getAttributes()) as Detox.ElementAttributes;
-        const kvs = JSON.parse(kvsAttrs.text);
-
-        jestExpect(kvs.amzn_b).toBeDefined();
-        jestExpect(kvs.amzn_h).toBeDefined();
-        jestExpect(kvs.amznslots).toBeDefined();
-        jestExpect(kvs.amznp).toBeDefined();
-      } else {
-        const errorAttrs =
-          (await errorText.getAttributes()) as Detox.ElementAttributes;
-        const errorCode = errorAttrs.text;
-
-        jestExpect(errorCode).toMatch(
-          /network_error|network_timeout|no_fill|internal_error|request_error/
-        );
-      }
-
-      jestExpect(bidStatus).toBe('success');
+      const bidSuccess = await tryLoadBid('interstitial');
+      jestExpect(bidSuccess).toBe(true);
     });
   });
 });

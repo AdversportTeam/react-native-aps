@@ -17,12 +17,6 @@ class CustomDetoxEnvironment extends DetoxCircusEnvironment {
       SpecReporter,
       WorkerAssignReporter,
     });
-
-    this.testEventListeners.push({
-      test_retry: async () => {
-        await new Promise((resolve) => setTimeout(resolve, 5000));
-      },
-    });
   }
 }
 
