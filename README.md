@@ -1,6 +1,19 @@
-# react-native-aps
+<p align="center">
+  <a href="https://github.com/AdversportTeam/react-native-aps/README.md">
+    <img width="160px" src="./docs/img/logo_aps.svg"><br/>
+  </a>
+  <h2 align="center">React Native Amazon Publisher Services</h2>
+</p>
 
-Amazon Publisher Services SDK for React Native
+<p align="center">
+  <a href="https://www.npmjs.com/package/react-native-aps"><img src="https://img.shields.io/npm/dm/react-native-aps.svg?style=flat-square" alt="NPM downloads"></a>
+  <a href="https://www.npmjs.com/package/react-native-aps"><img src="https://img.shields.io/npm/v/react-native-aps.svg?style=flat-square" alt="NPM version"></a>
+  <a href="/LICENSE"><img src="https://img.shields.io/npm/l/react-native-aps.svg?style=flat-square" alt="License"></a>
+</p>
+
+---
+
+**React Native Amazon Publisher Services** allows you to add demand partners via Amazon Publisher Services; a React Native wrapper around the native Amazon Publisher Services SDKs for both iOS and Android.
 
 ## Installation
 
