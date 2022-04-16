@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/AdversportTeam/react-native-aps/README.md">
-    <img width="160px" src="./docs/img/logo_aps.svg"><br/>
+    <img width="160px" src="./docs/img/logo_aps.png"><br/>
   </a>
   <h2 align="center">React Native Amazon Publisher Services</h2>
 </p>
