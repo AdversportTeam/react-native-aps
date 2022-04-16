@@ -103,8 +103,6 @@ You can also add/remove custom attributes by calling `addCustomAttribute` and `r
 You can use this methods to pass contextual parameters or pass the OMID Partner information. More information is available in the APS SDK documentation.
 
 ```js
-
-```js
 addCustomAttribute('key', 'value');
 removeCustomAttribute('key');
 ```
@@ -158,6 +156,38 @@ AdLoader.loadAd(apsOptions)
 ```
 
 #### Requesting Bid
+
+Request bid to APS via calling `AdLoader.loadAd` with `AdLoaderOptions`.
+
+```js
+AdLoader.loadAd({
+  slotUUID: TestIds.APS_SLOT_BANNER_320x50,
+  type: AdType.BANNER,
+  size: '320x50',
+})
+```
+
+AdLoaderOptions has following properties:
+- `slotUUID`: The slotUUID of the ad slot.
+- `type`: The ad type of the ad slot. One of `AdType.BANNER`, `AdType.INTERSTITIAL`.
+- `size`: The size of the banner ad slot. Required for banner ad slots.
+- `customTargeting`: The optional custom targeting key value pairs for the bid request.
+
+`AdLoader.loadAd` returns a promise that resolves to object containing key-value pairs. Using them, request ad with your ad server.
+
+In case of Google Ad Manager, pass the key value pairs to `requestOptions.customTargeting`.
+
+```js
+<View>
+  {apsBidDone && (
+    <BannerAd
+      unitId={TestIds.GAM_BANNER}
+      size={BannerAdSize.BANNER}
+      requestOptions={{ customTargeting: apsBidResult }}
+    />
+  )}
+</View>
+```
 
 ## Contributing
 
