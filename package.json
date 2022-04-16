@@ -58,6 +58,7 @@
     "test:android": "detox test -c android",
     "test:ios:build": "yarn detox build --configuration ios",
     "test:ios": "detox test -c ios",
+    "test:ios:pod:install": "cd example && cd ios && rm -rf ApsExample.xcworkspace && rm -f Podfile.lock && pod install --repo-update && cd ..",
     "test": "yarn test:jest",
     "release": "release-it",
     "example": "yarn --cwd example",
