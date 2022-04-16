@@ -149,7 +149,7 @@ jobs:
 
       - name: Detox Test
         timeout-minutes: 10
-        run: yarn test:ios:test
+        run: yarn test:ios
 
       - name: Compress Simulator Log
         continue-on-error: true
