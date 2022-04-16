@@ -45,8 +45,8 @@ jobs:
       - name: Configure JDK 1.11
         uses: actions/setup-java@v2
         with:
-          distribution: 'adopt'
-          java-version: '11' # ubuntu-latest is about to default to 11, force it everywhere
+          distribution: 'temurin'
+          java-version: '11'
 
       # Set path variables needed for caches
       - name: Set workflow variables
@@ -70,7 +70,7 @@ jobs:
           timeout_minutes: 10
           retry_wait_seconds: 60
           max_attempts: 3
-          command: yarn --no-audit --prefer-offline && cd example && DETOX_DISABLE_POSTINSTALL=1 yarn --no-audit --prefer-offline
+          command: yarn --no-audit --prefer-offline DETOX_DISABLE_POSTINSTALL=1 && cd example && yarn --no-audit --prefer-offline
 
       - uses: actions/cache@v2
         name: Gradle Cache
