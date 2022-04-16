@@ -11,7 +11,7 @@ import {
 import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 
 const apsOptions: AdLoaderOptions = {
-  slotUUID: TestIds.APS_SLOT_BANNER,
+  slotUUID: TestIds.APS_SLOT_BANNER_320x50,
   type: AdType.BANNER,
   size: '320x50',
 };

@@ -6,7 +6,6 @@
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/react-native-aps"><img src="https://img.shields.io/npm/dm/react-native-aps.svg?style=flat-square" alt="NPM downloads"></a>
   <a href="https://www.npmjs.com/package/react-native-aps"><img src="https://img.shields.io/npm/v/react-native-aps.svg?style=flat-square" alt="NPM version"></a>
   <a href="/LICENSE"><img src="https://img.shields.io/npm/l/react-native-aps.svg?style=flat-square" alt="License"></a>
 </p>
@@ -55,7 +54,7 @@ import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 // ...
 
 const apsOptions: AdLoaderOptions = {
-  slotUUID: TestIds.APS_SLOT_BANNER,
+  slotUUID: TestIds.APS_SLOT_BANNER_320x50,
   type: AdType.BANNER,
   size: '320x50',
 };
