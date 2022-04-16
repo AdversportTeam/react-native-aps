@@ -123,7 +123,7 @@
       "ios": {
         "type": "ios.app",
         "binaryPath": "example/ios/build/Build/Products/Release-iphonesimulator/ApsExample.app",
-        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace example/ios/ApsExample.xcworkspace -scheme ApsExample -configuration Release -sdk iphonesimulator -derivedDataPath example/ios/build -UseModernBuildSystem=YES"
+        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace example/ios/ApsExample.xcworkspace -scheme ApsExample -configuration Release -sdk iphonesimulator -derivedDataPath example/ios/build -UseModernBuildSystem=YES"
       },
       "android": {
         "type": "android.apk",
@@ -141,7 +141,7 @@
       "emulator": {
         "type": "android.emulator",
         "device": {
-          "avdName": "Pixel_4_API_32"
+          "avdName": "TestingAVD"
         }
       }
     },
