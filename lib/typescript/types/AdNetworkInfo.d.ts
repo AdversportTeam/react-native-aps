@@ -1,4 +1,7 @@
 import { AdNetwork } from './AdNetwork';
+/**
+ * @public
+ */
 export interface AdNetworkInfo {
     /**
      * The name of the primary ad server or mediator
@@ -8,4 +11,7 @@ export interface AdNetworkInfo {
         [key: string]: string;
     };
 }
+/**
+ * @internal
+ */
 export declare function validateAdNetworkInfo(adNetworkInfo: AdNetworkInfo): void;

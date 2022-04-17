@@ -1,4 +1,7 @@
 import { AdType } from './AdType';
+/**
+ * @public
+ */
 export interface AdLoaderOptions {
     /**
      * The slotUUID of the ad slot.
@@ -19,4 +22,7 @@ export interface AdLoaderOptions {
         [key: string]: string;
     };
 }
+/**
+ * @internal
+ */
 export declare function validateAdLoaderOptions(adLoaderOptions: AdLoaderOptions): void;

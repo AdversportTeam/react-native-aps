@@ -1,5 +1,8 @@
 import { TurboModule } from 'react-native';
 import type { AdNetworkInfo, MRAIDPolicy } from '../types';
+/**
+ * @internal
+ */
 export interface AdsModuleSpec extends TurboModule {
     initialize: (appKey: string) => Promise<void>;
     setAdNetworkInfo: (adNetworkInfo: AdNetworkInfo) => void;
