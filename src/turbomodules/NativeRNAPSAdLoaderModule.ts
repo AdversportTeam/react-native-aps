@@ -11,6 +11,9 @@ import { TurboModule, TurboModuleRegistry } from 'react-native';
 
 import type { AdLoaderOptions } from '../types';
 
+/**
+ * @internal
+ */
 export interface AdLoaderModuleSpec extends TurboModule {
   loadAd: (options: AdLoaderOptions) => Promise<{ [key: string]: string }>;
 }

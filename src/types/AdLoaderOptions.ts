@@ -7,6 +7,9 @@
 
 import { AdType, isAdType } from './AdType';
 
+/**
+ * @public
+ */
 export interface AdLoaderOptions {
   /**
    * The slotUUID of the ad slot.
@@ -28,6 +31,9 @@ export interface AdLoaderOptions {
 
 const sizeRegex = /([0-9]+)x([0-9]+)/;
 
+/**
+ * @internal
+ */
 export function validateAdLoaderOptions(adLoaderOptions: AdLoaderOptions) {
   if (typeof adLoaderOptions !== 'object') {
     throw new Error("'adLoaderOptions' expected an object value");

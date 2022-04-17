@@ -12,15 +12,22 @@ import {
   validateAdLoaderOptions,
 } from './types/AdLoaderOptions';
 
+/**
+ * @public
+ */
 export class AdLoader {
-  protected static _nativeModule = RNAPSAdLoaderModule;
+  private static _nativeModule = RNAPSAdLoaderModule;
 
   /**
    * Request APS for a bid. Only a single ad size and slotUUID is supported per bid request.
-   * @param adLoaderOptions `AdLoaderOptions` object used to configure the bid request.
+   * @param adLoaderOptions - `AdLoaderOptions` object used to configure the bid request.
    * @returns Key value pairs of returned bid response.
+   *
+   * @public
    */
-  static async loadAd(adLoaderOptions: AdLoaderOptions) {
+  static async loadAd(
+    adLoaderOptions: AdLoaderOptions
+  ): Promise<{ [key: string]: string }> {
     try {
       validateAdLoaderOptions(adLoaderOptions);
     } catch (e) {

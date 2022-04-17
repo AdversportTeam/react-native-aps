@@ -1,7 +1,10 @@
 {
   "name": "react-native-aps",
   "version": "0.1.0",
-  "author": "Jay Kim <me@wjay.kim> (https://github.com/wjaykim)",
+  "author": "AdversportTeam <rm@adversport.com> (https://github.com/AdversportTeam)",
+  "contributors": [
+    "Jay Kim <me@wjay.kim> (https://github.com/wjaykim)"
+  ],
   "description": "Amazon Publisher Services SDK for React Native",
   "license": "MIT",
   "keywords": [
@@ -14,11 +17,11 @@
     "Amazon Publisher Services",
     "Transparent Ad Marketplace"
   ],
-  "repository": "https://github.com/adversportTeam/react-native-aps",
+  "repository": "https://github.com/AdversportTeam/react-native-aps",
   "bugs": {
-    "url": "https://github.com/adversportTeam/react-native-aps/issues"
+    "url": "https://github.com/AdversportTeam/react-native-aps/issues"
   },
-  "homepage": "https://github.com/adversportTeam/react-native-aps#readme",
+  "homepage": "https://github.com/AdversportTeam/react-native-aps#readme",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/index.d.ts",
@@ -82,9 +85,12 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-detox": "^1.0.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-tsdoc": "^0.2.16",
     "google-java-format": "^1.0.1",
     "husky": "^7.0.4",
     "jest": "^27.5.1",
+    "jest-circus": "^27.5.1",
+    "jest-environment-node": "^27.5.1",
     "pod-install": "^0.1.32",
     "prettier": "^2.6.1",
     "react": "17.0.2",
@@ -164,7 +170,8 @@
     ],
     "plugins": [
       "detox",
-      "jest"
+      "jest",
+      "eslint-plugin-tsdoc"
     ],
     "env": {
       "jest/globals": true
@@ -182,12 +189,14 @@
           "trailingComma": "es5",
           "useTabs": false
         }
-      ]
+      ],
+      "tsdoc/syntax": "error"
     }
   },
   "eslintIgnore": [
     "node_modules/",
-    "lib/"
+    "lib/",
+    "website/"
   ],
   "prettier": {
     "quoteProps": "consistent",

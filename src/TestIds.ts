@@ -7,6 +7,9 @@
 
 import { Platform } from 'react-native';
 
+/**
+ * @public
+ */
 export const TestIds = {
   APS_APP_KEY: '',
   APS_SLOT_BANNER_320x50: '',

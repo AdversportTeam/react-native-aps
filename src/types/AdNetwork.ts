@@ -5,6 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+/**
+ * @public
+ */
 export const AdNetwork = {
   GOOGLE_AD_MANAGER: 'GOOGLE_AD_MANAGER',
   ADMOB: 'ADMOB',
@@ -15,8 +18,14 @@ export const AdNetwork = {
   OTHER: 'OTHER',
 } as const;
 
+/**
+ * @public
+ */
 export type AdNetwork = typeof AdNetwork[keyof typeof AdNetwork];
 
+/**
+ * @internal
+ */
 export function isAdNetwork(value: any): value is AdNetwork {
   return Object.values(AdNetwork).includes(value);
 }

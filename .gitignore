@@ -67,3 +67,5 @@ lib/
 
 # Coverage directory
 coverage
+
+website/docs/api
