@@ -63,7 +63,7 @@ const config = {
             activeBaseRegex: 'docs/(?!api)',
           },
           {
-            to: "docs/api/index",
+            to: "docs/api",
             position: 'left',
             label: "API",
             activeBaseRegex: 'docs/api',
