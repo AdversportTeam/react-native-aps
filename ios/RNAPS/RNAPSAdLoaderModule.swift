@@ -87,6 +87,11 @@ class RNAPSAdLoaderModule: NSObject {
     }
   }
   
+  @objc(skadnHelper:withInfo:)
+  func skadnHelper(name: String, info: String) {
+    DTBAdHelper.skadnHelper(name, withInfo: info)
+  }
+  
   static func rejectPromise(reject: RCTPromiseRejectBlock, code: String, message: String) -> Void {
     var userInfo = Dictionary<String, String>()
     userInfo["code"] = code
