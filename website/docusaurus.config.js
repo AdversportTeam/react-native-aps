@@ -57,14 +57,16 @@ const config = {
         },
         items: [
           {
-            type: 'doc',
-            docId: 'intro',
+            to: 'docs/guides',
             position: 'left',
-            label: 'Tutorial',
+            label: 'Docs',
+            activeBaseRegex: 'docs/(?!api)',
           },
-          { type: 'doc',
-            docId: "api/index",
+          {
+            to: "docs/api/index",
+            position: 'left',
             label: "API",
+            activeBaseRegex: 'docs/api',
           },
           {
             href: 'https://github.com/AdversportTeam/react-native-aps',
@@ -81,7 +83,7 @@ const config = {
             items: [
               {
                 label: 'Tutorial',
-                to: '/docs/intro',
+                to: '/docs/guides',
               },
             ],
           },
