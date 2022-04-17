@@ -8,7 +8,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const config = {
   title: 'React Native Amazon Publisher Services',
   tagline: 'React Native wrapper around the native Amazon Publisher Services SDKs',
-  url: 'https://AdversportTeam.github.io',
+  url: 'https://adversportteam.github.io',
   baseUrl: '/react-native-aps/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -67,7 +67,7 @@ const config = {
             label: "API",
           },
           {
-            href: 'https://github.com/adversportTeam/react-native-aps',
+            href: 'https://github.com/AdversportTeam/react-native-aps',
             label: 'GitHub',
             position: 'right',
           },
@@ -90,7 +90,7 @@ const config = {
             items: [
               {
                 label: 'GitHub',
-                href: 'https://github.com/adversportTeam/react-native-aps',
+                href: 'https://github.com/AdversportTeam/react-native-aps',
               },
             ],
           },
