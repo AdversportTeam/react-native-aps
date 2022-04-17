@@ -63,6 +63,7 @@ describe('React Native APS Example app', () => {
 
       if (retries < 3) {
         await new Promise((resolve) => setTimeout(resolve, 10000));
+        await device.reloadReactNative();
         await element(by.id(`test_${type}`)).tap();
         return await tryLoadBid(type, retries + 1);
       }

@@ -141,7 +141,7 @@
       "emulator": {
         "type": "android.emulator",
         "device": {
-          "avdName": "TestingAVD"
+          "avdName": "Pixel_4_API_32"
         }
       }
     },
