@@ -41,6 +41,9 @@ const config = {
       {
         entryPoints: ['../src/index.ts'],
         tsconfig: '../tsconfig.json',
+        excludePrivate: true,
+        excludeProtected: true,
+        excludeInternal: true,
         readme: 'none'
       },
     ],
