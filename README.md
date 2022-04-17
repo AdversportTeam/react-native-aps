@@ -8,6 +8,7 @@
 <p align="center">
   <a href="https://www.npmjs.com/package/react-native-aps"><img src="https://img.shields.io/npm/v/react-native-aps.svg?style=flat-square" alt="NPM version" /></a>
   <a href="/LICENSE"><img src="https://img.shields.io/npm/l/react-native-aps.svg?style=flat-square" alt="License" /></a>
+  <a href="https://app.codecov.io/gh/AdversportTeam/react-native-aps/"><img alt="Codecov" src="https://img.shields.io/codecov/c/github/AdversportTeam/react-native-aps?style=flat-square" /></a>
 </p>
 
 ---
