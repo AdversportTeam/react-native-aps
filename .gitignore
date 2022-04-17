@@ -67,3 +67,5 @@ android/keystores/debug.keystore
 
 # Coverage directory
 coverage
+
+website/docs/api

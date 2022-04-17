@@ -1,77 +1,24 @@
-# react-native-aps
+<p align="center">
+  <a href="https://github.com/AdversportTeam/react-native-aps/README.md">
+    <img width="500px" src="./website/static/img/logo_aps.png" /><br/>
+  </a>
+  <h2 align="center">React Native Amazon Publisher Services</h2>
+</p>
 
-Amazon Publisher Services SDK for React Native
+<p align="center">
+  <a href="https://www.npmjs.com/package/react-native-aps"><img src="https://img.shields.io/npm/v/react-native-aps.svg?style=flat-square" alt="NPM version" /></a>
+  <a href="/LICENSE"><img src="https://img.shields.io/npm/l/react-native-aps.svg?style=flat-square" alt="License" /></a>
+  <a href="https://app.codecov.io/gh/AdversportTeam/react-native-aps/"><img alt="Codecov" src="https://img.shields.io/codecov/c/github/AdversportTeam/react-native-aps?style=flat-square" /></a>
+</p>
 
-## Installation
+---
 
-```sh
-npm install react-native-aps
-cd ios && bundle exec pod install
-```
+**React Native Amazon Publisher Services** allows you to add demand partners via Amazon Publisher Services; a React Native wrapper around the native Amazon Publisher Services SDKs for both iOS and Android.
 
-## Usage
+## Documentation
 
-### Initializing APS Ads SDK
-
-```js
-import APSAds, { AdNetwork, TestIds } from 'react-native-aps';
-
-// ...
-
-APSAds.initialize(TestIds.APS_APP_KEY)
-  .then(() => {
-    APSAds.setAdNetworkInfo({ adNetwork: AdNetwork.GOOGLE_AD_MANAGER });
-    APSAds.setTestMode(true);
-  })
-```
-
-### Requesting Bid (Key-Value pairs)
-
-Below example shows displaying banner ad with `react-native-google-mobile-ads` library.
-
-```js
-import {
-  AdLoader,
-  AdLoaderOptions,
-  AdType,
-  isAdError,
-  TestIds,
-} from 'react-native-aps';
-import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
-
-// ...
-
-const apsOptions: AdLoaderOptions = {
-  slotUUID: TestIds.APS_SLOT_BANNER,
-  type: AdType.BANNER,
-  size: '320x50',
-};
-
-AdLoader.loadAd(apsOptions)
-  .then((result) => {
-    setApsBidResult(result);
-  })
-  .catch((error) => {
-    if (isAdError(error)) {
-      console.debug(error);
-    }
-  })
-  .finally(() => {
-    setApsBidDone(true);
-  });
-
-// ...
-
-<View>
-  {apsBidDone && (
-    <BannerAd
-      unitId={TestIds.GAM_BANNER}
-      size={BannerAdSize.BANNER}
-      requestOptions={{ customTargeting: apsBidResult }}
-    />
-  )}
-</View>
-```
+- [Guides](https://AdversportTeam.github.io/react-native-aps/docs/guides)
+- [API Reference](https://AdversportTeam.github.io/react-native-aps/docs/api)
 
 ## Contributing
 

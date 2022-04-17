@@ -9,14 +9,19 @@ import AdsModule from './internal/AdsModule';
 import { AdNetworkInfo, validateAdNetworkInfo } from './types/AdNetworkInfo';
 import { isMRAIDPolicy, MRAIDPolicy } from './types/MRAIDPolicy';
 
+/**
+ * @public
+ */
 export class APSAds {
-  protected static _nativeModule = AdsModule;
+  private static _nativeModule = AdsModule;
 
   /**
    * Initializes the APSAds SDK.
-   * @param appKey Generated APS app key from the APS portal
+   * @param appKey - Generated APS app key from the APS portal
+   *
+   * @public
    */
-  static initialize(appKey: string) {
+  static initialize(appKey: string): Promise<void> {
     if (typeof appKey !== 'string') {
       throw new Error("APSAds.initialze(*) 'appKey' expected a string value");
     }
@@ -25,9 +30,11 @@ export class APSAds {
 
   /**
    * Sets the primary ad server or mediator.
-   * @param adNetworkInfo `AdNetworkInfo` object containing the primary ad network and its properties
+   * @param adNetworkInfo - `AdNetworkInfo` object containing the primary ad network and its properties
+   *
+   * @public
    */
-  static setAdNetworkInfo(adNetworkInfo: AdNetworkInfo) {
+  static setAdNetworkInfo(adNetworkInfo: AdNetworkInfo): void {
     try {
       validateAdNetworkInfo(adNetworkInfo);
     } catch (e) {
@@ -40,9 +47,11 @@ export class APSAds {
 
   /**
    * Sets the MRAID versions supported by user ad server.
-   * @param versions Array of supported versions
+   * @param versions - Array of supported versions
+   *
+   * @public
    */
-  static setMRAIDSupportedVersions(versions: string[]) {
+  static setMRAIDSupportedVersions(versions: string[]): void {
     if (
       !Array.isArray(versions) ||
       !versions.every((v) => typeof v === 'string')
@@ -56,9 +65,11 @@ export class APSAds {
 
   /**
    * Sets the MRAID policy.
-   * @param policy MRAIDPolicy value. `MRAIDPolicy.DFP` for Google Ad Manager and `MRAIDPolicy.CUSTOM` for other ad server / mediation.
+   * @param policy - MRAIDPolicy value. `MRAIDPolicy.DFP` for Google Ad Manager and `MRAIDPolicy.CUSTOM` for other ad server / mediation.
+   *
+   * @public
    */
-  static setMRAIDPolicy(policy: MRAIDPolicy) {
+  static setMRAIDPolicy(policy: MRAIDPolicy): void {
     if (!isMRAIDPolicy(policy)) {
       throw new Error(
         "APSAds.setMRAIDPolicy(*) 'policy' expected one of MRAIDPolicy values"
@@ -69,9 +80,11 @@ export class APSAds {
 
   /**
    * Enable / disable the test mode for APSAds.
-   * @param enabled Whether to enable or disable the test mode.
+   * @param enabled - Whether to enable or disable the test mode.
+   *
+   * @public
    */
-  static setTestMode(enabled: boolean) {
+  static setTestMode(enabled: boolean): void {
     if (typeof enabled !== 'boolean') {
       throw new Error(
         "APSAds.setTestMode(*) 'enabled' expected a boolean value"
@@ -82,9 +95,11 @@ export class APSAds {
 
   /**
    * Enable / disable the geo location tracking for APSAds.
-   * @param enabled Whether to enable or disable the geo location tracking.
+   * @param enabled - Whether to enable or disable the geo location tracking.
+   *
+   * @public
    */
-  static setUseGeoLocation(enabled: boolean) {
+  static setUseGeoLocation(enabled: boolean): void {
     if (typeof enabled !== 'boolean') {
       throw new Error(
         "APSAds.setUseGeoLocation(*) 'enabled' expected a boolean value"
@@ -95,10 +110,12 @@ export class APSAds {
 
   /**
    * Adds a custom attribute to the APSAds SDK.
-   * @param key The key of the custom attribute
-   * @param value The value of the custom attribute
+   * @param key - The key of the custom attribute
+   * @param value - The value of the custom attribute
+   *
+   * @public
    */
-  static addCustomAttribute(key: string, value: string) {
+  static addCustomAttribute(key: string, value: string): void {
     if (typeof key !== 'string') {
       throw new Error(
         "APSAds.addCustomAttribute(*) 'key' expected a string value"
@@ -114,9 +131,11 @@ export class APSAds {
 
   /**
    * Removes a custom attribute from the APSAds SDK.
-   * @param key The key of the custom attribute
+   * @param key - The key of the custom attribute
+   *
+   * @public
    */
-  static removeCustomAttribute(key: string) {
+  static removeCustomAttribute(key: string): void {
     if (typeof key !== 'string') {
       throw new Error(
         "APSAds.removeCustomAttribute(*) 'key' expected a string value"

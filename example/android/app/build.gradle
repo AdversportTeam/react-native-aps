@@ -76,8 +76,8 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
-    enableHermes: false,  // clean and rebuild if changing
-    entryFile: "index.tsx",
+    enableHermes: true,  // clean and rebuild if changing
+    entryFile: "index.js",
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
@@ -95,7 +95,7 @@ def enableSeparateBuildPerCPUArchitecture = false
 /**
  * Run Proguard to shrink the Java bytecode in release builds.
  */
-def enableProguardInReleaseBuilds = false
+def enableProguardInReleaseBuilds = true
 
 /**
  * The preferred build flavor of JavaScriptCore.
@@ -159,6 +159,9 @@ android {
                 }
             }
         }
+
+        testBuildType System.getProperty('testBuildType', 'debug')
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
     if (isNewArchitectureEnabled()) {
@@ -226,7 +229,8 @@ android {
             // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro",
+              "${rootProject.projectDir}/../../node_modules/detox/android/detox/proguard-rules-app.pro"
         }
     }
     // applicationVariants are e.g. debug, release
@@ -251,7 +255,8 @@ dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+    implementation "androidx.appcompat:appcompat:1.4.1"
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
@@ -271,6 +276,9 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    //noinspection GradleDynamicVersion
+    androidTestImplementation('com.wix:detox:+')
 }
 
 

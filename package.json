@@ -1,45 +1,12 @@
 {
   "name": "react-native-aps",
   "version": "0.1.0",
-  "description": "Amazon Publisher Services SDK for React Native",
-  "main": "lib/commonjs/index",
-  "module": "lib/module/index",
-  "types": "lib/typescript/index.d.ts",
-  "react-native": "src/index",
-  "source": "src/index",
-  "files": [
-    "src",
-    "lib",
-    "android",
-    "ios",
-    "RNAmazonPublisherServices.podspec",
-    "!lib/typescript/example",
-    "!android/build",
-    "!ios/build",
-    "!**/__tests__",
-    "!**/__fixtures__",
-    "!**/__mocks__"
+  "author": "AdversportTeam <rm@adversport.com> (https://github.com/AdversportTeam)",
+  "contributors": [
+    "Jay Kim <me@wjay.kim> (https://github.com/wjaykim)"
   ],
-  "scripts": {
-    "_prepare": "yarn build",
-    "build": "bob build",
-    "build:clean": "rimraf android/build && rimraf ios/build && rimraf lib",
-    "lint:code": "yarn lint:js && yarn lint:android && yarn lint:ios:check",
-    "lint:js": "eslint src/ --ext .js,.jsx,.ts,.tsx --max-warnings=0",
-    "lint:android": "google-java-format --set-exit-if-changed --replace --glob=\"android/**/*.java\"",
-    "lint:ios:check": "clang-format --glob=\"ios/**/*.{h,cpp,m,mm}\" --style=Google -n -Werror",
-    "lint:ios:fix": "clang-format -i --glob=\"ios/**/*.{h,cpp,m,mm}\" --style=Google",
-    "lint:spellcheck": "spellchecker --quiet --files=\"docs/**/*.md\" --dictionaries=\"./.spellcheck.dict.txt\" --reports=\"spelling.json\" --plugins spell indefinite-article repeated-words syntax-mentions syntax-urls frontmatter",
-    "tsc:compile": "tsc --noEmit",
-    "lint": "yarn lint:code && yarn tsc:compile",
-    "test:jest": "jest",
-    "test:jest-watch": "jest --watch",
-    "test:jest-coverage": "jest --coverage",
-    "release": "release-it",
-    "example": "yarn --cwd example",
-    "pods": "cd example && pod-install --quiet",
-    "bootstrap": "yarn example && yarn && yarn pods"
-  },
+  "description": "Amazon Publisher Services SDK for React Native",
+  "license": "MIT",
   "keywords": [
     "react",
     "react-native",
@@ -50,15 +17,56 @@
     "Amazon Publisher Services",
     "Transparent Ad Marketplace"
   ],
-  "repository": "https://github.com/adversportTeam/react-native-aps",
-  "author": "Jay Kim <me@wjay.kim> (https://github.com/wjaykim)",
-  "license": "MIT",
+  "repository": "https://github.com/AdversportTeam/react-native-aps",
   "bugs": {
-    "url": "https://github.com/adversportTeam/react-native-aps/issues"
+    "url": "https://github.com/AdversportTeam/react-native-aps/issues"
   },
-  "homepage": "https://github.com/adversportTeam/react-native-aps#readme",
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
+  "homepage": "https://github.com/AdversportTeam/react-native-aps#readme",
+  "main": "lib/commonjs/index",
+  "module": "lib/module/index",
+  "types": "lib/typescript/index.d.ts",
+  "react-native": "src/index",
+  "source": "src/index",
+  "files": [
+    "/android/",
+    "/ios/",
+    "/lib/",
+    "/src/",
+    "/babel.config.js",
+    "/jest.setup.ts",
+    "/RNAmazonPublisherServices.podspec",
+    "!android/build",
+    "!ios/build"
+  ],
+  "scripts": {
+    "_prepare": "yarn build",
+    "build": "bob build",
+    "build:clean": "rimraf android/build && rimraf ios/build && rimraf lib",
+    "lint:code": "yarn lint:js:check && yarn lint:android:check && yarn lint:ios:check",
+    "lint:js:check": "eslint src/ --ext .js,.jsx,.ts,.tsx --max-warnings=0",
+    "lint:js:fix": "eslint src/ --ext .js,.jsx,.ts,.tsx --fix",
+    "lint:android:check": "google-java-format --set-exit-if-changed --replace --glob=\"android/**/*.java\"",
+    "lint:android:fix": "google-java-format --replace --glob=\"android/**/*.java\"",
+    "lint:ios:check": "clang-format --glob=\"ios/**/*.{h,cpp,m,mm}\" --style=Google -n -Werror",
+    "lint:ios:fix": "clang-format -i --glob=\"ios/**/*.{h,cpp,m,mm}\" --style=Google",
+    "lint:fix": "yarn lint:js:fix && yarn lint:android:fix && yarn lint:ios:fix",
+    "lint:report": "eslint --output-file=eslint-report.json --format=json src/ --ext .js,.jsx,.ts,.tsx",
+    "lint:spellcheck": "spellchecker --quiet --files=\"docs/**/*.md\" --dictionaries=\"./.spellcheck.dict.txt\" --reports=\"spelling.json\" --plugins spell indefinite-article repeated-words syntax-mentions syntax-urls frontmatter",
+    "tsc:compile": "tsc --noEmit",
+    "lint": "yarn lint:code && yarn tsc:compile",
+    "test:jest": "jest",
+    "test:jest-watch": "jest --watch",
+    "test:jest-coverage": "jest --coverage",
+    "test:android:build": "yarn detox build --configuration android",
+    "test:android": "detox test -c android",
+    "test:ios:build": "yarn detox build --configuration ios",
+    "test:ios": "detox test -c ios",
+    "test:ios:pod:install": "cd example && cd ios && rm -rf ApsExample.xcworkspace && rm -f Podfile.lock && pod install --repo-update && cd ..",
+    "test": "yarn test:jest",
+    "release": "release-it",
+    "example": "yarn --cwd example",
+    "pods": "cd example && pod-install --quiet",
+    "bootstrap": "yarn example && yarn && yarn pods"
   },
   "devDependencies": {
     "@babel/core": "^7.17.9",
@@ -72,12 +80,17 @@
     "clang-format": "^1.7.0",
     "codecov": "^3.8.3",
     "commitlint": "^16.2.3",
+    "detox": "^19.6.5",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-detox": "^1.0.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-tsdoc": "^0.2.16",
     "google-java-format": "^1.0.1",
     "husky": "^7.0.4",
     "jest": "^27.5.1",
+    "jest-circus": "^27.5.1",
+    "jest-environment-node": "^27.5.1",
     "pod-install": "^0.1.32",
     "prettier": "^2.6.1",
     "react": "17.0.2",
@@ -91,6 +104,9 @@
     "react": "*",
     "react-native": "*"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "jest": {
     "preset": "react-native",
     "modulePathIgnorePatterns": [
@@ -100,6 +116,94 @@
     "setupFiles": [
       "./jest.setup.ts"
     ]
+  },
+  "detox": {
+    "testRunner": "jest",
+    "runnerConfig": "e2e/config.json",
+    "behavior": {
+      "init": {
+        "exposeGlobals": false
+      }
+    },
+    "apps": {
+      "ios": {
+        "type": "ios.app",
+        "binaryPath": "example/ios/build/Build/Products/Release-iphonesimulator/ApsExample.app",
+        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace example/ios/ApsExample.xcworkspace -scheme ApsExample -configuration Release -sdk iphonesimulator -derivedDataPath example/ios/build -UseModernBuildSystem=YES"
+      },
+      "android": {
+        "type": "android.apk",
+        "binaryPath": "example/android/app/build/outputs/apk/release/app-release.apk",
+        "build": "cd example/android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && cd ../.."
+      }
+    },
+    "devices": {
+      "simulator": {
+        "type": "ios.simulator",
+        "device": {
+          "type": "iPhone 13"
+        }
+      },
+      "emulator": {
+        "type": "android.emulator",
+        "device": {
+          "avdName": "TestingAVD"
+        }
+      }
+    },
+    "configurations": {
+      "ios": {
+        "device": "simulator",
+        "app": "ios"
+      },
+      "android": {
+        "device": "emulator",
+        "app": "android"
+      }
+    }
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@react-native-community",
+      "prettier"
+    ],
+    "plugins": [
+      "detox",
+      "jest",
+      "eslint-plugin-tsdoc"
+    ],
+    "env": {
+      "jest/globals": true
+    },
+    "globals": {
+      "JSX": true
+    },
+    "rules": {
+      "prettier/prettier": [
+        "error",
+        {
+          "quoteProps": "consistent",
+          "singleQuote": true,
+          "tabWidth": 2,
+          "trailingComma": "es5",
+          "useTabs": false
+        }
+      ],
+      "tsdoc/syntax": "error"
+    }
+  },
+  "eslintIgnore": [
+    "node_modules/",
+    "lib/",
+    "website/"
+  ],
+  "prettier": {
+    "quoteProps": "consistent",
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "useTabs": false
   },
   "commitlint": {
     "extends": [
@@ -122,42 +226,6 @@
         "preset": "angular"
       }
     }
-  },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "@react-native-community",
-      "prettier"
-    ],
-    "plugins": [
-      "jest"
-    ],
-    "env": {
-      "jest/globals": true
-    },
-    "rules": {
-      "prettier/prettier": [
-        "error",
-        {
-          "quoteProps": "consistent",
-          "singleQuote": true,
-          "tabWidth": 2,
-          "trailingComma": "es5",
-          "useTabs": false
-        }
-      ]
-    }
-  },
-  "eslintIgnore": [
-    "node_modules/",
-    "lib/"
-  ],
-  "prettier": {
-    "quoteProps": "consistent",
-    "singleQuote": true,
-    "tabWidth": 2,
-    "trailingComma": "es5",
-    "useTabs": false
   },
   "react-native-builder-bob": {
     "source": "src",

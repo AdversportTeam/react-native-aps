@@ -7,6 +7,9 @@
 
 import { AdNetwork, isAdNetwork } from './AdNetwork';
 
+/**
+ * @public
+ */
 export interface AdNetworkInfo {
   /**
    * The name of the primary ad server or mediator
@@ -15,6 +18,9 @@ export interface AdNetworkInfo {
   adNetworkProperties?: { [key: string]: string };
 }
 
+/**
+ * @internal
+ */
 export function validateAdNetworkInfo(adNetworkInfo: AdNetworkInfo) {
   if (typeof adNetworkInfo !== 'object') {
     throw new Error("'adNetworkInfo' expected an object value");
