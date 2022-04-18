@@ -16,7 +16,7 @@ import type { AdLoaderOptions } from '../types';
  */
 export interface AdLoaderModuleSpec extends TurboModule {
   loadAd: (options: AdLoaderOptions) => Promise<{ [key: string]: string }>;
-  skadnHelper: (name: string, info: string) => void;
+  skadnHelper: (name: string, info?: string) => void;
 }
 
 export default TurboModuleRegistry.get<AdLoaderModuleSpec>(

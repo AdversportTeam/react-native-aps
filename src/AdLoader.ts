@@ -55,11 +55,11 @@ export class AdLoader {
    *
    * @public
    */
-  static skadnHelper(name: string, info: string) {
+  static skadnHelper(name: string, info?: string) {
     if (typeof name !== 'string') {
       throw new Error("AdLoader.skadnHelper(*) 'name' expected a string value");
     }
-    if (typeof info !== 'string') {
+    if (info && typeof info !== 'string') {
       throw new Error("AdLoader.skadnHelper(*) 'info' expected a string value");
     }
     if (Platform.OS !== 'ios') {
