@@ -21,5 +21,5 @@ export declare class AdLoader {
      *
      * @public
      */
-    static skadnHelper(name: string, info: string): void;
+    static skadnHelper(name: string, info?: string): void;
 }
