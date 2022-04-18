@@ -14,4 +14,6 @@ RCT_EXTERN_METHOD(loadAd
                   : (RCTPromiseResolveBlock)resolve withRejecter
                   : (RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(skadnHelper : (NSString)name withInfo : (NSString)info)
+
 @end

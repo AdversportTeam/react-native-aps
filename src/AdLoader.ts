@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import { Platform } from 'react-native';
 import { AdError } from './AdError';
 import RNAPSAdLoaderModule from './internal/AdLoaderModule';
 import {
@@ -45,5 +46,25 @@ export class AdLoader {
         throw error;
       }
     }
+  }
+
+  /**
+   * In order for SKAdNetwork to work, pass the app event.
+   * @param name - The name of the event.
+   * @param info - The data/info with the event.
+   *
+   * @public
+   */
+  static skadnHelper(name: string, info: string) {
+    if (typeof name !== 'string') {
+      throw new Error("AdLoader.skadnHelper(*) 'name' expected a string value");
+    }
+    if (typeof info !== 'string') {
+      throw new Error("AdLoader.skadnHelper(*) 'info' expected a string value");
+    }
+    if (Platform.OS !== 'ios') {
+      return;
+    }
+    return AdLoader._nativeModule.skadnHelper(name, info);
   }
 }

@@ -55,11 +55,29 @@ describe('AdLoader', function () {
     it('returns Promise with key value pair', function () {
       expect(
         AdLoader.loadAd({
-          slotUUID: TestIds.APS_SLOT_BANNER,
+          slotUUID: TestIds.APS_SLOT_BANNER_320x50,
           type: AdType.BANNER,
           size: '320x50',
         })
       ).resolves.toReturnWith({ key: 'value' });
+    });
+  });
+
+  describe('skadnHelper', function () {
+    it('throws if name is invalid', function () {
+      // @ts-ignore
+      expect(() => AdLoader.skadnHelper(123, 'info')).toThrowError(
+        "AdLoader.skadnHelper(*) 'name' expected a string value"
+      );
+    });
+    it('throws if info is invalid', function () {
+      // @ts-ignore
+      expect(() => AdLoader.skadnHelper('name', 123)).toThrowError(
+        "AdLoader.skadnHelper(*) 'info' expected a string value"
+      );
+    });
+    it('returns nothing', function () {
+      expect(AdLoader.skadnHelper('name', 'info')).toBeUndefined();
     });
   });
 });

@@ -25,6 +25,7 @@ jest.doMock('react-native', () => {
             }
             return Promise.resolve({ key: 'value' });
           }),
+          skadnHelper: jest.fn(),
         },
         RNAPSAdsModule: {
           initialize: jest.fn((_) => Promise.resolve()),
