@@ -7,6 +7,7 @@ export interface AdLoaderModuleSpec extends TurboModule {
     loadAd: (options: AdLoaderOptions) => Promise<{
         [key: string]: string;
     }>;
+    skadnHelper: (name: string, info: string) => void;
 }
 declare const _default: AdLoaderModuleSpec | null;
 export default _default;

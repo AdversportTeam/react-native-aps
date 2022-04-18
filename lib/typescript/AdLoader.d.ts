@@ -14,4 +14,12 @@ export declare class AdLoader {
     static loadAd(adLoaderOptions: AdLoaderOptions): Promise<{
         [key: string]: string;
     }>;
+    /**
+     * In order for SKAdNetwork to work, pass the app event.
+     * @param name - The name of the event.
+     * @param info - The data/info with the event.
+     *
+     * @public
+     */
+    static skadnHelper(name: string, info: string): void;
 }
