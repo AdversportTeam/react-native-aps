@@ -6,7 +6,7 @@
     "Jay Kim <me@wjay.kim> (https://github.com/wjaykim)"
   ],
   "description": "Amazon Publisher Services SDK for React Native",
-  "license": "MIT",
+  "license": "LGPL-3.0",
   "keywords": [
     "react",
     "react-native",

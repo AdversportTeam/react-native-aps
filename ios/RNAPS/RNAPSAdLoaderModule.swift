@@ -1,8 +1,19 @@
 /*
  * Copyright (c) 2022-present Adversport & Contributors
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * This file is part of react-native-aps.
+ *
+ * react-native-aps is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, version 3 of the License.
+ *
+ * react-native-aps is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
 import DTBiOSSDK
@@ -13,15 +24,15 @@ class RNAPSAdLoaderModule: NSObject {
   static let AD_TYPE_BANNER = "banner"
   static let AD_TYPE_INTERSTITIAL = "interstitial"
   static let ERROR_DOMAIN = "RNAPS"
-  
+
   @objc static func requiresMainQueueSetup() -> Bool {
     return false
   }
-  
+
   @objc(loadAd:withResolver:withRejecter:)
   func loadAd(options: Dictionary<String, Any>, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
     let adLoader = DTBAdLoader()
-    
+
     let slotUUID = options["slotUUID"] as! String
     let type = options["type"] as! String
     let size = options["size"] as? String
@@ -40,16 +51,16 @@ class RNAPSAdLoaderModule: NSObject {
       return
     }
     adLoader.setAdSizes([adSize])
-    
+
     if let customTargeting = options["customTargeting"] as? Dictionary<String, String> {
       for (key, value) in (customTargeting) {
         adLoader.putCustomTarget(value, withKey: key)
       }
     }
-    
+
     adLoader.loadAd(AdLoadCallback(resolve: resolve, reject: reject))
   }
-  
+
   class AdLoadCallback: DTBAdCallback {
     let resolve: RCTPromiseResolveBlock
     let reject: RCTPromiseRejectBlock
@@ -60,7 +71,7 @@ class RNAPSAdLoaderModule: NSObject {
     func onSuccess(_ adResponse: DTBAdResponse!) {
       resolve(adResponse.customTargeting())
     }
-    
+
     func onFailure(_ error: DTBAdError) {
       var code = ""
       switch error {
@@ -86,12 +97,12 @@ class RNAPSAdLoaderModule: NSObject {
       RNAPSAdLoaderModule.rejectPromise(reject: reject, code: code, message: message)
     }
   }
-  
+
   @objc(skadnHelper:withInfo:)
   func skadnHelper(name: String, info: String) {
     DTBAdHelper.skadnHelper(name, withInfo: info)
   }
-  
+
   static func rejectPromise(reject: RCTPromiseRejectBlock, code: String, message: String) -> Void {
     var userInfo = Dictionary<String, String>()
     userInfo["code"] = code

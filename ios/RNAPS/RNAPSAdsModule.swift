@@ -1,8 +1,19 @@
 /*
  * Copyright (c) 2022-present Adversport & Contributors
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * This file is part of react-native-aps.
+ *
+ * react-native-aps is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, version 3 of the License.
+ *
+ * react-native-aps is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
 import DTBiOSSDK
@@ -10,17 +21,17 @@ import Foundation
 
 @objc(RNAPSAdsModule)
 class RNAPSAdsModule: NSObject {
-  
+
   @objc static func requiresMainQueueSetup() -> Bool {
     return false
   }
-  
+
   @objc(initialize:withResolver:withRejecter:)
   func initialize(appKey: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
     DTBAds.sharedInstance().setAppKey(appKey)
     resolve(nil)
   }
-  
+
   @objc(setAdNetworkInfo:)
   func setAdNetworkInfo(adNetworkInfoDic: Dictionary<String, Any>) -> Void {
     guard let adNetworkString = adNetworkInfoDic["adNetwork"] as? String else {
@@ -57,12 +68,12 @@ class RNAPSAdsModule: NSObject {
     }
     DTBAds.sharedInstance().setAdNetworkInfo(adNetworkInfo)
   }
-  
+
   @objc(setMRAIDSupportedVersions:)
   func setMRAIDSupportedVersions(versions: Array<String>) -> Void {
     DTBAds.sharedInstance().mraidCustomVersions = versions
   }
-  
+
   @objc(setMRAIDPolicy:)
   func setMRAIDPolicy(policy: String) -> Void {
     var mraidPolicy: DTBMRAIDPolicy
@@ -78,25 +89,25 @@ class RNAPSAdsModule: NSObject {
     }
     DTBAds.sharedInstance().mraidPolicy = mraidPolicy
   }
-  
+
   @objc(setTestMode:)
   func setTestMode(enabled: Bool) -> Void {
     DTBAds.sharedInstance().testMode = enabled
   }
-  
+
   @objc(setUseGeoLocation:)
   func setUseGeoLocation(enabled: Bool) -> Void {
     DTBAds.sharedInstance().useGeoLocation = enabled
   }
-  
+
   @objc(addCustomAttribute:value:)
   func addCustomAttribute(key: String, value: String) {
     DTBAds.sharedInstance().addCustomAttribute(key, value: value)
   }
-  
+
   @objc(removeCustomAttribute:)
   func removeCustomAttribute(key: String) {
     DTBAds.sharedInstance().removeCustomAttribute(key)
   }
-  
+
 }
