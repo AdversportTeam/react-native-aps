@@ -62,14 +62,18 @@ class RNAPSAdLoaderModule: NSObject {
   }
 
   class AdLoadCallback: DTBAdCallback {
-    let resolve: RCTPromiseResolveBlock
-    let reject: RCTPromiseRejectBlock
+    var resolve: RCTPromiseResolveBlock?
+    var reject: RCTPromiseRejectBlock?
     init(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
       self.resolve = resolve
       self.reject = reject
     }
     func onSuccess(_ adResponse: DTBAdResponse!) {
-      resolve(adResponse.customTargeting())
+      if let resolve = resolve {
+        resolve(adResponse.customTargeting())
+        self.resolve = nil
+        self.reject = nil
+      }
     }
 
     func onFailure(_ error: DTBAdError) {
@@ -94,7 +98,11 @@ class RNAPSAdLoaderModule: NSObject {
         code = "unknown"
       }
       let message = String(format: "Failed to load APS ad with code: %@", code)
-      RNAPSAdLoaderModule.rejectPromise(reject: reject, code: code, message: message)
+      if let reject = reject {
+        RNAPSAdLoaderModule.rejectPromise(reject: reject, code: code, message: message)
+        self.resolve = nil
+        self.reject = nil
+      }
     }
   }
 
