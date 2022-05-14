@@ -16,7 +16,7 @@
  * along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Platform } from 'react-native';
+import { NativeEventEmitter, Platform } from 'react-native';
 import { AdError } from './AdError';
 import RNAPSAdLoaderModule from './internal/AdLoaderModule';
 import {
@@ -28,7 +28,12 @@ import {
  * @public
  */
 export class AdLoader {
-  private static _nativeModule = RNAPSAdLoaderModule;
+  private static readonly _nativeModule = RNAPSAdLoaderModule;
+  private static readonly _eventEmitter = new NativeEventEmitter(
+    RNAPSAdLoaderModule
+  );
+
+  private constructor() {}
 
   /**
    * Request APS for a bid. Only a single ad size and slotUUID is supported per bid request.
@@ -78,4 +83,15 @@ export class AdLoader {
     }
     return AdLoader._nativeModule.skadnHelper(name, info);
   }
+
+  static createAutoRefreshingAdLoader() {
+    const adLoader = new AdLoader();
+    return adLoader;
+  }
+
+  addListener(eventName: string, listener: () => void) {
+    return AdLoader._eventEmitter.addListener(eventName, listener);
+  }
+
+  destroy() {}
 }
