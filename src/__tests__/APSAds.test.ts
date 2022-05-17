@@ -1,5 +1,7 @@
-import { APSAds } from '../src/APSAds';
-import { AdNetwork, MRAIDPolicy } from '../src/types';
+import { APSAds } from '../APSAds';
+import { AdNetwork, MRAIDPolicy } from '../types';
+
+jest.mock('../internal/AdsModule');
 
 describe('APSAds', function () {
   describe('initialize', function () {

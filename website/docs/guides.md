@@ -104,22 +104,21 @@ Below example shows displaying banner ad with `react-native-google-mobile-ads` l
 ```js
 import {
   AdLoader,
-  AdLoaderOptions,
-  AdType,
-  isAdError,
+  BannerAdLoaderOptions,
   TestIds,
 } from 'react-native-aps';
 import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 
 // ...
 
-const apsOptions: AdLoaderOptions = {
+const apsOptions: BannerAdLoaderOptions = {
   slotUUID: TestIds.APS_SLOT_BANNER_320x50,
-  type: AdType.BANNER,
   size: '320x50',
 };
 
-AdLoader.loadAd(apsOptions)
+const adLoader = AdLoader.createBannerAdLoader(apsOptions)
+adLoader
+  .loadAd()
   .then((result) => {
     setApsBidResult(result);
   })
@@ -145,23 +144,33 @@ AdLoader.loadAd(apsOptions)
 </View>
 ```
 
-#### Requesting Bid
+#### Create ad loader
 
-Request bid to APS via calling `AdLoader.loadAd` with `AdLoaderOptions`.
+First, create AdLoader instance by calling `AdLoader.createBannerAdLoader` with `BannerAdLoaderOptions`.
 
 ```js
-AdLoader.loadAd({
+const adLoader = AdLoader.createBannerAdLoader({
   slotUUID: TestIds.APS_SLOT_BANNER_320x50,
-  type: AdType.BANNER,
   size: '320x50',
-})
+});
 ```
 
-AdLoaderOptions has following properties:
+BannerAdLoaderOptions has following properties:
 - `slotUUID`: The slotUUID of the ad slot.
-- `type`: The ad type of the ad slot. One of `AdType.BANNER`, `AdType.INTERSTITIAL`.
-- `size`: The size of the banner ad slot. Required for banner ad slots.
+- `size`: The size of the banner ad slot.
 - `customTargeting`: The optional custom targeting key value pairs for the bid request.
+
+#### Requesting Bid
+
+Request bid to APS via calling `loadAd` method on `AdLoader` instance.
+
+```js
+adLoader
+  .loadAd()
+  .then((result) => {
+    setApsBidResult(result);
+  });
+```
 
 `AdLoader.loadAd` returns a promise that resolves to object containing key-value pairs. Using them, request ad with your ad server.
 

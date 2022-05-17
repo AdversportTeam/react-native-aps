@@ -16,7 +16,7 @@
  * along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { NativeModules, Platform } from 'react-native';
+import { NativeModule, NativeModules, Platform } from 'react-native';
 
 import type { AdsModuleSpec } from '../turbomodules/NativeRNAPSAdsModule';
 
@@ -32,4 +32,4 @@ if (RNAPSAdsModule == null) {
   console.error(LINKING_ERROR);
 }
 
-export default RNAPSAdsModule as AdsModuleSpec;
+export default RNAPSAdsModule as AdsModuleSpec & NativeModule;

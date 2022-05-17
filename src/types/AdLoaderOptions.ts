@@ -16,8 +16,6 @@
  * along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { AdType, isAdType } from './AdType';
-
 /**
  * @public
  */
@@ -27,17 +25,29 @@ export interface AdLoaderOptions {
    */
   slotUUID: string;
   /**
-   * The ad type of the ad slot. One of `AdType.BANNER`, `AdType.INTERSTITIAL`.
-   */
-  type: AdType;
-  /**
-   * The size of the banner ad slot. Required for banner ad slots.
-   */
-  size?: string;
-  /**
    * The optional custom targeting key value pairs for the bid request.
    */
   customTargeting?: { [key: string]: string };
+}
+
+/**
+ * @public
+ */
+export interface BannerAdLoaderOptions extends AdLoaderOptions {
+  /**
+   * The size of the banner ad slot. Required for banner ad slots.
+   */
+  size: string;
+
+  /**
+   * Whether the banner ad to be automatically refreshed. Defaults to `false`.
+   */
+  autoRefresh?: boolean;
+
+  /**
+   * The time interval in seconds between refreshes. Defaults to `60` seconds if autoRefresh enabled. The minimum auto-refresh time supported is `20` seconds.
+   */
+  refreshInterval?: number;
 }
 
 const sizeRegex = /([0-9]+)x([0-9]+)/;
@@ -52,13 +62,16 @@ export function validateAdLoaderOptions(adLoaderOptions: AdLoaderOptions) {
   if (typeof adLoaderOptions.slotUUID !== 'string') {
     throw new Error("'adLoaderOptions.slotUUID' expected a string value");
   }
-  if (!isAdType(adLoaderOptions.type)) {
-    throw new Error("'adLoaderOptions.type' expected one of AdType values");
-  }
-  if (
-    adLoaderOptions.type === AdType.BANNER &&
-    (!adLoaderOptions.size || !sizeRegex.test(adLoaderOptions.size))
-  ) {
-    throw new Error("'adLoaderOptions.size' expected a valid size string.");
+}
+
+/**
+ * @internal
+ */
+export function validateBannerAdLoaderOptions(
+  adLoaderOptions: BannerAdLoaderOptions
+) {
+  validateAdLoaderOptions(adLoaderOptions);
+  if (!adLoaderOptions.size || !sizeRegex.test(adLoaderOptions.size)) {
+    throw new Error("'adLoaderOptions.size' expected a valid size string");
   }
 }

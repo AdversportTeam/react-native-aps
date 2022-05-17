@@ -3,39 +3,47 @@ import { StyleSheet, Text, View } from 'react-native';
 import {
   AdError,
   AdLoader,
-  AdLoaderOptions,
-  AdType,
-  isAdError,
+  AdLoaderEvent,
+  BannerAdLoaderOptions,
   TestIds,
 } from 'react-native-aps';
 import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 
-const apsOptions: AdLoaderOptions = {
+const adLoaderOptions: BannerAdLoaderOptions = {
   slotUUID: TestIds.APS_SLOT_BANNER_320x50,
-  type: AdType.BANNER,
   size: '320x50',
 };
+
+const adLoader = AdLoader.createBannerAdLoader(adLoaderOptions);
 
 export default function Banner() {
   const [apsBidResult, setApsBidResult] = useState<{ [key: string]: string }>(
     {}
   );
   const [apsBidError, setApsBidError] = useState<AdError>();
-  const [apsBidDone, setApsBidDone] = useState(false);
+  const apsBidDone =
+    Object.keys(apsBidResult).length > 0 || apsBidError !== undefined;
 
   useEffect(() => {
-    AdLoader.loadAd(apsOptions)
-      .then((result) => {
+    const unsubSuccess = adLoader.addListener(
+      AdLoaderEvent.SUCCESS,
+      (result) => {
         setApsBidResult(result);
-      })
-      .catch((error) => {
-        if (isAdError(error)) {
-          setApsBidError(error);
-        }
-      })
-      .finally(() => {
-        setApsBidDone(true);
-      });
+      }
+    );
+    const unsubFailure = adLoader.addListener(
+      AdLoaderEvent.FAILURE,
+      (error) => {
+        setApsBidError(error);
+      }
+    );
+
+    adLoader.loadAd();
+
+    return () => {
+      unsubSuccess();
+      unsubFailure();
+    };
   }, []);
 
   return (
