@@ -16,10 +16,22 @@
  * along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export { AdLoaderEvent } from './AdLoaderEvent';
-export { AdLoaderListener } from './AdLoaderListener';
-export { AdLoaderOptions, BannerAdLoaderOptions } from './AdLoaderOptions';
-export { AdNetwork } from './AdNetwork';
-export { AdNetworkInfo } from './AdNetworkInfo';
-export { AdType } from './AdType';
-export { MRAIDPolicy } from './MRAIDPolicy';
+/**
+ * @public
+ */
+export const AdLoaderEvent = {
+  SUCCESS: 'onSuccess',
+  FAILURE: 'onFailure',
+} as const;
+
+/**
+ * @public
+ */
+export type AdLoaderEvent = typeof AdLoaderEvent[keyof typeof AdLoaderEvent];
+
+/**
+ * @internal
+ */
+export function isAdLoaderEvent(value: any): value is AdLoaderEvent {
+  return Object.values(AdLoaderEvent).includes(value);
+}

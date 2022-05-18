@@ -17,14 +17,19 @@
  */
 
 #import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
 
-@interface RCT_EXTERN_MODULE (RNAPSAdLoaderModule, NSObject)
+@interface RCT_EXTERN_MODULE (RNAPSAdLoaderModule, RCTEventEmitter)
 
 RCT_EXTERN_METHOD(loadAd
-                  : (NSDictionary)options withResolver
+                  : (nonnull NSNumber *)loaderId forAdType
+                  : (nonnull NSString *)adType withOptions
+                  : (nonnull NSDictionary *)options withResolver
                   : (RCTPromiseResolveBlock)resolve withRejecter
                   : (RCTPromiseRejectBlock)reject)
 
-RCT_EXTERN_METHOD(skadnHelper : (NSString)name withInfo : (NSString)info)
+RCT_EXTERN_METHOD(stopAutoRefresh : (nonnull NSNumber *)loaderId)
+
+RCT_EXTERN_METHOD(skadnHelper : (nonnull NSString *)name withInfo : (NSString *)info)
 
 @end

@@ -4,16 +4,16 @@ import {
   AdError,
   AdLoader,
   AdLoaderOptions,
-  AdType,
   isAdError,
   TestIds,
 } from 'react-native-aps';
 import { AdEventType, InterstitialAd } from 'react-native-google-mobile-ads';
 
-const apsOptions: AdLoaderOptions = {
+const adLoaderOptions: AdLoaderOptions = {
   slotUUID: TestIds.APS_SLOT_INTERSTITIAL,
-  type: AdType.INTERSTITIAL,
 };
+
+const adLoader = AdLoader.createInterstitialAdLoader(adLoaderOptions);
 
 export default function Interstitial() {
   const [apsBidResult, setApsBidResult] = useState<{ [key: string]: string }>(
@@ -25,7 +25,8 @@ export default function Interstitial() {
   const [isLoaded, setLoaded] = useState(false);
 
   const loadApsBid = () => {
-    AdLoader.loadAd(apsOptions)
+    adLoader
+      .loadAd()
       .then((result) => {
         setApsBidResult(result);
         const interstitial = InterstitialAd.createForAdRequest(

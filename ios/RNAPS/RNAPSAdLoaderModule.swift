@@ -20,62 +20,80 @@ import DTBiOSSDK
 import Foundation
 
 @objc(RNAPSAdLoaderModule)
-class RNAPSAdLoaderModule: NSObject {
+class RNAPSAdLoaderModule: RCTEventEmitter {
   static let AD_TYPE_BANNER = "banner"
   static let AD_TYPE_INTERSTITIAL = "interstitial"
+  static let EVENT_SUCCESS = "onSuccess"
+  static let EVENT_FAILURE = "onFailure"
   static let ERROR_DOMAIN = "RNAPS"
+  var adLoaders = Dictionary<NSNumber, DTBAdLoader>()
+  var hasListeners = false;
+  
+  //MARK: - Native Module Setup
+  
+  deinit {
+    invalidate()
+  }
 
-  @objc static func requiresMainQueueSetup() -> Bool {
+  @objc static override func requiresMainQueueSetup() -> Bool {
     return false
   }
-
-  @objc(loadAd:withResolver:withRejecter:)
-  func loadAd(options: Dictionary<String, Any>, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
-    let adLoader = DTBAdLoader()
-
-    let slotUUID = options["slotUUID"] as! String
-    let type = options["type"] as! String
-    let size = options["size"] as? String
-    let adSize: DTBAdSize
-    switch type {
-    case RNAPSAdLoaderModule.AD_TYPE_BANNER:
-      let values = size!.split(separator: "x")
-      let width = Int(values[0])!
-      let height = Int(values[1])!
-      adSize = DTBAdSize(bannerAdSizeWithWidth: width, height: height, andSlotUUID: slotUUID)
-      break
-    case RNAPSAdLoaderModule.AD_TYPE_INTERSTITIAL:
-      adSize = DTBAdSize(interstitialAdSizeWithSlotUUID: slotUUID)
-      break
-    default:
-      return
+  
+  @objc override func invalidate() {
+    super.invalidate()
+    for adLoader in adLoaders.values {
+      adLoader.stop()
     }
-    adLoader.setAdSizes([adSize])
-
-    if let customTargeting = options["customTargeting"] as? Dictionary<String, String> {
-      for (key, value) in (customTargeting) {
-        adLoader.putCustomTarget(value, withKey: key)
-      }
-    }
-
-    adLoader.loadAd(AdLoadCallback(resolve: resolve, reject: reject))
+    adLoaders.removeAll()
   }
-
-  class AdLoadCallback: DTBAdCallback {
+  
+  @objc override func startObserving() {
+    hasListeners = true;
+  }
+  
+  @objc override func stopObserving() {
+    hasListeners = false;
+  }
+  
+  @objc override func supportedEvents() -> [String] {
+    return [
+      RNAPSAdLoaderModule.EVENT_SUCCESS,
+      RNAPSAdLoaderModule.EVENT_FAILURE
+    ]
+  }
+  
+  private func sendEvent(name: String, body: Any) {
+    if (hasListeners) {
+      sendEvent(withName: name, body: body)
+    }
+  }
+  
+  //MARK: - AdLoadCallback impl
+  
+  private class AdLoadCallback: DTBAdCallback {
+    let adLoaderModule: RNAPSAdLoaderModule
+    let loaderId: NSNumber
     var resolve: RCTPromiseResolveBlock?
     var reject: RCTPromiseRejectBlock?
-    init(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    init(adLoaderModule: RNAPSAdLoaderModule, loaderId: NSNumber, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+      self.adLoaderModule = adLoaderModule
+      self.loaderId = loaderId
       self.resolve = resolve
       self.reject = reject
     }
     func onSuccess(_ adResponse: DTBAdResponse!) {
+      let response = adResponse.customTargeting() ?? Dictionary()
+      adLoaderModule.sendEvent(name: RNAPSAdLoaderModule.EVENT_SUCCESS, body: [
+        "loaderId": loaderId,
+        "response": response
+      ])
       if let resolve = resolve {
-        resolve(adResponse.customTargeting())
+        resolve(response)
         self.resolve = nil
         self.reject = nil
       }
     }
-
+    
     func onFailure(_ error: DTBAdError) {
       var code = ""
       switch error {
@@ -98,24 +116,74 @@ class RNAPSAdLoaderModule: NSObject {
         code = "unknown"
       }
       let message = String(format: "Failed to load APS ad with code: %@", code)
+      var userInfo = Dictionary<String, String>()
+      userInfo["code"] = code
+      userInfo["message"] = message
+      adLoaderModule.sendEvent(name: RNAPSAdLoaderModule.EVENT_FAILURE, body: [
+        "loaderId": loaderId,
+        "userInfo": userInfo
+      ])
       if let reject = reject {
-        RNAPSAdLoaderModule.rejectPromise(reject: reject, code: code, message: message)
+        let error = NSError.init(domain: RNAPSAdLoaderModule.ERROR_DOMAIN, code: 666, userInfo: userInfo)
+        reject(code, message, error)
         self.resolve = nil
         self.reject = nil
       }
     }
   }
+  
+  //MARK: - Native Methods
+
+  @objc(loadAd:forAdType:withOptions:withResolver:withRejecter:)
+  func loadAd(loaderId: NSNumber, adType: String, options: Dictionary<String, Any>, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
+    stopAutoRefresh(loaderId: loaderId)
+    
+    let adLoader = DTBAdLoader()
+
+    let slotUUID = options["slotUUID"] as! String
+    let size = options["size"] as? String
+    let adSize: DTBAdSize
+    switch adType {
+    case RNAPSAdLoaderModule.AD_TYPE_BANNER:
+      let values = size!.split(separator: "x")
+      let width = Int(values[0])!
+      let height = Int(values[1])!
+      adSize = DTBAdSize(bannerAdSizeWithWidth: width, height: height, andSlotUUID: slotUUID)
+      break
+    case RNAPSAdLoaderModule.AD_TYPE_INTERSTITIAL:
+      adSize = DTBAdSize(interstitialAdSizeWithSlotUUID: slotUUID)
+      break
+    default:
+      return
+    }
+    adLoader.setAdSizes([adSize])
+
+    if let customTargeting = options["customTargeting"] as? Dictionary<String, String> {
+      for (key, value) in (customTargeting) {
+        adLoader.putCustomTarget(value, withKey: key)
+      }
+    }
+    
+    let autoRefresh = options["autoRefresh"] as? Bool ?? false
+    
+    let refreshInterval = options["refreshInterval"] as? Int32 ?? 60
+    
+    if (autoRefresh) {
+      adLoader.setAutoRefresh(refreshInterval)
+      adLoaders.updateValue(adLoader, forKey: loaderId)
+    }
+
+    adLoader.loadAd(AdLoadCallback(adLoaderModule: self, loaderId: loaderId, resolve: resolve, reject: reject))
+  }
+  
+  @objc(stopAutoRefresh:)
+  func stopAutoRefresh(loaderId: NSNumber) {
+    adLoaders[loaderId]?.stop()
+    adLoaders.removeValue(forKey: loaderId)
+  }
 
   @objc(skadnHelper:withInfo:)
   func skadnHelper(name: String, info: String) {
     DTBAdHelper.skadnHelper(name, withInfo: info)
-  }
-
-  static func rejectPromise(reject: RCTPromiseRejectBlock, code: String, message: String) -> Void {
-    var userInfo = Dictionary<String, String>()
-    userInfo["code"] = code
-    userInfo["message"] = message
-    let error = NSError.init(domain: RNAPSAdLoaderModule.ERROR_DOMAIN, code: 666, userInfo: userInfo)
-    reject(code, message, error)
   }
 }

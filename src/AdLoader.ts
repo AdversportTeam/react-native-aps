@@ -16,40 +16,127 @@
  * along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Platform } from 'react-native';
+import { NativeEventEmitter, Platform } from 'react-native';
 import { AdError } from './AdError';
-import RNAPSAdLoaderModule from './internal/AdLoaderModule';
+import AdLoaderModule from './internal/AdLoaderModule';
+import { AdLoaderEvent, isAdLoaderEvent } from './types/AdLoaderEvent';
+import type { AdLoaderListener } from './types/AdLoaderListener';
 import {
   AdLoaderOptions,
+  BannerAdLoaderOptions,
   validateAdLoaderOptions,
+  validateBannerAdLoaderOptions,
 } from './types/AdLoaderOptions';
+import { AdType } from './types/AdType';
 
 /**
  * @public
  */
 export class AdLoader {
-  private static _nativeModule = RNAPSAdLoaderModule;
+  private static readonly _nativeModule = AdLoaderModule;
+  private static readonly _eventEmitter = new NativeEventEmitter(
+    AdLoaderModule
+  );
+  private static _adLoaders = 0;
+  private loaderId: number;
+
+  private constructor(
+    public readonly adType: AdType,
+    public readonly adLoaderOptions: AdLoaderOptions
+  ) {
+    this.loaderId = AdLoader._adLoaders++;
+  }
 
   /**
-   * Request APS for a bid. Only a single ad size and slotUUID is supported per bid request.
-   * @param adLoaderOptions - `AdLoaderOptions` object used to configure the bid request.
-   * @returns Key value pairs of returned bid response.
-   *
-   * @public
+   * Create a banner AdLoader instance.
+   * @param adLoaderOptions - `BannerAdLoaderOptions` object used to configure the bid request.
+   * @returns AdLoader instance.
    */
-  static async loadAd(
-    adLoaderOptions: AdLoaderOptions
-  ): Promise<{ [key: string]: string }> {
+  static createBannerAdLoader(adLoaderOptions: BannerAdLoaderOptions) {
+    try {
+      validateBannerAdLoaderOptions(adLoaderOptions as BannerAdLoaderOptions);
+    } catch (e) {
+      if (e instanceof Error) {
+        throw new Error(`AdLoader.createBannerAdLoader(*) ${e.message}`);
+      }
+    }
+    const adLoader = new AdLoader(AdType.BANNER, adLoaderOptions);
+    return adLoader;
+  }
+
+  /**
+   * Create a interstitial AdLoader instance.
+   * @param adLoaderOptions - `AdLoaderOptions` object used to configure the bid request.
+   * @returns AdLoader instance.
+   */
+  static createInterstitialAdLoader(adLoaderOptions: AdLoaderOptions) {
     try {
       validateAdLoaderOptions(adLoaderOptions);
     } catch (e) {
       if (e instanceof Error) {
-        throw new Error(`AdLoader.loadAd(*) ${e.message}`);
+        throw new Error(`AdLoader.createInterstitialAdLoader(*) ${e.message}`);
       }
     }
+    const adLoader = new AdLoader(AdType.INTERSTITIAL, adLoaderOptions);
+    return adLoader;
+  }
 
+  /**
+   * Add a listener for the bid response. Supported events are:
+   * - `AdLoaderEvent.SUCCESS`
+   * - `AdLoaderEvent.FAILURE`
+   * @param eventName - The name of the event to listen.
+   * @param listener - The listener to be called when the event is fired.
+   *
+   * @returns Unsubscribe function.
+   *
+   * @public
+   */
+  addListener<E extends AdLoaderEvent>(
+    eventName: E,
+    listener: AdLoaderListener<E>
+  ) {
+    if (!isAdLoaderEvent(eventName)) {
+      throw new Error(
+        `AdLoader.addListener(*) 'eventName' expected one of AdLoaderEvent values`
+      );
+    }
+    if (typeof listener !== 'function') {
+      throw new Error(
+        `AdLoader.addListener(_, *) 'listener' expected a function`
+      );
+    }
+    const subscribtion = AdLoader._eventEmitter.addListener(
+      eventName,
+      (payload) => {
+        if (payload.loaderId !== this.loaderId) {
+          return;
+        }
+        let error;
+        if (payload.userInfo) {
+          error = AdError.fromNativeError(payload);
+        }
+        listener(error || payload.response);
+      }
+    );
+    return () => subscribtion.remove();
+  }
+
+  /**
+   * Request APS for a bid. Only a single ad size and slotUUID is supported per bid request.
+   * This method will return a promise that resolves a bid response requested by this call.
+   * In order to receive further bid responses returned by auto refresh, you must register listeners via `addListener()`.
+   * @returns Promise of key value pairs from returned bid response.
+   *
+   * @public
+   */
+  async loadAd() {
     try {
-      return await AdLoader._nativeModule.loadAd(adLoaderOptions);
+      return await AdLoader._nativeModule.loadAd(
+        this.loaderId,
+        this.adType,
+        this.adLoaderOptions
+      );
     } catch (error) {
       if ((error as any).userInfo) {
         throw AdError.fromNativeError(error);
@@ -57,6 +144,15 @@ export class AdLoader {
         throw error;
       }
     }
+  }
+
+  /**
+   * Stop the auto refresh of the ad.
+   *
+   * @public
+   */
+  stopAutoRefresh() {
+    AdLoader._nativeModule.stopAutoRefresh(this.loaderId);
   }
 
   /**
