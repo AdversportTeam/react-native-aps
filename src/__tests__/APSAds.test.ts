@@ -11,8 +11,8 @@ describe('APSAds', function () {
         "APSAds.initialze(*) 'appKey' expected a string value"
       );
     });
-    it('returns Promise of void', function () {
-      expect(APSAds.initialize('appKey')).resolves.toBeUndefined();
+    it('returns Promise of void', async function () {
+      await expect(APSAds.initialize('appKey')).resolves.toBeUndefined();
     });
   });
   describe('setAdNetworkInfo', function () {

@@ -23,7 +23,7 @@ import type { AdNetworkInfo, MRAIDPolicy } from '../types';
 /**
  * @internal
  */
-export interface AdsModuleSpec extends TurboModule {
+export interface Spec extends TurboModule {
   initialize: (appKey: string) => Promise<void>;
 
   setAdNetworkInfo: (adNetworkInfo: AdNetworkInfo) => void;
@@ -41,4 +41,4 @@ export interface AdsModuleSpec extends TurboModule {
   removeCustomAttribute: (key: string) => void;
 }
 
-export default TurboModuleRegistry.get<AdsModuleSpec>('RNAPSAdsModule');
+export default TurboModuleRegistry.get<Spec>('RNAPSAdsModule');

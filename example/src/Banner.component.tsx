@@ -7,7 +7,7 @@ import {
   BannerAdLoaderOptions,
   TestIds,
 } from 'react-native-aps';
-import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
+import { GAMBannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 
 const adLoaderOptions: BannerAdLoaderOptions = {
   slotUUID: TestIds.APS_SLOT_BANNER_320x50,
@@ -49,9 +49,9 @@ export default function Banner() {
   return (
     <View style={styles.container}>
       {apsBidDone && (
-        <BannerAd
+        <GAMBannerAd
           unitId={TestIds.GAM_BANNER}
-          size={BannerAdSize.BANNER}
+          sizes={[BannerAdSize.BANNER]}
           requestOptions={{ customTargeting: apsBidResult }}
           onAdFailedToLoad={(error) => console.debug(error)}
         />

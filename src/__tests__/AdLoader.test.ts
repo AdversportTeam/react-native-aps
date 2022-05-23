@@ -105,19 +105,19 @@ describe('AdLoader', function () {
   });
 
   describe('loadAd', function () {
-    it('throws AdError if got native Error', function () {
+    it('throws AdError if got native Error', async function () {
       const adLoader = AdLoader.createBannerAdLoader({
         slotUUID: 'ad-error-throwing-slot-uuid',
         size: '320x50',
       });
-      expect(adLoader.loadAd()).rejects.toBeInstanceOf(AdError);
+      await expect(adLoader.loadAd()).rejects.toBeInstanceOf(AdError);
     });
-    it('returns Promise with key value pair', function () {
+    it('returns Promise with key value pair', async function () {
       const adLoader = AdLoader.createBannerAdLoader({
         slotUUID: TestIds.APS_SLOT_BANNER_320x50,
         size: '320x50',
       });
-      expect(adLoader.loadAd()).resolves.toReturnWith({ key: 'value' });
+      await expect(adLoader.loadAd()).resolves.toEqual({ key: 'value' });
     });
   });
 

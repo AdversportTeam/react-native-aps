@@ -18,7 +18,7 @@
 
 import { NativeModule, NativeModules, Platform } from 'react-native';
 
-import type { AdsModuleSpec } from '../turbomodules/NativeRNAPSAdsModule';
+import type { Spec } from '../turbomodules/NativeRNAPSAdsModule';
 
 const { RNAPSAdsModule } = NativeModules;
 
@@ -32,4 +32,4 @@ if (RNAPSAdsModule == null) {
   console.error(LINKING_ERROR);
 }
 
-export default RNAPSAdsModule as AdsModuleSpec & NativeModule;
+export default RNAPSAdsModule as Spec & NativeModule;

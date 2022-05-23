@@ -7,7 +7,7 @@ import {
   isAdError,
   TestIds,
 } from 'react-native-aps';
-import { AdEventType, InterstitialAd } from 'react-native-google-mobile-ads';
+import { AdEventType, GAMInterstitialAd } from 'react-native-google-mobile-ads';
 
 const adLoaderOptions: AdLoaderOptions = {
   slotUUID: TestIds.APS_SLOT_INTERSTITIAL,
@@ -21,7 +21,7 @@ export default function Interstitial() {
   );
   const [apsBidError, setApsBidError] = useState<AdError>();
   const [apsBidDone, setApsBidDone] = useState(false);
-  const [interstitialAd, setInterstitialAd] = useState<InterstitialAd>();
+  const [interstitialAd, setInterstitialAd] = useState<GAMInterstitialAd>();
   const [isLoaded, setLoaded] = useState(false);
 
   const loadApsBid = () => {
@@ -29,7 +29,7 @@ export default function Interstitial() {
       .loadAd()
       .then((result) => {
         setApsBidResult(result);
-        const interstitial = InterstitialAd.createForAdRequest(
+        const interstitial = GAMInterstitialAd.createForAdRequest(
           TestIds.GAM_INTERSTITIAL,
           {
             customTargeting: result,
@@ -41,7 +41,7 @@ export default function Interstitial() {
         if (isAdError(error)) {
           setApsBidError(error);
         }
-        const interstitial = InterstitialAd.createForAdRequest(
+        const interstitial = GAMInterstitialAd.createForAdRequest(
           TestIds.GAM_INTERSTITIAL
         );
         setInterstitialAd(interstitial);
@@ -59,21 +59,23 @@ export default function Interstitial() {
     if (!interstitialAd) {
       return;
     }
-    const unsubscribe = interstitialAd.onAdEvent((type, error) => {
-      switch (type) {
-        case AdEventType.LOADED:
-          setLoaded(true);
-          break;
-        case AdEventType.OPENED:
-          setLoaded(false);
-          break;
-        case AdEventType.CLOSED:
-          loadApsBid();
-          break;
-        case AdEventType.ERROR:
-          console.debug(error);
+    const unsubscribe = interstitialAd.addAdEventsListener(
+      ({ type, payload }) => {
+        switch (type) {
+          case AdEventType.LOADED:
+            setLoaded(true);
+            break;
+          case AdEventType.OPENED:
+            setLoaded(false);
+            break;
+          case AdEventType.CLOSED:
+            loadApsBid();
+            break;
+          case AdEventType.ERROR:
+            console.debug(payload);
+        }
       }
-    });
+    );
     interstitialAd.load();
     return () => {
       unsubscribe();

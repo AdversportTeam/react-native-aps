@@ -20,16 +20,16 @@ import { TurboModule, TurboModuleRegistry } from 'react-native';
 
 import type { AdLoaderOptions, AdType, BannerAdLoaderOptions } from '../types';
 
-export interface AdLoaderModuleSpec extends TurboModule {
+export interface Spec extends TurboModule {
   loadAd: (
     loaderId: number,
     adType: AdType,
     options: AdLoaderOptions | BannerAdLoaderOptions
   ) => Promise<{ [key: string]: string }>;
+
   stopAutoRefresh: (loaderId: number) => void;
+
   skadnHelper: (name: string, info?: string) => void;
 }
 
-export default TurboModuleRegistry.get<AdLoaderModuleSpec>(
-  'RNAPSAdLoaderModule'
-);
+export default TurboModuleRegistry.get<Spec>('RNAPSAdLoaderModule');

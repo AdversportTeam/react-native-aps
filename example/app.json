@@ -1,6 +1,6 @@
 {
-  "name": "ApsExample",
-  "displayName": "Aps Example",
+  "name": "RNAPSExample",
+  "displayName": "RNAPS Example",
   "react-native-google-mobile-ads": {
     "android_app_id": "ca-app-pub-6665423091330227~2042492603",
     "ios_app_id": "ca-app-pub-6665423091330227~4399889178"
