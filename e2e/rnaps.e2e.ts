@@ -1,4 +1,4 @@
-import Detox, { device, expect, element, by, waitFor } from 'detox';
+import { device, expect, element, by, waitFor } from 'detox';
 import { jestExpect } from './jestExpect';
 
 describe('React Native APS Example app', () => {
@@ -43,7 +43,7 @@ describe('React Native APS Example app', () => {
     if (bidStatus === 'success') {
       const kvsAttrs =
         (await kvsText.getAttributes()) as Detox.ElementAttributes;
-      const kvs = JSON.parse(kvsAttrs.text);
+      const kvs = JSON.parse(kvsAttrs.text ?? '{}');
 
       jestExpect(kvs.amzn_b).toBeDefined();
       jestExpect(kvs.amzn_h).toBeDefined();
