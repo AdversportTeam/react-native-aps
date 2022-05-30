@@ -61,12 +61,13 @@
     "test:android": "detox test -c android",
     "test:ios:build": "yarn detox build --configuration ios",
     "test:ios": "detox test -c ios",
-    "test:ios:pod:install": "cd example && cd ios && rm -rf ApsExample.xcworkspace && rm -f Podfile.lock && pod install --repo-update && cd ..",
+    "test:ios:pod:install": "cd Example && cd ios && rm -rf ApsExample.xcworkspace && rm -f Podfile.lock && pod install --repo-update && cd ..",
+    "test:packager:ci": "cd example && cross-env TMPDIR=$HOME/.metro REACT_DEBUGGER=\"echo nope\" node_modules/.bin/react-native start --no-interactive",
     "test": "yarn test:jest",
     "release": "release-it",
-    "example": "yarn --cwd example",
-    "pods": "cd example && pod-install --quiet",
-    "bootstrap": "yarn example && yarn && yarn pods"
+    "example": "yarn --cwd Example",
+    "pods": "cd Example && pod-install --quiet",
+    "bootstrap": "yarn Example && yarn && yarn pods"
   },
   "devDependencies": {
     "@babel/core": "^7.17.12",
@@ -111,7 +112,7 @@
   "jest": {
     "preset": "react-native",
     "modulePathIgnorePatterns": [
-      "<rootDir>/example/node_modules",
+      "<rootDir>/Example/node_modules",
       "<rootDir>/lib/"
     ],
     "setupFiles": [
@@ -129,13 +130,13 @@
     "apps": {
       "ios": {
         "type": "ios.app",
-        "binaryPath": "example/ios/build/Build/Products/Release-iphonesimulator/ApsExample.app",
-        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace example/ios/ApsExample.xcworkspace -scheme ApsExample -configuration Release -sdk iphonesimulator -derivedDataPath example/ios/build -UseModernBuildSystem=YES"
+        "binaryPath": "Example/ios/build/Build/Products/Debug-iphonesimulator/ApsExample.app",
+        "build": "set -o pipefail && xcodebuild VALID_ARCHS=\"`uname -m`\" CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace Example/ios/ApsExample.xcworkspace -scheme ApsExample -configuration Debug -sdk iphonesimulator -derivedDataPath example/ios/build | xcbeautify"
       },
       "android": {
         "type": "android.apk",
-        "binaryPath": "example/android/app/build/outputs/apk/release/app-release.apk",
-        "build": "cd example/android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && cd ../.."
+        "binaryPath": "Example/android/app/build/outputs/apk/debug/app-debug.apk",
+        "build": "cd Example/android && ./gradlew assembleDebug assembleAndroidTest lintDebug -DtestBuildType=debug && cd ../.."
       }
     },
     "devices": {

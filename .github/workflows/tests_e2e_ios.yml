@@ -71,7 +71,7 @@ jobs:
         name: Xcode Compile Cache
         with:
           key: ${{ runner.os }}-v2 # makes a unique key w/related restore key internally
-          max-size: 400M
+          max-size: 750M
 
       - name: Yarn Install
         uses: nick-invision/retry@v2
@@ -98,7 +98,7 @@ jobs:
         name: Cache Pods
         id: pods-cache
         with:
-          path: tests/ios/Pods
+          path: Example/ios/Pods
           key: ${{ runner.os }}-pods-v2-${{ hashFiles('**/Podfile.lock') }}
           restore-keys: ${{ runner.os }}-pods-v2
 
@@ -118,13 +118,6 @@ jobs:
           max_attempts: 3
           command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew && HOMEBREW_NO_AUTO_UPDATE=1 brew install applesimutils xcbeautify && applesimutils --list
 
-      - name: Metro Bundler Cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.workflow-variables.outputs.metro-cache }}
-          key: ${{ runner.os }}-metro-v1-${{ github.run_id }}
-          restore-keys: ${{ runner.os }}-metro-v1
-
       - name: Build iOS App
         run: |
           export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
@@ -138,6 +131,25 @@ jobs:
           yarn test:ios:build
           ccache -s
         shell: bash
+
+      - name: Metro Bundler Cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.workflow-variables.outputs.metro-cache }}
+          key: ${{ runner.os }}-metro-v1-${{ github.run_id }}
+          restore-keys: ${{ runner.os }}-metro-v1
+
+      - name: Pre-fetch Javascript bundle
+        run: |
+          nohup yarn test:packager:ci &
+          printf 'Waiting for packager to come online'
+          until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
+            printf '.'
+            sleep 2
+          done
+          echo "Packager is online! Preparing bundle..."
+          curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false&inlineSourceMap=true"
+          echo "...javascript bundle ready"
 
       - name: Create Simulator Log
         # With a little delay so the detox test below has time to spawn it, missing the first part of boot is fine
@@ -161,11 +173,11 @@ jobs:
           name: simulator_log
           path: simulator.log.gz
 
-      # - name: Submit Coverage
-      #   # This can fail on timeouts etc, wrap with retry
-      #   uses: nick-invision/retry@v2
-      #   with:
-      #     timeout_minutes: 10
-      #     retry_wait_seconds: 60
-      #     max_attempts: 3
-      #     command: ./node_modules/.bin/codecov
+      - name: Submit Coverage
+        # This can fail on timeouts etc, wrap with retry
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: ./node_modules/.bin/codecov
