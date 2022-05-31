@@ -59,6 +59,7 @@
     "test:jest-coverage": "jest --coverage",
     "test:android:build": "yarn detox build --configuration android",
     "test:android": "detox test -c android",
+    "test:android:local": "detox test -c android.local",
     "test:ios:build": "yarn detox build --configuration ios",
     "test:ios": "detox test -c ios",
     "test:ios:pod:install": "cd Example && cd ios && rm -rf ApsExample.xcworkspace && rm -f Podfile.lock && pod install --repo-update && cd ..",
@@ -153,6 +154,12 @@
         "device": {
           "avdName": "TestingAVD"
         }
+      },
+      "emulator.local": {
+        "type": "android.emulator",
+        "device": {
+          "avdName": "Pixel_4_API_Tiramisu"
+        }
       }
     },
     "configurations": {
@@ -162,6 +169,10 @@
       },
       "android": {
         "device": "emulator",
+        "app": "android"
+      },
+      "android.local": {
+        "device": "emulator.local",
         "app": "android"
       }
     }

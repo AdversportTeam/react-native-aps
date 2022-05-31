@@ -1,4 +1,4 @@
-import { device, expect, element, by, waitFor } from 'detox';
+import { device, expect, element, by, waitFor, cleanup } from 'detox';
 import { jestExpect } from './jestExpect';
 
 describe('React Native APS Example app', () => {
@@ -103,5 +103,9 @@ describe('React Native APS Example app', () => {
       const bidSuccess = await tryLoadBid('interstitial');
       jestExpect(bidSuccess).toBe(true);
     });
+  });
+
+  afterAll(async () => {
+    await cleanup();
   });
 });
