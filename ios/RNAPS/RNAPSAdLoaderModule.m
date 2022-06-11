@@ -21,6 +21,10 @@
 
 @interface RCT_EXTERN_MODULE (RNAPSAdLoaderModule, RCTEventEmitter)
 
+- (dispatch_queue_t)methodQueue {
+  return dispatch_get_main_queue();
+}
+
 RCT_EXTERN_METHOD(loadAd
                   : (nonnull NSNumber *)loaderId forAdType
                   : (nonnull NSString *)adType withOptions
