@@ -18,12 +18,12 @@
 
 import { TurboModule, TurboModuleRegistry } from 'react-native';
 
-import type { AdLoaderOptions, AdType, BannerAdLoaderOptions } from '../types';
+import type { AdLoaderOptions, BannerAdLoaderOptions } from '../types';
 
 export interface Spec extends TurboModule {
   loadAd: (
     loaderId: number,
-    adType: AdType,
+    adType: string,
     options: AdLoaderOptions | BannerAdLoaderOptions
   ) => Promise<{ [key: string]: string }>;
 
