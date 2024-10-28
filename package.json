@@ -257,12 +257,8 @@
     ]
   },
   "codegenConfig": {
-    "libraries": [
-      {
-        "name": "rnaps",
-        "type": "modules",
-        "jsSrcsDir": "./src/turbomodules"
-      }
-    ]
+    "name": "rnaps",
+    "type": "modules",
+    "jsSrcsDir": "./src/turbomodules"
   }
 }
