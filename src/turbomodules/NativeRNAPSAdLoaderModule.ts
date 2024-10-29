@@ -16,7 +16,8 @@
  * along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TurboModule, TurboModuleRegistry } from 'react-native';
+import type { TurboModule } from 'react-native';
+import { TurboModuleRegistry } from 'react-native';
 
 export const AdType = {
   BANNER: 'banner',
