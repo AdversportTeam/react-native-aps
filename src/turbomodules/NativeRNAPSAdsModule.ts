@@ -61,4 +61,4 @@ export interface Spec extends TurboModule {
   removeCustomAttribute: (key: string) => void;
 }
 
-export default TurboModuleRegistry.get<Spec>('RNAPSAdsModule');
+export default TurboModuleRegistry.getEnforcing<Spec>('RNAPSAdsModule');
