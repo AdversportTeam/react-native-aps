@@ -21,7 +21,8 @@ Pod::Spec.new do |s|
 
     # folly_version must match the version used in React Native
     # See folly_version in react-native/React/FBReactNativeSpec/FBReactNativeSpec.podspec
-    folly_version = '2021.06.28.00-v2'
+    folly_config = get_folly_config()
+    folly_version = folly_config[:version]
     folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
 
     s.compiler_flags  = folly_compiler_flags
