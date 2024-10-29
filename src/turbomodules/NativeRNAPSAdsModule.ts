@@ -20,17 +20,16 @@ import { TurboModuleRegistry } from 'react-native';
 
 import type { MRAIDPolicy } from '../types';
 
-export const AdNetwork = {
-  GOOGLE_AD_MANAGER: 'GOOGLE_AD_MANAGER',
-  ADMOB: 'ADMOB',
-  AD_GENERATION: 'AD_GENERATION',
-  IRON_SOURCE: 'IRON_SOURCE',
-  MAX: 'MAX',
-  NIMBUS: 'NIMBUS',
-  OTHER: 'OTHER',
-} as const;
+export enum AdNetwork {
+  GOOGLE_AD_MANAGER = 'GOOGLE_AD_MANAGER',
+  ADMOB = 'ADMOB',
+  AD_GENERATION = 'AD_GENERATION',
+  IRON_SOURCE = 'IRON_SOURCE',
+  MAX = 'MAX',
+  NIMBUS = 'NIMBUS',
+  OTHER = 'OTHER',
+};
 
-export type AdNetwork = typeof AdNetwork[keyof typeof AdNetwork];
 
 export interface AdNetworkInfo {
   /**
