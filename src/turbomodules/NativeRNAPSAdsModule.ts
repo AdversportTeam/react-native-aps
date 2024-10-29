@@ -20,7 +20,7 @@ import { TurboModule, TurboModuleRegistry } from 'react-native';
 
 import type { MRAIDPolicy } from '../types';
 
-type AdNetwork = {
+export const AdNetwork = {
   GOOGLE_AD_MANAGER: 'GOOGLE_AD_MANAGER',
   ADMOB: 'ADMOB',
   AD_GENERATION: 'AD_GENERATION',
@@ -28,9 +28,11 @@ type AdNetwork = {
   MAX: 'MAX',
   NIMBUS: 'NIMBUS',
   OTHER: 'OTHER',
-};
+} as const;
 
-interface AdNetworkInfo {
+export type AdNetwork = typeof AdNetwork[keyof typeof AdNetwork];
+
+export interface AdNetworkInfo {
   /**
    * The name of the primary ad server or mediator
    */
