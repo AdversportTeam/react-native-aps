@@ -19,12 +19,10 @@
 import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
 
-export const AdType = {
+export type AdType = {
   BANNER: 'banner',
   INTERSTITIAL: 'interstitial',
-} as const;
-
-export type AdType = typeof AdType[keyof typeof AdType];
+};
 
 export interface AdLoaderOptions {
   /**
@@ -59,7 +57,7 @@ export interface Spec extends TurboModule {
     loaderId: number,
     adType: AdType,
     options: AdLoaderOptions | BannerAdLoaderOptions
-  ) => Promise<{ [key: string]: string }>;
+  ) => void;
 
   stopAutoRefresh: (loaderId: number) => void;
 
