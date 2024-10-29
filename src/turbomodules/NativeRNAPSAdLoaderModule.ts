@@ -51,7 +51,7 @@ export interface Spec extends TurboModule {
   loadAd: (
     loaderId: number,
     adType: string,
-    options: AdLoaderOptions | BannerAdLoaderOptions
+    options: BannerAdLoaderOptions
   ) => Promise<{ [key: string]: string }>;
 
   stopAutoRefresh: (loaderId: number) => void;
