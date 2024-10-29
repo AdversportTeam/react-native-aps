@@ -23,6 +23,6 @@ export const AdType = {
 
 export type AdType = typeof AdType[keyof typeof AdType];
 
-function isAdType(value: any): value is AdType {
+export function isAdType(value: any): value is AdType {
   return Object.values(AdType).includes(value);
 }
