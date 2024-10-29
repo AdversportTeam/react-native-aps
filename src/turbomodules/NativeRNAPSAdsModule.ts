@@ -18,7 +18,25 @@
 
 import { TurboModule, TurboModuleRegistry } from 'react-native';
 
-import type { AdNetworkInfo, MRAIDPolicy } from '../types';
+import type { MRAIDPolicy } from '../types';
+
+type AdNetwork = {
+  GOOGLE_AD_MANAGER: 'GOOGLE_AD_MANAGER',
+  ADMOB: 'ADMOB',
+  AD_GENERATION: 'AD_GENERATION',
+  IRON_SOURCE: 'IRON_SOURCE',
+  MAX: 'MAX',
+  NIMBUS: 'NIMBUS',
+  OTHER: 'OTHER',
+};
+
+interface AdNetworkInfo {
+  /**
+   * The name of the primary ad server or mediator
+   */
+  adNetwork: AdNetwork;
+  adNetworkProperties?: { [key: string]: string };
+}
 
 /**
  * @internal
