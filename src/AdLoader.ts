@@ -135,7 +135,7 @@ export class AdLoader {
       return await AdLoader._nativeModule.loadAd(
         this.loaderId,
         this.adType,
-        this.adLoaderOptions
+        //this.adLoaderOptions
       );
     } catch (error) {
       if ((error as any).userInfo) {
