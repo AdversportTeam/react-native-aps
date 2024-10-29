@@ -20,17 +20,11 @@ import AdsModule from './internal/AdsModule';
 import { AdNetworkInfo, validateAdNetworkInfo } from './types/AdNetworkInfo';
 import { isMRAIDPolicy, MRAIDPolicy } from './types/MRAIDPolicy';
 
-/**
- * @public
- */
 export class APSAds {
   private static _nativeModule = AdsModule;
 
   /**
    * Initializes the APSAds SDK.
-   * @param appKey - Generated APS app key from the APS portal
-   *
-   * @public
    */
   static initialize(appKey: string): Promise<void> {
     if (typeof appKey !== 'string') {
@@ -41,9 +35,6 @@ export class APSAds {
 
   /**
    * Sets the primary ad server or mediator.
-   * @param adNetworkInfo - `AdNetworkInfo` object containing the primary ad network and its properties
-   *
-   * @public
    */
   static setAdNetworkInfo(adNetworkInfo: AdNetworkInfo): void {
     try {
@@ -58,9 +49,6 @@ export class APSAds {
 
   /**
    * Sets the MRAID versions supported by user ad server.
-   * @param versions - Array of supported versions
-   *
-   * @public
    */
   static setMRAIDSupportedVersions(versions: string[]): void {
     if (
@@ -76,9 +64,6 @@ export class APSAds {
 
   /**
    * Sets the MRAID policy.
-   * @param policy - MRAIDPolicy value. `MRAIDPolicy.DFP` for Google Ad Manager and `MRAIDPolicy.CUSTOM` for other ad server / mediation.
-   *
-   * @public
    */
   static setMRAIDPolicy(policy: MRAIDPolicy): void {
     if (!isMRAIDPolicy(policy)) {
@@ -91,9 +76,6 @@ export class APSAds {
 
   /**
    * Enable / disable the test mode for APSAds.
-   * @param enabled - Whether to enable or disable the test mode.
-   *
-   * @public
    */
   static setTestMode(enabled: boolean): void {
     if (typeof enabled !== 'boolean') {
@@ -106,9 +88,6 @@ export class APSAds {
 
   /**
    * Enable / disable the geo location tracking for APSAds.
-   * @param enabled - Whether to enable or disable the geo location tracking.
-   *
-   * @public
    */
   static setUseGeoLocation(enabled: boolean): void {
     if (typeof enabled !== 'boolean') {
@@ -121,10 +100,6 @@ export class APSAds {
 
   /**
    * Adds a custom attribute to the APSAds SDK.
-   * @param key - The key of the custom attribute
-   * @param value - The value of the custom attribute
-   *
-   * @public
    */
   static addCustomAttribute(key: string, value: string): void {
     if (typeof key !== 'string') {
@@ -142,9 +117,6 @@ export class APSAds {
 
   /**
    * Removes a custom attribute from the APSAds SDK.
-   * @param key - The key of the custom attribute
-   *
-   * @public
    */
   static removeCustomAttribute(key: string): void {
     if (typeof key !== 'string') {

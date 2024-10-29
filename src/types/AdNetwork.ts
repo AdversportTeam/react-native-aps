@@ -16,9 +16,6 @@
  * along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * @public
- */
 export const AdNetwork = {
   GOOGLE_AD_MANAGER: 'GOOGLE_AD_MANAGER',
   ADMOB: 'ADMOB',
@@ -29,14 +26,8 @@ export const AdNetwork = {
   OTHER: 'OTHER',
 } as const;
 
-/**
- * @public
- */
 export type AdNetwork = typeof AdNetwork[keyof typeof AdNetwork];
 
-/**
- * @internal
- */
 export function isAdNetwork(value: any): value is AdNetwork {
   return Object.values(AdNetwork).includes(value);
 }

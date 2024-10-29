@@ -16,22 +16,13 @@
  * along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * @public
- */
 export const AdType = {
   BANNER: 'banner',
   INTERSTITIAL: 'interstitial',
 } as const;
 
-/**
- * @public
- */
 export type AdType = typeof AdType[keyof typeof AdType];
 
-/**
- * @internal
- */
-export function isAdType(value: any): value is AdType {
+function isAdType(value: any): value is AdType {
   return Object.values(AdType).includes(value);
 }

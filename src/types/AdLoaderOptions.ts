@@ -16,9 +16,6 @@
  * along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * @public
- */
 export interface AdLoaderOptions {
   /**
    * The slotUUID of the ad slot.
@@ -30,9 +27,6 @@ export interface AdLoaderOptions {
   customTargeting?: { [key: string]: string };
 }
 
-/**
- * @public
- */
 export interface BannerAdLoaderOptions extends AdLoaderOptions {
   /**
    * The size of the banner ad slot. Required for banner ad slots.
@@ -52,9 +46,6 @@ export interface BannerAdLoaderOptions extends AdLoaderOptions {
 
 const sizeRegex = /([0-9]+)x([0-9]+)/;
 
-/**
- * @internal
- */
 export function validateAdLoaderOptions(adLoaderOptions: AdLoaderOptions) {
   if (typeof adLoaderOptions !== 'object') {
     throw new Error("'adLoaderOptions' expected an object value");
@@ -64,9 +55,6 @@ export function validateAdLoaderOptions(adLoaderOptions: AdLoaderOptions) {
   }
 }
 
-/**
- * @internal
- */
 export function validateBannerAdLoaderOptions(
   adLoaderOptions: BannerAdLoaderOptions
 ) {

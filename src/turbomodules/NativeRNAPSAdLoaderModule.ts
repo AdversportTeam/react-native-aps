@@ -17,7 +17,41 @@
  */
 
 import { TurboModule, TurboModuleRegistry } from 'react-native';
-import type { AdLoaderOptions, AdType, BannerAdLoaderOptions } from 'src/types';
+
+export const AdType = {
+  BANNER: 'banner',
+  INTERSTITIAL: 'interstitial',
+} as const;
+
+export type AdType = typeof AdType[keyof typeof AdType];
+
+export interface AdLoaderOptions {
+  /**
+   * The slotUUID of the ad slot.
+   */
+  slotUUID: string;
+  /**
+   * The optional custom targeting key value pairs for the bid request.
+   */
+  customTargeting?: { [key: string]: string };
+}
+
+export interface BannerAdLoaderOptions extends AdLoaderOptions {
+  /**
+   * The size of the banner ad slot. Required for banner ad slots.
+   */
+  size: string;
+
+  /**
+   * Whether the banner ad to be automatically refreshed. Defaults to `false`.
+   */
+  autoRefresh?: boolean;
+
+  /**
+   * The time interval in seconds between refreshes. Defaults to `60` seconds if autoRefresh enabled. The minimum auto-refresh time supported is `20` seconds.
+   */
+  refreshInterval?: number;
+}
 
 export interface Spec extends TurboModule {
   loadAd: (
