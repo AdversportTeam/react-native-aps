@@ -16,9 +16,9 @@
  * along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export type AdType = {
-  BANNER: 'banner',
-  INTERSTITIAL: 'interstitial',
+export enum AdType {
+  BANNER = 'banner',
+  INTERSTITIAL = 'interstitial',
 }
 
 export function isAdType(value: any): value is AdType {

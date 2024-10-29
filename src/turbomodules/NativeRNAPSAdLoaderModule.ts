@@ -19,10 +19,10 @@
 import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
 
-export type AdType = {
-  BANNER: 'banner',
-  INTERSTITIAL: 'interstitial',
-};
+export enum AdType {
+  BANNER = 'banner',
+  INTERSTITIAL = 'interstitial',
+}
 
 export interface AdLoaderOptions {
   /**

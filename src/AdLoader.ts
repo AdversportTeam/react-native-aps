@@ -27,7 +27,7 @@ import {
   validateAdLoaderOptions,
   validateBannerAdLoaderOptions,
 } from './types/AdLoaderOptions';
-import { AdType } from './types/AdType';
+import { AdType } from './types';
 
 export class AdLoader {
   private static readonly _nativeModule = AdLoaderModule;
