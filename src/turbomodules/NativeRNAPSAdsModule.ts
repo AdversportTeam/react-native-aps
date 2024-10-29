@@ -18,7 +18,12 @@
 import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
 
-import type { MRAIDPolicy } from '../types';
+
+export enum MRAIDPolicy {
+  NONE = 'NONE',
+  DFP = 'DFP',
+  CUSTOM = 'CUSTOM',
+};
 
 export enum AdNetwork {
   GOOGLE_AD_MANAGER = 'GOOGLE_AD_MANAGER',
