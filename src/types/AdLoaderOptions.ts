@@ -31,7 +31,7 @@ export interface BannerAdLoaderOptions extends AdLoaderOptions {
   /**
    * The size of the banner ad slot. Required for banner ad slots.
    */
-  size: string;
+  size?: string;
 
   /**
    * Whether the banner ad to be automatically refreshed. Defaults to `false`.
