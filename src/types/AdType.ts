@@ -22,5 +22,5 @@ export enum AdType {
 }
 
 export function isAdType(value: any): value is AdType {
-  return value === 'banner' || value === 'interstitial';
+  return Object.values(AdType).includes(value);
 }

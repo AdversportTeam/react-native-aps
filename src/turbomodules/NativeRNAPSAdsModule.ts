@@ -18,29 +18,11 @@
 import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
 
-
-export enum MRAIDPolicy {
-  NONE = 'NONE',
-  DFP = 'DFP',
-  CUSTOM = 'CUSTOM',
-};
-
-export enum AdNetwork {
-  GOOGLE_AD_MANAGER = 'GOOGLE_AD_MANAGER',
-  ADMOB = 'ADMOB',
-  AD_GENERATION = 'AD_GENERATION',
-  IRON_SOURCE = 'IRON_SOURCE',
-  MAX = 'MAX',
-  NIMBUS = 'NIMBUS',
-  OTHER = 'OTHER',
-};
-
-
 export interface AdNetworkInfo {
   /**
    * The name of the primary ad server or mediator
    */
-  adNetwork: AdNetwork;
+  adNetwork: string;
   adNetworkProperties?: { [key: string]: string };
 }
 
@@ -54,7 +36,7 @@ export interface Spec extends TurboModule {
 
   setMRAIDSupportedVersions: (supportedVersions: string[]) => void;
 
-  setMRAIDPolicy: (policy: MRAIDPolicy) => void;
+  setMRAIDPolicy: (policy: string) => void;
 
   setTestMode: (enabled: boolean) => void;
 

@@ -19,11 +19,6 @@
 import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
 
-export enum AdType {
-  BANNER = 'banner',
-  INTERSTITIAL = 'interstitial',
-}
-
 export interface AdLoaderOptions {
   /**
    * The slotUUID of the ad slot.
@@ -55,7 +50,7 @@ export interface BannerAdLoaderOptions extends AdLoaderOptions {
 export interface Spec extends TurboModule {
   loadAd: (
     loaderId: number,
-    adType: AdType,
+    adType: string,
     options: AdLoaderOptions | BannerAdLoaderOptions
   ) => Promise<{ [key: string]: string }>;
 
