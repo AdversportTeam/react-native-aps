@@ -18,12 +18,7 @@
 
 import { TurboModule, TurboModuleRegistry } from 'react-native';
 
-import type { AdLoaderOptions, BannerAdLoaderOptions } from '../types';
-
-type AdType = {
-  BANNER: 'banner',
-  INTERSTITIAL: 'interstitial',
-};
+import type { AdLoaderOptions, AdType, BannerAdLoaderOptions } from '../types';
 
 export interface Spec extends TurboModule {
   loadAd: (
