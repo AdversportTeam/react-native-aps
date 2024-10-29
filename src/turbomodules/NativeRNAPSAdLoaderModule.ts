@@ -18,13 +18,6 @@
 
 import { TurboModule, TurboModuleRegistry } from 'react-native';
 
-export const AdType = {
-  BANNER: 'banner',
-  INTERSTITIAL: 'interstitial',
-} as const;
-
-export type AdType = typeof AdType[keyof typeof AdType];
-
 export interface AdLoaderOptions {
   /**
    * The slotUUID of the ad slot.
@@ -56,7 +49,7 @@ export interface BannerAdLoaderOptions extends AdLoaderOptions {
 export interface Spec extends TurboModule {
   loadAd: (
     loaderId: number,
-    adType: AdType,
+    adType: string,
     options: AdLoaderOptions | BannerAdLoaderOptions
   ) => Promise<{ [key: string]: string }>;
 
