@@ -19,7 +19,7 @@
 import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
 
-export interface AdLoaderOptions {
+interface AdLoaderOptions {
   /**
    * The slotUUID of the ad slot.
    */
@@ -30,7 +30,7 @@ export interface AdLoaderOptions {
   customTargeting?: { [key: string]: string };
 }
 
-export interface BannerAdLoaderOptions extends AdLoaderOptions {
+interface BannerAdLoaderOptions extends AdLoaderOptions {
   /**
    * The size of the banner ad slot. Required for banner ad slots.
    */

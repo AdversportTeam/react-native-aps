@@ -18,7 +18,7 @@
 import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
 
-export interface AdNetworkInfo {
+interface AdNetworkInfo {
   /**
    * The name of the primary ad server or mediator
    */
