@@ -49,7 +49,8 @@ class RNAPSAdsModule: NSObject {
       networkName = DTBADNETWORK_AD_GENERATION
       break;
     case "IRON_SOURCE":
-      networkName = DTBADNETWORK_IRON_SOURCE
+      //networkName = DTBADNETWORK_IRON_SOURCE
+      networkName = DTBADNETWORK_OTHER
       break;
     case "MAX":
       networkName = DTBADNETWORK_MAX
