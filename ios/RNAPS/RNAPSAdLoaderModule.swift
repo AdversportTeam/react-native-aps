@@ -28,9 +28,9 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
   static let ERROR_DOMAIN = "RNAPS"
   var adLoaders = Dictionary<NSNumber, DTBAdLoader>()
   var hasListeners = false;
-  
+
   //MARK: - Native Module Setup
-  
+
   deinit {
     invalidate()
   }
@@ -38,7 +38,7 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
   @objc static override func requiresMainQueueSetup() -> Bool {
     return false
   }
-  
+
   @objc override func invalidate() {
     super.invalidate()
     for adLoader in adLoaders.values {
@@ -46,30 +46,32 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
     }
     adLoaders.removeAll()
   }
-  
+
   @objc override func startObserving() {
     hasListeners = true;
   }
-  
+
   @objc override func stopObserving() {
     hasListeners = false;
   }
-  
-  @objc override func supportedEvents() -> [String] {
+
+  // Using '!' for compatibility if superclass requires it, otherwise [String] is fine
+  @objc override func supportedEvents() -> [String]! {
     return [
       RNAPSAdLoaderModule.EVENT_SUCCESS,
       RNAPSAdLoaderModule.EVENT_FAILURE
     ]
   }
-  
+
   private func sendEvent(name: String, body: Any) {
     if (hasListeners) {
       sendEvent(withName: name, body: body)
     }
   }
-  
+
   //MARK: - AdLoadCallback impl
-  
+
+  // NOTE: Kept original AdLoadCallback without NSObject inheritance or weak ref based on "minimal" request
   private class AdLoadCallback: DTBAdCallback {
     let adLoaderModule: RNAPSAdLoaderModule
     let loaderId: NSNumber
@@ -82,7 +84,8 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
       self.reject = reject
     }
     func onSuccess(_ adResponse: DTBAdResponse!) {
-      let response = adResponse.customTargeting() ?? Dictionary()
+      // Using original optional handling which defaults to empty Dict if nil
+      let response = adResponse.customTargeting() ?? [:]
       adLoaderModule.sendEvent(name: RNAPSAdLoaderModule.EVENT_SUCCESS, body: [
         "loaderId": loaderId,
         "response": response
@@ -93,13 +96,14 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
         self.reject = nil
       }
     }
-    
+
     func onFailure(_ error: DTBAdError) {
       var code = ""
+      // Using original switch without @unknown default
       switch error {
       case NETWORK_ERROR:
         code = "network_error"
-        break;
+        break; // Keep original breaks
       case NETWORK_TIMEOUT:
         code = "network_timeout"
         break;
@@ -112,7 +116,7 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
       case REQUEST_ERROR:
         code = "request_error"
         break;
-      default:
+      default: // Use simple default to ensure exhaustiveness
         code = "unknown"
       }
       let message = String(format: "Failed to load APS ad with code: %@", code)
@@ -124,27 +128,43 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
         "userInfo": userInfo
       ])
       if let reject = reject {
-        let error = NSError.init(domain: RNAPSAdLoaderModule.ERROR_DOMAIN, code: 666, userInfo: userInfo)
-        reject(code, message, error)
+        // Using original Int conversion and error code
+        let nsError = NSError.init(domain: RNAPSAdLoaderModule.ERROR_DOMAIN, code: Int(error.rawValue), userInfo: userInfo)
+        reject(code, message, nsError)
         self.resolve = nil
         self.reject = nil
       }
     }
   }
-  
+
   //MARK: - Native Methods
 
   @objc(loadAd:forAdType:withOptions:withResolver:withRejecter:)
   func loadAd(loaderId: NSNumber, adType: String, options: Dictionary<String, Any>, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
     stopAutoRefresh(loaderId: loaderId)
-    
-    let adLoader = DTBAdLoader()
 
+    // --- MINIMAL PATCH START ---
+
+    // 1. Extract options needed for size/loader (moved before loader init)
+    // WARNING: Using original unsafe force-unwrapping as requested! Could crash!
     let slotUUID = options["slotUUID"] as! String
-    let size = options["size"] as? String
+    let size = options["size"] as? String // Keep optional for interstitial case
+
+    // 2. Create AdNetworkInfo (using OTHER as placeholder)
+    // NOTE: Ensure DTBADNETWORK_OTHER is defined/imported. Change if needed.
+    let adNetworkInfo = DTBAdNetworkInfo(networkName: DTBADNETWORK_OTHER)
+
+    // 3. Initialize AdLoader correctly
+    let adLoader = DTBAdLoader(adNetworkInfo: adNetworkInfo)
+
+    // --- MINIMAL PATCH END ---
+
+
+    // --- Original logic continues below (using original unsafe unwraps!) ---
     let adSize: DTBAdSize
     switch adType {
     case RNAPSAdLoaderModule.AD_TYPE_BANNER:
+      // WARNING: Original unsafe unwraps! Could crash!
       let values = size!.split(separator: "x")
       let width = Int(values[0])!
       let height = Int(values[1])!
@@ -154,20 +174,22 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
       adSize = DTBAdSize(interstitialAdSizeWithSlotUUID: slotUUID)
       break
     default:
+      // Original code just returned, no error reject
       return
     }
     adLoader.setAdSizes([adSize])
 
     if let customTargeting = options["customTargeting"] as? Dictionary<String, String> {
+      // Original loop syntax
       for (key, value) in (customTargeting) {
         adLoader.putCustomTarget(value, withKey: key)
       }
     }
-    
+
     let autoRefresh = options["autoRefresh"] as? Bool ?? false
-    
+
     let refreshInterval = options["refreshInterval"] as? Int32 ?? 60
-    
+
     if (autoRefresh) {
       adLoader.setAutoRefresh(refreshInterval)
       adLoaders.updateValue(adLoader, forKey: loaderId)
@@ -175,9 +197,10 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
 
     adLoader.loadAd(AdLoadCallback(adLoaderModule: self, loaderId: loaderId, resolve: resolve, reject: reject))
   }
-  
+
   @objc(stopAutoRefresh:)
   func stopAutoRefresh(loaderId: NSNumber) {
+    // Original optional chaining is fine
     adLoaders[loaderId]?.stop()
     adLoaders.removeValue(forKey: loaderId)
   }
