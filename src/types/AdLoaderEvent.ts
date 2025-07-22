@@ -16,22 +16,13 @@
  * along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * @public
- */
 export const AdLoaderEvent = {
   SUCCESS: 'onSuccess',
   FAILURE: 'onFailure',
 } as const;
 
-/**
- * @public
- */
 export type AdLoaderEvent = typeof AdLoaderEvent[keyof typeof AdLoaderEvent];
 
-/**
- * @internal
- */
 export function isAdLoaderEvent(value: any): value is AdLoaderEvent {
   return Object.values(AdLoaderEvent).includes(value);
 }

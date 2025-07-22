@@ -16,23 +16,12 @@
  * along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * @public
- */
-export const MRAIDPolicy = {
-  NONE: 'NONE',
-  DFP: 'DFP',
-  CUSTOM: 'CUSTOM',
-} as const;
+export enum MRAIDPolicy {
+  NONE = 'NONE',
+  DFP = 'DFP',
+  CUSTOM = 'CUSTOM',
+};
 
-/**
- * @public
- */
-export type MRAIDPolicy = typeof MRAIDPolicy[keyof typeof MRAIDPolicy];
-
-/**
- * @internal
- */
 export function isMRAIDPolicy(value: any): value is MRAIDPolicy {
   return Object.values(MRAIDPolicy).includes(value);
 }

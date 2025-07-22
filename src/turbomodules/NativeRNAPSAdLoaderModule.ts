@@ -16,15 +16,42 @@
  * along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TurboModule, TurboModuleRegistry } from 'react-native';
+import type { TurboModule } from 'react-native';
+import { TurboModuleRegistry } from 'react-native';
 
-import type { AdLoaderOptions, AdType, BannerAdLoaderOptions } from '../types';
+interface AdLoaderOptions {
+  /**
+   * The slotUUID of the ad slot.
+   */
+  slotUUID: string;
+  /**
+   * The optional custom targeting key value pairs for the bid request.
+   */
+  customTargeting?: { [key: string]: string };
+}
+
+interface BannerAdLoaderOptions extends AdLoaderOptions {
+  /**
+   * The size of the banner ad slot. Required for banner ad slots.
+   */
+  size?: string;
+
+  /**
+   * Whether the banner ad to be automatically refreshed. Defaults to `false`.
+   */
+  autoRefresh?: boolean;
+
+  /**
+   * The time interval in seconds between refreshes. Defaults to `60` seconds if autoRefresh enabled. The minimum auto-refresh time supported is `20` seconds.
+   */
+  refreshInterval?: number;
+}
 
 export interface Spec extends TurboModule {
   loadAd: (
     loaderId: number,
-    adType: AdType,
-    options: AdLoaderOptions | BannerAdLoaderOptions
+    adType: string,
+    options: BannerAdLoaderOptions
   ) => Promise<{ [key: string]: string }>;
 
   stopAutoRefresh: (loaderId: number) => void;
@@ -32,4 +59,4 @@ export interface Spec extends TurboModule {
   skadnHelper: (name: string, info?: string) => void;
 }
 
-export default TurboModuleRegistry.get<Spec>('RNAPSAdLoaderModule');
+export default TurboModuleRegistry.getEnforcing<Spec>('RNAPSAdLoaderModule');
