@@ -20,7 +20,7 @@ export enum MRAIDPolicy {
   NONE = 'NONE',
   DFP = 'DFP',
   CUSTOM = 'CUSTOM',
-};
+}
 
 export function isMRAIDPolicy(value: any): value is MRAIDPolicy {
   return Object.values(MRAIDPolicy).includes(value);
