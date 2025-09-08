@@ -25,7 +25,6 @@
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/index.d.ts",
-  "react-native": "src/index",
   "source": "src/index",
   "files": [
     "/android/",
@@ -113,13 +112,30 @@
     "registry": "https://registry.npmjs.org/"
   },
   "jest": {
-    "preset": "react-native",
+    "testEnvironment": "node",
     "modulePathIgnorePatterns": [
       "<rootDir>/Example/node_modules",
       "<rootDir>/lib/"
     ],
     "setupFiles": [
       "./jest.setup.ts"
+    ],
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.(ts|tsx|js)"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/**/*.d.ts"
     ]
   },
   "detox": {
@@ -260,5 +276,16 @@
     "name": "rnaps",
     "type": "modules",
     "jsSrcsDir": "./src/turbomodules"
+  },
+  "react-native": {
+    "main": "src/index",
+    "android": {
+      "sourceDir": "./android/",
+      "packageImportPath": "import com.adversport.rnaps.RNAPSPackage;",
+      "packageInstance": "new RNAPSPackage()"
+    },
+    "ios": {
+      "podspecPath": "./RNAmazonPublisherServices.podspec"
+    }
   }
 }

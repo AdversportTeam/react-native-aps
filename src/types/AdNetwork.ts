@@ -24,7 +24,7 @@ export enum AdNetwork {
   MAX = 'MAX',
   NIMBUS = 'NIMBUS',
   OTHER = 'OTHER',
-};
+}
 
 export function isAdNetwork(value: any): value is AdNetwork {
   return Object.values(AdNetwork).includes(value);
