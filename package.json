@@ -25,7 +25,6 @@
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/index.d.ts",
-  "react-native": "src/index",
   "source": "src/index",
   "files": [
     "/android/",
@@ -260,5 +259,16 @@
     "name": "rnaps",
     "type": "modules",
     "jsSrcsDir": "./src/turbomodules"
+  },
+  "react-native": {
+    "main": "src/index",
+    "android": {
+      "sourceDir": "./android/",
+      "packageImportPath": "import com.adversport.rnaps.RNAPSPackage;",
+      "packageInstance": "new RNAPSPackage()"
+    },
+    "ios": {
+      "podspecPath": "./RNAmazonPublisherServices.podspec"
+    }
   }
 }
