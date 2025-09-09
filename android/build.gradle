@@ -9,8 +9,6 @@ buildscript {
 
   dependencies {
     classpath 'com.android.tools.build:gradle:7.0.4'
-    // noinspection DifferentKotlinGradleVersion
-    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.6.10')}"
   }
 }
 
@@ -18,7 +16,6 @@ if (isNewArchitectureEnabled()) {
   apply plugin: "com.facebook.react"
 }
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
 
 android {
   compileSdkVersion safeExtGet('compileSdkVersion', 31)

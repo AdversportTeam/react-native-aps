@@ -1,4 +1,4 @@
-package com.adversport.rnaps
+package com.adversport.rnaps;
 
 /*
  * Copyright (c) 2022-present Adversport & Contributors
@@ -18,18 +18,22 @@ package com.adversport.rnaps
  * along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import com.facebook.react.ReactPackage
-import com.facebook.react.bridge.NativeModule
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.uimanager.ViewManager
+import com.facebook.react.ReactPackage;
+import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.uimanager.ViewManager;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-@Suppress("unused")
-class RNAPSPackage : ReactPackage {
-  override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-    return listOf(RNAPSAdsModule(reactContext), RNAPSAdLoaderModule(reactContext))
+public class RNAPSPackage implements ReactPackage {
+  @Override
+  public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
+    return Arrays.asList(new RNAPSAdsModule(reactContext), new RNAPSAdLoaderModule(reactContext));
   }
 
-  override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
-    return emptyList()
+  @Override
+  public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
+    return Collections.emptyList();
   }
 }
