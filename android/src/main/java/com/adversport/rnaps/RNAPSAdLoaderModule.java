@@ -145,7 +145,20 @@ public class RNAPSAdLoaderModule extends ReactContextBaseJavaModule {
 
       sendEvent(EVENT_SUCCESS, payload);
       if (promise != null) {
-        promise.resolve(responseMap);
+        // Créer une copie pour promise.resolve car responseMap est déjà utilisé
+        WritableMap responseCopy = Arguments.createMap();
+        for (Map.Entry<String, List<String>> entry : customParams.entrySet()) {
+          List<String> values = entry.getValue();
+          StringBuilder valueBuilder = new StringBuilder();
+          for (int i = 0; i < values.size(); i++) {
+            valueBuilder.append(values.get(i));
+            if (i < values.size() - 1) {
+              valueBuilder.append(",");
+            }
+          }
+          responseCopy.putString(entry.getKey(), valueBuilder.toString());
+        }
+        promise.resolve(responseCopy);
         promise = null;
       }
     }
