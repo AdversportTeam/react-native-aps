@@ -22,7 +22,7 @@ const adLoaderOptions: AdLoaderOptions = {
 
 const adLoader = AdLoader.createInterstitialAdLoader(adLoaderOptions);
 
-type Phase = 'bidding' | 'loading_ad' | 'ready' | 'shown';
+type Phase = 'bidding' | 'loading_ad' | 'ready' | 'shown' | 'error';
 
 export default function InterstitialDemo() {
   const [apsBidResult, setApsBidResult] = useState<{ [key: string]: string }>(
@@ -91,6 +91,7 @@ export default function InterstitialDemo() {
             loadApsBid();
             break;
           case AdEventType.ERROR:
+            setPhase('error');
             addEvent(`GAM error: ${(payload as any)?.message ?? 'unknown'}`);
             break;
         }
@@ -165,9 +166,13 @@ export default function InterstitialDemo() {
 
       <Pressable
         testID="show_interstitial"
-        style={[styles.showButton, phase !== 'ready' && styles.showButtonDisabled]}
-        disabled={phase !== 'ready'}
-        onPress={() => interstitialAd?.show()}
+        style={[
+          styles.showButton,
+          phase === 'error' && styles.showButtonError,
+          phase !== 'ready' && phase !== 'error' && styles.showButtonDisabled,
+        ]}
+        disabled={phase !== 'ready' && phase !== 'error'}
+        onPress={() => (phase === 'error' ? loadApsBid() : interstitialAd?.show())}
       >
         {phase === 'bidding' || phase === 'loading_ad' ? (
           <ActivityIndicator color="#fff" size="small" />
@@ -175,7 +180,9 @@ export default function InterstitialDemo() {
           <Text style={styles.showButtonText}>
             {phase === 'ready'
               ? 'Show Interstitial'
-              : 'Reload in progress...'}
+              : phase === 'error'
+                ? 'Retry'
+                : 'Reload in progress...'}
           </Text>
         )}
       </Pressable>
@@ -329,6 +336,9 @@ const styles = StyleSheet.create({
   },
   showButtonDisabled: {
     backgroundColor: '#a5b4fc',
+  },
+  showButtonError: {
+    backgroundColor: '#dc2626',
   },
   showButtonText: {
     color: '#fff',

@@ -28,6 +28,10 @@ export default function BannerDemo() {
   );
   const [apsBidError, setApsBidError] = useState<AdError>();
   const [gamAdLoaded, setGamAdLoaded] = useState(false);
+  const [events, setEvents] = useState<string[]>([]);
+
+  const addEvent = (msg: string) =>
+    setEvents((prev) => [`${new Date().toLocaleTimeString()} ${msg}`, ...prev]);
 
   const apsBidDone =
     Object.keys(apsBidResult).length > 0 || apsBidError !== undefined;
@@ -36,14 +40,21 @@ export default function BannerDemo() {
   useEffect(() => {
     const unsubSuccess = adLoader.addListener(
       AdLoaderEvent.SUCCESS,
-      (result) => setApsBidResult(result)
+      (result) => {
+        setApsBidResult(result);
+        addEvent(`APS bid won (${Object.keys(result).length} KVs)`);
+      }
     );
     const unsubFailure = adLoader.addListener(
       AdLoaderEvent.FAILURE,
-      (error) => setApsBidError(error)
+      (error) => {
+        setApsBidError(error);
+        addEvent(`APS bid failed (code: ${error.code})`);
+      }
     );
 
     adLoader.loadAd();
+    addEvent('APS bid requested');
 
     return () => {
       unsubSuccess();
@@ -125,13 +136,32 @@ export default function BannerDemo() {
               unitId={TestIds.GAM_BANNER}
               sizes={[BannerAdSize.BANNER]}
               requestOptions={{ customTargeting: apsBidResult }}
-              onAdLoaded={() => setGamAdLoaded(true)}
-              onAdFailedToLoad={(error) => console.debug(error)}
+              onAdLoaded={() => {
+                setGamAdLoaded(true);
+                addEvent('GAM banner loaded');
+              }}
+              onAdFailedToLoad={(error) => {
+                console.debug(error);
+                addEvent(`GAM error: ${error.message}`);
+              }}
             />
             {gamAdLoaded && (
               <Text style={styles.adFooter}>Ad rendered via GAM</Text>
             )}
           </View>
+        )}
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Event Log</Text>
+        {events.length === 0 ? (
+          <Text style={styles.emptyLog}>No events yet</Text>
+        ) : (
+          events.slice(0, 10).map((event, i) => (
+            <Text key={i} style={styles.logEntry}>
+              {event}
+            </Text>
+          ))
         )}
       </View>
     </View>
@@ -278,5 +308,18 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontSize: 11,
     color: '#94a3b8',
+  },
+  emptyLog: {
+    color: '#94a3b8',
+    fontSize: 13,
+    fontStyle: 'italic',
+  },
+  logEntry: {
+    fontSize: 12,
+    color: '#475569',
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    paddingVertical: 3,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#f1f5f9',
   },
 });
