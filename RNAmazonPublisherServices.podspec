@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   s.source_files = "ios/**/*.{h,m,mm,swift}"
 
   if new_arch_enabled
-    s.platforms    = { :ios => "11.0" }
+    s.platforms    = { :ios => "12.0" }
 
     # folly_version must match the version used in React Native
     # See folly_version in react-native/React/FBReactNativeSpec/FBReactNativeSpec.podspec
@@ -37,9 +37,9 @@ Pod::Spec.new do |s|
     s.dependency "RCTTypeSafety"
     s.dependency "ReactCommon/turbomodule/core"
   else
-    s.platforms    = { :ios => "10.0" }
+    s.platforms    = { :ios => "12.0" }
   end
 
   s.dependency "React-Core"
-  s.dependency "AmazonPublisherServicesSDK"
+  s.dependency "AmazonPublisherServicesSDK", "~> 5.2"
 end

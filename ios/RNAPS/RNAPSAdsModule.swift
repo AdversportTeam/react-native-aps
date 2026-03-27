@@ -22,6 +22,8 @@ import Foundation
 @objc(RNAPSAdsModule)
 class RNAPSAdsModule: NSObject {
 
+  static var cachedAdNetworkInfo: DTBAdNetworkInfo?
+
   @objc static func requiresMainQueueSetup() -> Bool {
     return false
   }
@@ -48,16 +50,16 @@ class RNAPSAdsModule: NSObject {
     case "AD_GENERATION":
       networkName = DTBADNETWORK_AD_GENERATION
       break;
-    case "IRON_SOURCE":
-      //networkName = DTBADNETWORK_IRON_SOURCE
+    case "IRON_SOURCE", "UNITY_LEVELPLAY":
+      networkName = DTBADNETWORK_UNITY_LEVELPLAY
+    case "UNKNOWN":
       networkName = DTBADNETWORK_OTHER
-      break;
+    case "CUSTOM_MEDIATION":
+      networkName = DTBADNETWORK_OTHER
     case "MAX":
       networkName = DTBADNETWORK_MAX
-      break;
     case "NIMBUS":
       networkName = DTBADNETWORK_NIMBUS
-      break;
     default:
       networkName = DTBADNETWORK_OTHER
     }
@@ -67,7 +69,7 @@ class RNAPSAdsModule: NSObject {
         adNetworkInfo.setAdNetworkProperties(key, adNetworkValue: value)
       }
     }
-    DTBAds.sharedInstance().setAdNetworkInfo(adNetworkInfo)
+    RNAPSAdsModule.cachedAdNetworkInfo = adNetworkInfo
   }
 
   @objc(setMRAIDSupportedVersions:)
