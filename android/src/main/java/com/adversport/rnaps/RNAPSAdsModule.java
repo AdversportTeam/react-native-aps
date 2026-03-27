@@ -31,6 +31,12 @@ public class RNAPSAdsModule extends ReactContextBaseJavaModule {
 
   public static final String MODULE_NAME = "RNAPSAdsModule";
 
+  private static DTBAdNetworkInfo cachedAdNetworkInfo = null;
+
+  public static DTBAdNetworkInfo getCachedAdNetworkInfo() {
+    return cachedAdNetworkInfo;
+  }
+
   public RNAPSAdsModule(ReactApplicationContext reactContext) {
     super(reactContext);
   }
@@ -62,7 +68,14 @@ public class RNAPSAdsModule extends ReactContextBaseJavaModule {
         adNetwork = DTBAdNetwork.AD_GENERATION;
         break;
       case "IRON_SOURCE":
-        adNetwork = DTBAdNetwork.IRON_SOURCE;
+      case "UNITY_LEVELPLAY":
+        adNetwork = DTBAdNetwork.UNITY_LEVELPLAY;
+        break;
+      case "UNKNOWN":
+        adNetwork = DTBAdNetwork.UNKNOWN;
+        break;
+      case "CUSTOM_MEDIATION":
+        adNetwork = DTBAdNetwork.CUSTOM_MEDIATION;
         break;
       case "MAX":
         adNetwork = DTBAdNetwork.MAX;
@@ -91,7 +104,7 @@ public class RNAPSAdsModule extends ReactContextBaseJavaModule {
       }
     }
 
-    AdRegistration.setAdNetworkInfo(adNetworkInfo);
+    cachedAdNetworkInfo = adNetworkInfo;
   }
 
   @ReactMethod

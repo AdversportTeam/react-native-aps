@@ -168,7 +168,11 @@ public class RNAPSAdLoaderModule extends ReactContextBaseJavaModule {
   public void loadAd(int loaderId, String adType, ReadableMap options, Promise promise) {
     stopAutoRefresh(loaderId);
 
-    DTBAdRequest adLoader = new DTBAdRequest();
+    DTBAdNetworkInfo adNetworkInfo = RNAPSAdsModule.getCachedAdNetworkInfo();
+    if (adNetworkInfo == null) {
+      adNetworkInfo = new DTBAdNetworkInfo(DTBAdNetwork.OTHER);
+    }
+    DTBAdRequest adLoader = new DTBAdRequest(adNetworkInfo);
 
     String slotUUID = options.getString("slotUUID");
     if (slotUUID == null) {

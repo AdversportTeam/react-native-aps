@@ -143,24 +143,13 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
   func loadAd(loaderId: NSNumber, adType: String, options: Dictionary<String, Any>, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
     stopAutoRefresh(loaderId: loaderId)
 
-    // --- MINIMAL PATCH START ---
-
-    // 1. Extract options needed for size/loader (moved before loader init)
-    // WARNING: Using original unsafe force-unwrapping as requested! Could crash!
     let slotUUID = options["slotUUID"] as! String
-    let size = options["size"] as? String // Keep optional for interstitial case
+    let size = options["size"] as? String
 
-    // 2. Create AdNetworkInfo (using OTHER as placeholder)
-    // NOTE: Ensure DTBADNETWORK_OTHER is defined/imported. Change if needed.
-    let adNetworkInfo = DTBAdNetworkInfo(networkName: DTBADNETWORK_OTHER)
-
-    // 3. Initialize AdLoader correctly
+    let adNetworkInfo = RNAPSAdsModule.cachedAdNetworkInfo
+        ?? DTBAdNetworkInfo(networkName: DTBADNETWORK_OTHER)
     let adLoader = DTBAdLoader(adNetworkInfo: adNetworkInfo)
 
-    // --- MINIMAL PATCH END ---
-
-
-    // --- Original logic continues below (using original unsafe unwraps!) ---
     let adSize: DTBAdSize
     switch adType {
     case RNAPSAdLoaderModule.AD_TYPE_BANNER:
