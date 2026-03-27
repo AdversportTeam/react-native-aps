@@ -1,5 +1,9 @@
-ext.safeExtGet = {prop, fallback ->
+def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
+def isNewArchitectureEnabled() {
+  return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
 }
 
 if (isNewArchitectureEnabled()) {
@@ -8,23 +12,25 @@ if (isNewArchitectureEnabled()) {
 apply plugin: 'com.android.library'
 
 android {
-  compileSdkVersion safeExtGet('compileSdkVersion', 31)
+  compileSdkVersion safeExtGet('compileSdkVersion', 35)
 
   defaultConfig {
-    minSdkVersion safeExtGet('minSdkVersion', 21)
-    targetSdkVersion safeExtGet('targetSdkVersion', 31)
+    minSdkVersion safeExtGet('minSdkVersion', 24)
+    targetSdkVersion safeExtGet('targetSdkVersion', 34)
     versionCode 1
     versionName "1.0"
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
-    
   }
-  
 
   buildTypes {
     release {
       minifyEnabled false
       consumerProguardFiles 'proguard-rules.pro'
     }
+  }
+
+  buildFeatures {
+    buildConfig true
   }
 }
 
@@ -39,7 +45,7 @@ dependencies {
   } else {
     implementation 'com.facebook.react:react-native:+'
   }
-  implementation ("com.amazon.android:aps-sdk:10.1.1")
+  implementation("com.amazon.android:aps-sdk:10.1.1")
 }
 
 if (isNewArchitectureEnabled()) {
@@ -48,19 +54,5 @@ if (isNewArchitectureEnabled()) {
     codegenJavaPackageName = "com.adversport.rnaps"
     root = rootProject.file("..")
     jsRootDir = file("../src/turbomodules")
-    reactNativeDir = rootProject.file("../node_modules/react-native/")
-    codegenDir = rootProject.file("../node_modules/react-native-codegen/")
   }
-}
-
-def safeExtGet(prop, fallback) {
-  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-}
-
-def isNewArchitectureEnabled() {
-  // To opt-in for the New Architecture, you can either:
-  // - Set `newArchEnabled` to true inside the `gradle.properties` file
-  // - Invoke gradle with `-newArchEnabled=true`
-  // - Set an environment variable `ORG_GRADLE_PROJECT_newArchEnabled=true`
-  return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
 }
