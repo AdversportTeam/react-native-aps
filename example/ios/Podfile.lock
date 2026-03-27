@@ -1,5 +1,5 @@
 PODS:
-  - AmazonPublisherServicesSDK (5.5.0)
+  - AmazonPublisherServicesSDK (5.3.1)
   - boost (1.84.0)
   - DoubleConversion (1.1.6)
   - fast_float (6.1.4)
@@ -1504,7 +1504,7 @@ PODS:
     - React-perflogger (= 0.77.3)
     - React-utils (= 0.77.3)
   - RNAmazonPublisherServices (2.1.0):
-    - AmazonPublisherServicesSDK (~> 5.2)
+    - AmazonPublisherServicesSDK (= 5.3.1)
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1770,7 +1770,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  AmazonPublisherServicesSDK: b0569f0689a21957ec929062c3493b337f279e15
+  AmazonPublisherServicesSDK: 6dbf6736815e2d70925a475bb1ed5a2c8b824599
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
@@ -1838,7 +1838,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 9b3704075c2fe8fd7c739779655fb88700a1ca30
   ReactCodegen: c9645fb81bcaf5afebaebb25874bcd5224cd40f1
   ReactCommon: fea23933fb9fffdc48fcc208746839ec62d52571
-  RNAmazonPublisherServices: 3a8eed4e0fd1128d9ed626b5bfa7238fa990f19d
+  RNAmazonPublisherServices: 9710f127c0b005065da6c1724f6c03886e5d65e4
   RNGoogleMobileAds: 9942180fdf37e5e04f50b43d70c504d86729447d
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 92f3bb322c40a86b7233b815854730442e01b8c4

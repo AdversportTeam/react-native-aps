@@ -45,7 +45,7 @@ dependencies {
   } else {
     implementation 'com.facebook.react:react-native:+'
   }
-  implementation("com.amazon.android:aps-sdk:10.1.1")
+  implementation("com.amazon.android:aps-sdk:11.1.1")
 }
 
 if (isNewArchitectureEnabled()) {
