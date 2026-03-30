@@ -35,13 +35,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Enable Corepack
+        run: corepack enable
       - uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 22
           cache: yarn
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile && cd website && yarn install --frozen-lockfile
+        run: yarn install --immutable && cd website && yarn install --immutable
       - name: Build website
         run: cd website && yarn build
 

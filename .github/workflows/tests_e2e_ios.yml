@@ -31,9 +31,11 @@ jobs:
           all_but_latest: true
 
       # Set up tool versions
+      - name: Enable Corepack
+        run: corepack enable
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
 
       - uses: maxim-lobanov/setup-xcode@v1
         with:
@@ -79,7 +81,7 @@ jobs:
           timeout_minutes: 10
           retry_wait_seconds: 60
           max_attempts: 3
-          command: yarn --no-audit --prefer-offline && cd example && yarn --no-audit --prefer-offline
+          command: yarn install --immutable && cd example && yarn install --immutable
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1

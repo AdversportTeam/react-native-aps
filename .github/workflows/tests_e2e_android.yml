@@ -36,9 +36,11 @@ jobs:
           fetch-depth: 50
 
       # Set up tool versions
+      - name: Enable Corepack
+        run: corepack enable
       - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
 
       - name: Configure JDK 1.11
         uses: actions/setup-java@v4
@@ -68,7 +70,7 @@ jobs:
           timeout_minutes: 10
           retry_wait_seconds: 60
           max_attempts: 3
-          command: DETOX_DISABLE_POSTINSTALL=1 yarn --no-audit --prefer-offline && cd example && yarn --no-audit --prefer-offline
+          command: DETOX_DISABLE_POSTINSTALL=1 yarn install --immutable && cd example && yarn install --immutable
 
       - uses: actions/cache@v4
         name: Gradle Cache
