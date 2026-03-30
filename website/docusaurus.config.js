@@ -51,13 +51,6 @@ const config = {
             to: 'docs/guides',
             position: 'left',
             label: 'Docs',
-            activeBaseRegex: 'docs/(?!api)',
-          },
-          {
-            to: "docs/api",
-            position: 'left',
-            label: "API",
-            activeBaseRegex: 'docs/api',
           },
           {
             href: 'https://github.com/AdversportTeam/react-native-aps',
