@@ -53,7 +53,9 @@ export default function BannerDemo() {
       (error) => {
         setApsBidError(error);
         setBidComplete(true);
-        addEvent(`APS bid failed (code: ${error.code})`);
+        addEvent(
+          `APS bid failed (${error.formatShortLabel()}) — ${error.message}`
+        );
       }
     );
 
@@ -70,7 +72,9 @@ export default function BannerDemo() {
           : new AdError('unknown', String(error?.message ?? error));
         setApsBidError(adError);
         setBidComplete(true);
-        addEvent(`APS bid failed (code: ${adError.code})`);
+        addEvent(
+          `APS bid failed (${adError.formatShortLabel()}) — ${adError.message}`
+        );
       });
     addEvent('APS bid requested');
 
@@ -116,10 +120,15 @@ export default function BannerDemo() {
               <Text style={styles.badgeTextSuccess}>Won</Text>
             </View>
           ) : (
-            <View style={[styles.badge, styles.badgeError]}>
+            <View style={[styles.badge, styles.badgeError, styles.badgeErrorStack]}>
               <Text style={styles.badgeTextError}>
-                Failed ({apsBidError?.code ?? '?'})
+                Failed ({apsBidError?.formatShortLabel() ?? '?'})
               </Text>
+              {!!apsBidError?.message && (
+                <Text style={styles.badgeTextErrorDetail} numberOfLines={3}>
+                  {apsBidError.message}
+                </Text>
+              )}
             </View>
           )}
         </View>
@@ -256,6 +265,18 @@ const styles = StyleSheet.create({
   },
   badgeError: {
     backgroundColor: '#fef2f2',
+  },
+  badgeErrorStack: {
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    maxWidth: '78%',
+    gap: 4,
+  },
+  badgeTextErrorDetail: {
+    fontSize: 11,
+    color: '#b91c1c',
+    fontWeight: '400',
+    textAlign: 'right',
   },
   badgeTextLoading: {
     fontSize: 13,
