@@ -16,7 +16,7 @@
  * along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { NativeModule, NativeModules, Platform } from 'react-native';
+import { type NativeModule, NativeModules, Platform } from 'react-native';
 
 import type { Spec } from '../turbomodules/NativeRNAPSAdLoaderModule';
 
