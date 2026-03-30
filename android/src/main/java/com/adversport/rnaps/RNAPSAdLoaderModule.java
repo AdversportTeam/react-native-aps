@@ -232,9 +232,9 @@ public class RNAPSAdLoaderModule extends ReactContextBaseJavaModule {
 
     if (autoRefresh) {
       adLoader.setAutoRefresh(refreshInterval);
-      adLoaders.put(loaderId, adLoader);
     }
 
+    adLoaders.put(loaderId, adLoader);
     adLoader.loadAd(new AdCallback(loaderId, promise));
   }
 
