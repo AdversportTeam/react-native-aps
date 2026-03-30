@@ -181,9 +181,9 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
 
     if (autoRefresh) {
       adLoader.setAutoRefresh(refreshInterval)
-      adLoaders.updateValue(adLoader, forKey: loaderId)
     }
 
+    adLoaders.updateValue(adLoader, forKey: loaderId)
     adLoader.loadAd(AdLoadCallback(adLoaderModule: self, loaderId: loaderId, resolve: resolve, reject: reject))
   }
 

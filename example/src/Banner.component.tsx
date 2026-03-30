@@ -11,6 +11,7 @@ import {
   AdLoader,
   AdLoaderEvent,
   BannerAdLoaderOptions,
+  isAdError,
   TestIds,
 } from 'react-native-aps';
 import { GAMBannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
@@ -27,21 +28,23 @@ export default function BannerDemo() {
     {}
   );
   const [apsBidError, setApsBidError] = useState<AdError>();
+  const [bidComplete, setBidComplete] = useState(false);
   const [gamAdLoaded, setGamAdLoaded] = useState(false);
   const [events, setEvents] = useState<string[]>([]);
 
   const addEvent = (msg: string) =>
     setEvents((prev) => [`${new Date().toLocaleTimeString()} ${msg}`, ...prev]);
 
-  const apsBidDone =
-    Object.keys(apsBidResult).length > 0 || apsBidError !== undefined;
+  const apsBidDone = bidComplete;
   const bidSuccess = apsBidDone && !apsBidError;
 
   useEffect(() => {
+    // Events for auto-refresh scenarios
     const unsubSuccess = adLoader.addListener(
       AdLoaderEvent.SUCCESS,
       (result) => {
         setApsBidResult(result);
+        setBidComplete(true);
         addEvent(`APS bid won (${Object.keys(result).length} KVs)`);
       }
     );
@@ -49,11 +52,26 @@ export default function BannerDemo() {
       AdLoaderEvent.FAILURE,
       (error) => {
         setApsBidError(error);
+        setBidComplete(true);
         addEvent(`APS bid failed (code: ${error.code})`);
       }
     );
 
-    adLoader.loadAd();
+    adLoader
+      .loadAd()
+      .then((result) => {
+        setApsBidResult(result);
+        setBidComplete(true);
+        addEvent(`APS bid won (${Object.keys(result).length} KVs)`);
+      })
+      .catch((error) => {
+        const adError = isAdError(error)
+          ? error
+          : new AdError('unknown', String(error?.message ?? error));
+        setApsBidError(adError);
+        setBidComplete(true);
+        addEvent(`APS bid failed (code: ${adError.code})`);
+      });
     addEvent('APS bid requested');
 
     return () => {
