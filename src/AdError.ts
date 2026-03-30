@@ -56,8 +56,7 @@ export class AdError extends Error {
     const code = typeof ui?.code === 'string' ? ui.code : 'unknown';
     const message =
       typeof ui?.message === 'string' ? ui.message : String(ui?.message ?? '');
-    const sdkCode =
-      typeof ui?.sdkCode === 'string' ? ui.sdkCode : undefined;
+    const sdkCode = typeof ui?.sdkCode === 'string' ? ui.sdkCode : undefined;
     let rawValue: number | undefined;
     if (typeof ui?.rawValue === 'number' && !Number.isNaN(ui.rawValue)) {
       rawValue = ui.rawValue;
