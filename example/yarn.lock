@@ -4841,7 +4841,7 @@ __metadata:
     react: "npm:18.3.1"
     react-native: "npm:0.77.3"
     react-native-aps: "link:../"
-    react-native-google-mobile-ads: "npm:^14.2.0"
+    react-native-google-mobile-ads: "npm:15.8.3"
     typescript: "npm:^5.0.4"
   languageName: unknown
   linkType: soft
@@ -4852,9 +4852,9 @@ __metadata:
   languageName: node
   linkType: soft
 
-"react-native-google-mobile-ads@npm:^14.2.0":
-  version: 14.11.0
-  resolution: "react-native-google-mobile-ads@npm:14.11.0"
+"react-native-google-mobile-ads@npm:15.8.3":
+  version: 15.8.3
+  resolution: "react-native-google-mobile-ads@npm:15.8.3"
   dependencies:
     "@iabtcf/core": "npm:^1.5.3"
     use-deep-compare-effect: "npm:^1.8.1"
@@ -4863,7 +4863,7 @@ __metadata:
   peerDependenciesMeta:
     expo:
       optional: true
-  checksum: 10c0/5d424081fc14f1da9d495cdf26109fb0d55c5d1599fb651d5117f36357eab0334e61701557046e1f58b84e4cafa480dcf6ac13071641188950fcdcf10f00e2c4
+  checksum: 10c0/444adaa3a852a2acbe799802ba5e1b4cf9b94c5ff07c2e2d0a403084a85120060b5426046e613fe90efe92b222949dbbe5dcd38fd4d25cce70d7e46bad9af8c7
   languageName: node
   linkType: hard
 
