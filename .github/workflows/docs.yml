@@ -24,7 +24,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Install Dependencies
+      - name: Yarn Install
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 5
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: yarn install --immutable
+      - name: Install spellchecker-cli
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 10
@@ -48,7 +55,7 @@ jobs:
           cache: yarn
 
       - name: Install dependencies
-        run: yarn install --immutable && cd website && yarn install --immutable
+        run: yarn install --immutable && cd website && YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install
       - name: Build website
         run: cd website && yarn build
 
