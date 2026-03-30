@@ -119,10 +119,19 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
       default: // Use simple default to ensure exhaustiveness
         code = "unknown"
       }
-      let message = String(format: "Failed to load APS ad with code: %@", code)
-      var userInfo = Dictionary<String, String>()
-      userInfo["code"] = code
-      userInfo["message"] = message
+      let sdkLabel = String(describing: error)
+      let message = String(
+        format: "Failed to load APS ad (mapped: %@, APS: %@, rawValue: %d)",
+        code,
+        sdkLabel,
+        error.rawValue
+      )
+      let userInfo: [String: Any] = [
+        "code": code,
+        "message": message,
+        "sdkCode": sdkLabel,
+        "rawValue": error.rawValue,
+      ]
       adLoaderModule.sendEvent(name: RNAPSAdLoaderModule.EVENT_FAILURE, body: [
         "loaderId": loaderId,
         "userInfo": userInfo

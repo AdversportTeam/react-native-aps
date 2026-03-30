@@ -103,9 +103,26 @@ public class RNAPSAdLoaderModule extends ReactContextBaseJavaModule {
           break;
       }
 
+      String sdkCodeName = errorCode.name();
+      String sdkMessage = adError.getMessage();
+      if (sdkMessage == null) {
+        sdkMessage = "";
+      }
+      String composedMessage =
+          "Failed to load APS ad (mapped: "
+              + code
+              + ", SDK: "
+              + sdkCodeName
+              + ", ordinal: "
+              + errorCode.ordinal()
+              + ")"
+              + (sdkMessage.isEmpty() ? "" : " — " + sdkMessage);
+
       WritableMap userInfoMap = Arguments.createMap();
       userInfoMap.putString("code", code);
-      userInfoMap.putString("message", adError.getMessage());
+      userInfoMap.putString("message", composedMessage);
+      userInfoMap.putString("sdkCode", sdkCodeName);
+      userInfoMap.putInt("rawValue", errorCode.ordinal());
 
       WritableMap payload = Arguments.createMap();
       payload.putInt("loaderId", loaderId);
@@ -116,8 +133,10 @@ public class RNAPSAdLoaderModule extends ReactContextBaseJavaModule {
         // Créer une copie pour promise.reject car userInfoMap est déjà utilisé
         WritableMap userInfoCopy = Arguments.createMap();
         userInfoCopy.putString("code", code);
-        userInfoCopy.putString("message", adError.getMessage());
-        promise.reject(code, adError.getMessage(), userInfoCopy);
+        userInfoCopy.putString("message", composedMessage);
+        userInfoCopy.putString("sdkCode", sdkCodeName);
+        userInfoCopy.putInt("rawValue", errorCode.ordinal());
+        promise.reject(code, composedMessage, userInfoCopy);
         promise = null;
       }
     }
