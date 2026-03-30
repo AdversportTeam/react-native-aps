@@ -33,10 +33,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "docusaurus-plugin-typedoc": "^0.17.3",
-    "typedoc": "^0.22.15",
-    "typedoc-plugin-markdown": "^3.12.0"
   }
 }

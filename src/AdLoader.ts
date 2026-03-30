@@ -22,8 +22,8 @@ import AdLoaderModule from './internal/AdLoaderModule';
 import { AdLoaderEvent, isAdLoaderEvent } from './types/AdLoaderEvent';
 import type { AdLoaderListener } from './types/AdLoaderListener';
 import {
-  AdLoaderOptions,
-  BannerAdLoaderOptions,
+  type AdLoaderOptions,
+  type BannerAdLoaderOptions,
   validateAdLoaderOptions,
   validateBannerAdLoaderOptions,
 } from './types/AdLoaderOptions';

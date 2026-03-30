@@ -17,7 +17,10 @@
  */
 
 import AdsModule from './internal/AdsModule';
-import { AdNetworkInfo, validateAdNetworkInfo } from './types/AdNetworkInfo';
+import {
+  type AdNetworkInfo,
+  validateAdNetworkInfo,
+} from './types/AdNetworkInfo';
 import { isMRAIDPolicy, MRAIDPolicy } from './types/MRAIDPolicy';
 
 export class APSAds {

@@ -46,6 +46,9 @@ android.iml
 example/ios/Pods
 example/vendor/bundle/
 
+# Yarn Berry
+.yarn/install-state.gz
+
 # node.js
 #
 node_modules/

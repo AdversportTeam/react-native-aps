@@ -35,19 +35,7 @@ const config = {
     ],
   ],
 
-  plugins: [
-    [
-      'docusaurus-plugin-typedoc',
-      {
-        entryPoints: ['../src/index.ts'],
-        tsconfig: '../tsconfig.json',
-        excludePrivate: true,
-        excludeProtected: true,
-        excludeInternal: true,
-        readme: 'none'
-      },
-    ],
-  ],
+  plugins: [],
 
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
@@ -63,13 +51,6 @@ const config = {
             to: 'docs/guides',
             position: 'left',
             label: 'Docs',
-            activeBaseRegex: 'docs/(?!api)',
-          },
-          {
-            to: "docs/api",
-            position: 'left',
-            label: "API",
-            activeBaseRegex: 'docs/api',
           },
           {
             href: 'https://github.com/AdversportTeam/react-native-aps',
