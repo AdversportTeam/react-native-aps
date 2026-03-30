@@ -35,19 +35,7 @@ const config = {
     ],
   ],
 
-  plugins: [
-    [
-      'docusaurus-plugin-typedoc',
-      {
-        entryPoints: ['../src/index.ts'],
-        tsconfig: '../tsconfig.json',
-        excludePrivate: true,
-        excludeProtected: true,
-        excludeInternal: true,
-        readme: 'none'
-      },
-    ],
-  ],
+  plugins: [],
 
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
