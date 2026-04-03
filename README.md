@@ -26,4 +26,4 @@ See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the 
 
 ## License
 
-LGPL-3.0
+[MPL-2.0](LICENSE) (Mozilla Public License 2.0)
