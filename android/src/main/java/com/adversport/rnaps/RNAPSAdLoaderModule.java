@@ -254,6 +254,18 @@ public class RNAPSAdLoaderModule extends ReactContextBaseJavaModule {
     }
 
     adLoaders.put(loaderId, adLoader);
+    // NOTE: options.contentUrl is intentionally ignored here.
+    //
+    // Amazon DSP asks for the public web URL of the content being viewed, but
+    // the Android APS SDK (com.amazon.android:aps-sdk 11.1.1) exposes no
+    // equivalent of the iOS +[APS setContentUrl:] — verified by inspecting every
+    // public member of AdRegistration and DTBAdRequest. There is no supported
+    // way to attach it to an Android bid request today.
+    //
+    // Ignoring it is deliberate: rejecting the promise would break the whole
+    // bidding chain for callers that legitimately pass the option for iOS. The
+    // limitation has been raised with Amazon APS; revisit when they ship an API.
+
     adLoader.loadAd(new AdCallback(loaderId, promise));
   }
 

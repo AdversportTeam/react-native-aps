@@ -55,6 +55,50 @@ describe('AdLoader', function () {
     });
   });
 
+  describe('contentUrl', function () {
+    it('throws if contentUrl is not a string', function () {
+      expect(() =>
+        AdLoader.createBannerAdLoader({
+          slotUUID: 'uuid',
+          size: '320x50',
+          // @ts-ignore
+          contentUrl: 123,
+        })
+      ).toThrowError(
+        "AdLoader.createBannerAdLoader(*) 'adLoaderOptions.contentUrl' expected a string value"
+      );
+    });
+
+    it('accepts a valid contentUrl and keeps it on the loader options', function () {
+      const adLoader = AdLoader.createBannerAdLoader({
+        slotUUID: 'uuid',
+        size: '320x50',
+        contentUrl: 'https://www.example.com/article/12345',
+      });
+      expect(adLoader.adLoaderOptions.contentUrl).toBe(
+        'https://www.example.com/article/12345'
+      );
+    });
+
+    it('is optional — omitting it stays valid', function () {
+      const adLoader = AdLoader.createBannerAdLoader({
+        slotUUID: 'uuid',
+        size: '320x50',
+      });
+      expect(adLoader.adLoaderOptions.contentUrl).toBeUndefined();
+    });
+
+    it('is accepted on interstitial loaders too', function () {
+      const adLoader = AdLoader.createInterstitialAdLoader({
+        slotUUID: 'uuid',
+        contentUrl: 'https://www.example.com/article/12345',
+      });
+      expect(adLoader.adLoaderOptions.contentUrl).toBe(
+        'https://www.example.com/article/12345'
+      );
+    });
+  });
+
   describe('addListener', function () {
     const adLoader = AdLoader.createBannerAdLoader({
       slotUUID: TestIds.APS_SLOT_BANNER_320x50,

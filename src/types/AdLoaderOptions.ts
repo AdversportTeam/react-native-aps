@@ -25,6 +25,20 @@ export interface AdLoaderOptions {
    * The optional custom targeting key value pairs for the bid request.
    */
   customTargeting?: { [key: string]: string };
+  /**
+   * The public web URL of the content the user is currently viewing.
+   *
+   * Amazon DSP requires in-app bid requests to carry it so that AmazonAdBot can
+   * crawl the page and verify the content surrounding the ad. Inventory it
+   * cannot verify progressively loses eligibility with Amazon advertisers.
+   *
+   * It must be the web URL matching the in-app content — not a deep link, not a
+   * store URL, not the app home page — and it must be publicly reachable.
+   *
+   * iOS only: the Android APS SDK exposes no equivalent, where the value is
+   * ignored. See the README for the current status of that limitation.
+   */
+  contentUrl?: string;
 }
 
 export interface BannerAdLoaderOptions extends AdLoaderOptions {
@@ -52,6 +66,12 @@ export function validateAdLoaderOptions(adLoaderOptions: AdLoaderOptions) {
   }
   if (typeof adLoaderOptions.slotUUID !== 'string') {
     throw new Error("'adLoaderOptions.slotUUID' expected a string value");
+  }
+  if (
+    adLoaderOptions.contentUrl !== undefined &&
+    typeof adLoaderOptions.contentUrl !== 'string'
+  ) {
+    throw new Error("'adLoaderOptions.contentUrl' expected a string value");
   }
 }
 

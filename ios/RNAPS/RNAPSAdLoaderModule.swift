@@ -192,6 +192,25 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
       adLoader.setAutoRefresh(refreshInterval)
     }
 
+    // Amazon DSP requires the public web URL of the content being viewed, so
+    // that AmazonAdBot can crawl it and verify the surroundings of the ad.
+    //
+    // +[APS setContentUrl:] is a CLASS method, i.e. process-global state. We set
+    // it here, immediately before loadAd and inside the same native call, so it
+    // cannot be overwritten by another slot between the two — React Native
+    // serialises module methods on a single queue.
+    //
+    // Empty or nil is skipped on purpose: the SDK header states it "will throw
+    // an NSException in development" in that case. Callers with no reliable URL
+    // simply omit the option.
+    //
+    // Known limitation: the setter is sticky and cannot be cleared, so the last
+    // URL set stays attached to subsequent requests until another one replaces
+    // it. Raised with Amazon APS.
+    if let contentUrl = options["contentUrl"] as? String, !contentUrl.isEmpty {
+      APS.setContentUrl(contentUrl)
+    }
+
     adLoaders.updateValue(adLoader, forKey: loaderId)
     adLoader.loadAd(AdLoadCallback(adLoaderModule: self, loaderId: loaderId, resolve: resolve, reject: reject))
   }
