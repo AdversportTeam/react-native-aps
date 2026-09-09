@@ -22,6 +22,10 @@ import {
   validateAdNetworkInfo,
 } from './types/AdNetworkInfo';
 import { isMRAIDPolicy, MRAIDPolicy } from './types/MRAIDPolicy';
+import {
+  type ExternalUserId,
+  validateExternalUserIds,
+} from './types/ExternalUserId';
 
 export class APSAds {
   private static _nativeModule = AdsModule;
@@ -128,5 +132,23 @@ export class APSAds {
       );
     }
     return this._nativeModule.removeCustomAttribute(key);
+  }
+
+  /**
+   * Sets the third-party user identifiers (ID5, LiveRamp...) sent with every bid request.
+   * Amazon forwards them to the TAM/UAM bidders the publisher has enabled.
+   *
+   * Set once per user session, and call again whenever an id changes. Pass an empty array to
+   * clear them, which is what a consent withdrawal must do.
+   */
+  static setExternalUserIds(externalUserIds: ExternalUserId[]): void {
+    try {
+      validateExternalUserIds(externalUserIds);
+    } catch (e) {
+      if (e instanceof Error) {
+        throw new Error(`APSAds.setExternalUserIds(*) ${e.message}`);
+      }
+    }
+    return this._nativeModule.setExternalUserIds(externalUserIds);
   }
 }

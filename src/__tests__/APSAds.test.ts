@@ -1,4 +1,5 @@
 import { APSAds } from '../APSAds';
+import AdsModule from '../internal/AdsModule';
 import { AdNetwork, MRAIDPolicy } from '../types';
 
 jest.mock('../internal/AdsModule');
@@ -108,6 +109,53 @@ describe('APSAds', function () {
       expect(APSAds.addCustomAttribute('key', 'value')).toBeUndefined();
     });
   });
+  describe('setExternalUserIds', function () {
+    const anId5Eid = {
+      source: 'id5-sync.com',
+      uids: [{ id: 'ID5*abc', atype: 2, ext: { linkType: '2' } }],
+    };
+
+    it('throws if externalUserIds is not an array', function () {
+      // @ts-ignore
+      expect(() => APSAds.setExternalUserIds('nope')).toThrowError(
+        "APSAds.setExternalUserIds(*) 'externalUserIds' expected an array value"
+      );
+    });
+    it('throws if source is missing', function () {
+      expect(() =>
+        // @ts-ignore
+        APSAds.setExternalUserIds([{ uids: [{ id: 'a' }] }])
+      ).toThrowError(
+        "APSAds.setExternalUserIds(*) 'externalUserIds[0].source' expected a string value"
+      );
+    });
+    it('throws if uids is empty', function () {
+      expect(() =>
+        APSAds.setExternalUserIds([{ source: 'id5-sync.com', uids: [] }])
+      ).toThrowError(
+        "APSAds.setExternalUserIds(*) 'externalUserIds[0].uids' expected a non-empty array value"
+      );
+    });
+    it('throws if a uid has no id', function () {
+      expect(() =>
+        APSAds.setExternalUserIds([
+          // @ts-ignore
+          { source: 'id5-sync.com', uids: [{ atype: 2 }] },
+        ])
+      ).toThrowError(
+        "APSAds.setExternalUserIds(*) 'externalUserIds[0].uids[0].id' expected a string value"
+      );
+    });
+    it('accepts an eid as returned by the issuer, untouched', function () {
+      expect(APSAds.setExternalUserIds([anId5Eid])).toBeUndefined();
+      expect(AdsModule.setExternalUserIds).toHaveBeenCalledWith([anId5Eid]);
+    });
+    it('accepts an empty array, which clears the ids', function () {
+      expect(APSAds.setExternalUserIds([])).toBeUndefined();
+      expect(AdsModule.setExternalUserIds).toHaveBeenCalledWith([]);
+    });
+  });
+
   describe('removeCustomAttribute', function () {
     it('throws if key is invalid', function () {
       // @ts-ignore

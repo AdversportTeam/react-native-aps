@@ -7,6 +7,7 @@ const AdsModule = {
   setUseGeoLocation: jest.fn(),
   addCustomAttribute: jest.fn(),
   removeCustomAttribute: jest.fn(),
+  setExternalUserIds: jest.fn(),
 };
 
 export default AdsModule;

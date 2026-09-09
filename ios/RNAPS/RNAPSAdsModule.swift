@@ -98,6 +98,12 @@ class RNAPSAdsModule: NSObject {
     DTBAds.sharedInstance().testMode = enabled
   }
 
+  // The setters below still go through the deprecated DTBAds singleton on purpose.
+  // APS 5.6.4 deprecates them in favour of +[APS setTestMode:], +[APS setUseGeoLocation:],
+  // +[APS setMraidPolicy:] and +[APS setMraidSupportedVersions:], but none of those are
+  // declared in APS.h — the selectors exist in the binary yet were never exposed, so Swift
+  // cannot see them. Declaring them ourselves would bind us to an undeclared API. Revisit
+  // when Amazon publishes the headers; removeCustomAttribute has no APS equivalent at all.
   @objc(setUseGeoLocation:)
   func setUseGeoLocation(enabled: Bool) -> Void {
     DTBAds.sharedInstance().useGeoLocation = enabled
@@ -105,12 +111,33 @@ class RNAPSAdsModule: NSObject {
 
   @objc(addCustomAttribute:value:)
   func addCustomAttribute(key: String, value: String) {
-    DTBAds.sharedInstance().addCustomAttribute(key, value: value)
+    APS.setCustomAttribute(value, forKey: key)
   }
 
   @objc(removeCustomAttribute:)
   func removeCustomAttribute(key: String) {
     DTBAds.sharedInstance().removeCustomAttribute(key)
+  }
+
+  // Third-party identifiers (ID5, LiveRamp...), forwarded by Amazon to the TAM/UAM bidders
+  // the publisher has enabled. Set once per user session; call again when an id changes.
+  // Passing an empty array clears them, which is what a consent withdrawal must do.
+  @objc(setExternalUserIds:)
+  func setExternalUserIds(externalUserIds: [[String: Any]]) {
+    let ids: [APSExternalUserId] = externalUserIds.compactMap { entry in
+      guard let source = entry["source"] as? String,
+            let uids = entry["uids"] as? [[String: Any]], !uids.isEmpty else {
+        return nil
+      }
+      let builder = APSExternalUserIdBuilder.builder()
+      _ = builder.addSource(source)
+      for uid in uids {
+        guard let id = uid["id"] as? String else { continue }
+        _ = builder.addUniqueId(id, atype: uid["atype"] as? NSNumber, ext: uid["ext"] as? [String: String])
+      }
+      return builder.build()
+    }
+    APS.setExternalUserIds(ids)
   }
 
 }
