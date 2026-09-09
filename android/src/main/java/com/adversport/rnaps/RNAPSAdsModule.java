@@ -203,7 +203,9 @@ public class RNAPSAdsModule extends ReactContextBaseJavaModule {
     AdRegistration.setExternalUserIds(ids);
   }
 
-  /** Reads a nested string map, skipping any non-string value rather than failing the whole call. */
+  /**
+   * Reads a nested string map, skipping any non-string value rather than failing the whole call.
+   */
   private static Map<String, String> readStringMap(ReadableMap parent, String key) {
     if (!parent.hasKey(key)) {
       return null;
