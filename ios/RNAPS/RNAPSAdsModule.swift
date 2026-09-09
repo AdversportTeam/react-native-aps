@@ -135,7 +135,8 @@ class RNAPSAdsModule: NSObject {
             let uids = entry["uids"] as? [[String: Any]], !uids.isEmpty else {
         return nil
       }
-      let builder = APSExternalUserIdBuilder.builder()
+      // Swift imports the +builder factory as an initializer, so `.builder()` does not exist here.
+      let builder = APSExternalUserIdBuilder()
       _ = builder.addSource(source)
       for uid in uids {
         guard let id = uid["id"] as? String else { continue }
