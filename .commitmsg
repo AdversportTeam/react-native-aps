@@ -1,0 +1,29 @@
+feat: support Amazon DSP content URL on bid requests
+
+Amazon DSP now requires in-app bid requests to carry the public web URL of the
+content being viewed, so AmazonAdBot can crawl the page and verify what
+surrounds the ad. Inventory it cannot verify progressively loses eligibility
+with Amazon advertisers.
+
+Adds an optional `contentUrl` to AdLoaderOptions, applied per bid request.
+
+iOS: forwarded to +[APS setContentUrl:], called immediately before loadAd and
+inside the same native method. That setter is a class method, so the value is
+process-global; setting it there means another slot cannot overwrite it between
+the two, since React Native serialises module methods on a single queue. An
+empty value is skipped rather than forwarded — the SDK header states it throws
+an NSException in development builds otherwise.
+
+Android: ignored, and documented as such. The Android APS SDK
+(com.amazon.android:aps-sdk 11.1.1) exposes no equivalent of setContentUrl —
+verified against every public member of AdRegistration and DTBAdRequest.
+Rejecting the promise would break the bidding chain for callers that
+legitimately pass the option for iOS, so the option is accepted and dropped.
+
+Two known limitations are documented in the README and have been raised with
+Amazon APS: the Android gap above, and the fact that the iOS setter is sticky —
+it cannot be cleared, so the last URL set stays attached to later requests until
+another one replaces it.
+
+Validation rejects a non-string contentUrl, consistent with the other options.
+36 tests green.
