@@ -99,11 +99,17 @@ class RNAPSAdsModule: NSObject {
   }
 
   // The setters below still go through the deprecated DTBAds singleton on purpose.
-  // APS 5.6.4 deprecates them in favour of +[APS setTestMode:], +[APS setUseGeoLocation:],
-  // +[APS setMraidPolicy:] and +[APS setMraidSupportedVersions:], but none of those are
-  // declared in APS.h — the selectors exist in the binary yet were never exposed, so Swift
-  // cannot see them. Declaring them ourselves would bind us to an undeclared API. Revisit
-  // when Amazon publishes the headers; removeCustomAttribute has no APS equivalent at all.
+  //
+  // Their replacements are not setters at all: APS 5.6.4 moved testMode, useGeolocation,
+  // mraidPolicy and mraidSupportedVersions onto APSInitConfig, an object handed once to
+  // +[APS initializeWithAppKey:config:completion:]. Adopting them means reshaping this
+  // bridge's contract — JS calls initialize() first and these setters afterwards, which
+  // the config model cannot express — so it belongs in its own change, not here.
+  //
+  // Do not trust the deprecation text: it points at +[APS setTestMode:] and friends, which
+  // are declared nowhere in APS.h (the selectors do exist in the binary). Read APSInitConfig.h.
+  //
+  // removeCustomAttribute has no replacement at all, on APS or on APSInitConfig.
   @objc(setUseGeoLocation:)
   func setUseGeoLocation(enabled: Bool) -> Void {
     DTBAds.sharedInstance().useGeoLocation = enabled
