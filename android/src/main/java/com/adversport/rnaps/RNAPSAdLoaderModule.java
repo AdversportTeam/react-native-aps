@@ -229,14 +229,15 @@ public class RNAPSAdLoaderModule extends ReactContextBaseJavaModule {
       case AD_TYPE_INTERSTITIAL:
         adSize = new DTBAdSize.DTBInterstitialAdSize(slotUUID);
         break;
-      case AD_TYPE_VIDEO: {
-        // Instream video bid request — player size mirrors the web adManager
-        // (assets/js/adManager.js playerSize [640, 480]).
-        int playerWidth = options.hasKey("playerWidth") ? options.getInt("playerWidth") : 640;
-        int playerHeight = options.hasKey("playerHeight") ? options.getInt("playerHeight") : 480;
-        adSize = new DTBAdSize.DTBVideo(playerWidth, playerHeight, slotUUID);
-        break;
-      }
+      case AD_TYPE_VIDEO:
+        {
+          // Instream video bid request — player size mirrors the web adManager
+          // (assets/js/adManager.js playerSize [640, 480]).
+          int playerWidth = options.hasKey("playerWidth") ? options.getInt("playerWidth") : 640;
+          int playerHeight = options.hasKey("playerHeight") ? options.getInt("playerHeight") : 480;
+          adSize = new DTBAdSize.DTBVideo(playerWidth, playerHeight, slotUUID);
+          break;
+        }
       default:
         promise.reject("invalid_ad_type", "unsupported ad type: " + adType);
         return;
