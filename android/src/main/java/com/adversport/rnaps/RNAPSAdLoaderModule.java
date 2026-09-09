@@ -32,6 +32,7 @@ public class RNAPSAdLoaderModule extends ReactContextBaseJavaModule {
   public static final String MODULE_NAME = "RNAPSAdLoaderModule";
   public static final String AD_TYPE_BANNER = "banner";
   public static final String AD_TYPE_INTERSTITIAL = "interstitial";
+  public static final String AD_TYPE_VIDEO = "video";
   public static final String EVENT_SUCCESS = "onSuccess";
   public static final String EVENT_FAILURE = "onFailure";
 
@@ -64,10 +65,12 @@ public class RNAPSAdLoaderModule extends ReactContextBaseJavaModule {
 
   private class AdCallback implements DTBAdCallback {
     private final int loaderId;
+    private final boolean isVideo;
     private Promise promise;
 
-    public AdCallback(int loaderId, Promise promise) {
+    public AdCallback(int loaderId, boolean isVideo, Promise promise) {
       this.loaderId = loaderId;
+      this.isVideo = isVideo;
       this.promise = promise;
     }
 
@@ -143,29 +146,32 @@ public class RNAPSAdLoaderModule extends ReactContextBaseJavaModule {
 
     @Override
     public void onSuccess(DTBAdResponse response) {
-      WritableMap responseMap = Arguments.createMap();
-      Map<String, List<String>> customParams = response.getDefaultDisplayAdsRequestCustomParams();
-
-      for (Map.Entry<String, List<String>> entry : customParams.entrySet()) {
-        List<String> values = entry.getValue();
-        StringBuilder valueBuilder = new StringBuilder();
-        for (int i = 0; i < values.size(); i++) {
-          valueBuilder.append(values.get(i));
-          if (i < values.size() - 1) {
-            valueBuilder.append(",");
-          }
-        }
-        responseMap.putString(entry.getKey(), valueBuilder.toString());
-      }
-
       WritableMap payload = Arguments.createMap();
       payload.putInt("loaderId", loaderId);
-      payload.putMap("response", responseMap);
+      payload.putMap("response", buildTargetingMap(response));
 
       sendEvent(EVENT_SUCCESS, payload);
       if (promise != null) {
-        // Créer une copie pour promise.resolve car responseMap est déjà utilisé
-        WritableMap responseCopy = Arguments.createMap();
+        // Fresh copy — the event payload above already consumed a WritableMap.
+        promise.resolve(buildTargetingMap(response));
+        promise = null;
+      }
+    }
+
+    // Banner/interstitial expose Map<String, List<String>> (comma-joined here);
+    // instream video exposes a flat Map<String, String> via a distinct SDK
+    // accessor — pick the right one so the amzn* video keywords aren't dropped.
+    private WritableMap buildTargetingMap(DTBAdResponse response) {
+      WritableMap map = Arguments.createMap();
+      if (isVideo) {
+        Map<String, String> videoParams = response.getDefaultVideoAdsRequestCustomParams();
+        if (videoParams != null) {
+          for (Map.Entry<String, String> entry : videoParams.entrySet()) {
+            map.putString(entry.getKey(), entry.getValue());
+          }
+        }
+      } else {
+        Map<String, List<String>> customParams = response.getDefaultDisplayAdsRequestCustomParams();
         for (Map.Entry<String, List<String>> entry : customParams.entrySet()) {
           List<String> values = entry.getValue();
           StringBuilder valueBuilder = new StringBuilder();
@@ -175,11 +181,10 @@ public class RNAPSAdLoaderModule extends ReactContextBaseJavaModule {
               valueBuilder.append(",");
             }
           }
-          responseCopy.putString(entry.getKey(), valueBuilder.toString());
+          map.putString(entry.getKey(), valueBuilder.toString());
         }
-        promise.resolve(responseCopy);
-        promise = null;
       }
+      return map;
     }
   }
 
@@ -224,6 +229,14 @@ public class RNAPSAdLoaderModule extends ReactContextBaseJavaModule {
       case AD_TYPE_INTERSTITIAL:
         adSize = new DTBAdSize.DTBInterstitialAdSize(slotUUID);
         break;
+      case AD_TYPE_VIDEO: {
+        // Instream video bid request — player size mirrors the web adManager
+        // (assets/js/adManager.js playerSize [640, 480]).
+        int playerWidth = options.hasKey("playerWidth") ? options.getInt("playerWidth") : 640;
+        int playerHeight = options.hasKey("playerHeight") ? options.getInt("playerHeight") : 480;
+        adSize = new DTBAdSize.DTBVideo(playerWidth, playerHeight, slotUUID);
+        break;
+      }
       default:
         promise.reject("invalid_ad_type", "unsupported ad type: " + adType);
         return;
@@ -254,6 +267,7 @@ public class RNAPSAdLoaderModule extends ReactContextBaseJavaModule {
     }
 
     adLoaders.put(loaderId, adLoader);
+
     // NOTE: options.contentUrl is intentionally ignored here.
     //
     // Amazon DSP asks for the public web URL of the content being viewed, but
@@ -266,7 +280,7 @@ public class RNAPSAdLoaderModule extends ReactContextBaseJavaModule {
     // bidding chain for callers that legitimately pass the option for iOS. The
     // limitation has been raised with Amazon APS; revisit when they ship an API.
 
-    adLoader.loadAd(new AdCallback(loaderId, promise));
+    adLoader.loadAd(new AdCallback(loaderId, AD_TYPE_VIDEO.equals(adType), promise));
   }
 
   @ReactMethod

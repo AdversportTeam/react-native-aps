@@ -83,3 +83,29 @@ export function validateBannerAdLoaderOptions(
     throw new Error("'adLoaderOptions.size' expected a valid size string");
   }
 }
+
+export interface VideoAdLoaderOptions extends AdLoaderOptions {
+  /**
+   * The width of the video player. Required for video (instream) ad slots.
+   */
+  playerWidth: number;
+
+  /**
+   * The height of the video player. Required for video (instream) ad slots.
+   */
+  playerHeight: number;
+}
+
+export function validateVideoAdLoaderOptions(
+  adLoaderOptions: VideoAdLoaderOptions
+) {
+  validateAdLoaderOptions(adLoaderOptions);
+  if (
+    typeof adLoaderOptions.playerWidth !== 'number' ||
+    typeof adLoaderOptions.playerHeight !== 'number'
+  ) {
+    throw new Error(
+      "'adLoaderOptions.playerWidth' and 'adLoaderOptions.playerHeight' expected number values"
+    );
+  }
+}

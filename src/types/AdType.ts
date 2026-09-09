@@ -19,6 +19,7 @@
 export enum AdType {
   BANNER = 'banner',
   INTERSTITIAL = 'interstitial',
+  VIDEO = 'video',
 }
 
 export function isAdType(value: any): value is AdType {

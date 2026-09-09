@@ -18,7 +18,11 @@
 
 export { AdLoaderEvent } from './AdLoaderEvent';
 export type { AdLoaderListener } from './AdLoaderListener';
-export type { AdLoaderOptions, BannerAdLoaderOptions } from './AdLoaderOptions';
+export type {
+  AdLoaderOptions,
+  BannerAdLoaderOptions,
+  VideoAdLoaderOptions,
+} from './AdLoaderOptions';
 export { AdNetwork } from './AdNetwork';
 export type { AdNetworkInfo } from './AdNetworkInfo';
 export { AdType } from './AdType';
