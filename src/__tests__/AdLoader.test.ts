@@ -55,6 +55,53 @@ describe('AdLoader', function () {
     });
   });
 
+  describe('createVideoAdLoader', function () {
+    it('throws if adLoaderOptions is invalid', function () {
+      expect(() =>
+        // @ts-ignore
+        AdLoader.createVideoAdLoader(123)
+      ).toThrowError(
+        "AdLoader.createVideoAdLoader(*) 'adLoaderOptions' expected an object value"
+      );
+    });
+    it('throws if slotUUID is invalid', function () {
+      expect(() =>
+        // @ts-ignore
+        AdLoader.createVideoAdLoader({ slotUUID: 123 })
+      ).toThrowError(
+        "AdLoader.createVideoAdLoader(*) 'adLoaderOptions.slotUUID' expected a string value"
+      );
+    });
+    it('throws if the player size is missing', function () {
+      expect(() =>
+        // @ts-ignore
+        AdLoader.createVideoAdLoader({ slotUUID: 'uuid' })
+      ).toThrowError(
+        "AdLoader.createVideoAdLoader(*) 'adLoaderOptions.playerWidth' and 'adLoaderOptions.playerHeight' expected number values"
+      );
+    });
+    it('throws if the player size is not numeric', function () {
+      expect(() =>
+        AdLoader.createVideoAdLoader({
+          slotUUID: 'uuid',
+          // @ts-ignore
+          playerWidth: '640',
+          playerHeight: 480,
+        })
+      ).toThrowError(
+        "AdLoader.createVideoAdLoader(*) 'adLoaderOptions.playerWidth' and 'adLoaderOptions.playerHeight' expected number values"
+      );
+    });
+    it('returns an AdLoader for a valid player size', function () {
+      const adLoader = AdLoader.createVideoAdLoader({
+        slotUUID: 'uuid',
+        playerWidth: 640,
+        playerHeight: 480,
+      });
+      expect(adLoader).toBeInstanceOf(AdLoader);
+    });
+  });
+
   describe('contentUrl', function () {
     it('throws if contentUrl is not a string', function () {
       expect(() =>

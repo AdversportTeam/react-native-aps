@@ -23,6 +23,7 @@ import Foundation
 class RNAPSAdLoaderModule: RCTEventEmitter {
   static let AD_TYPE_BANNER = "banner"
   static let AD_TYPE_INTERSTITIAL = "interstitial"
+  static let AD_TYPE_VIDEO = "video"
   static let EVENT_SUCCESS = "onSuccess"
   static let EVENT_FAILURE = "onFailure"
   static let ERROR_DOMAIN = "RNAPS"
@@ -170,6 +171,15 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
       break
     case RNAPSAdLoaderModule.AD_TYPE_INTERSTITIAL:
       adSize = DTBAdSize(interstitialAdSizeWithSlotUUID: slotUUID)
+      break
+    case RNAPSAdLoaderModule.AD_TYPE_VIDEO:
+      // Instream video bid request — player size mirrors the web adManager
+      // (assets/js/adManager.js playerSize [640, 480]). Same legacy DTB path the
+      // banner/interstitial cases use; DTBAdResponse.customTargeting() (in the
+      // shared onSuccess) returns the amzn* keywords for the video slot.
+      let playerWidth = options["playerWidth"] as? Int ?? 640
+      let playerHeight = options["playerHeight"] as? Int ?? 480
+      adSize = DTBAdSize(videoAdSizeWithPlayerWidth: playerWidth, height: playerHeight, andSlotUUID: slotUUID)
       break
     default:
       // Original code just returned, no error reject

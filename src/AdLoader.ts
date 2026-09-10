@@ -24,8 +24,10 @@ import type { AdLoaderListener } from './types/AdLoaderListener';
 import {
   type AdLoaderOptions,
   type BannerAdLoaderOptions,
+  type VideoAdLoaderOptions,
   validateAdLoaderOptions,
   validateBannerAdLoaderOptions,
+  validateVideoAdLoaderOptions,
 } from './types/AdLoaderOptions';
 import { AdType } from './types';
 
@@ -71,6 +73,21 @@ export class AdLoader {
       }
     }
     const adLoader = new AdLoader(AdType.INTERSTITIAL, adLoaderOptions);
+    return adLoader;
+  }
+
+  /**
+   * Create a video (instream) AdLoader instance.
+   */
+  static createVideoAdLoader(adLoaderOptions: VideoAdLoaderOptions) {
+    try {
+      validateVideoAdLoaderOptions(adLoaderOptions);
+    } catch (e) {
+      if (e instanceof Error) {
+        throw new Error(`AdLoader.createVideoAdLoader(*) ${e.message}`);
+      }
+    }
+    const adLoader = new AdLoader(AdType.VIDEO, adLoaderOptions);
     return adLoader;
   }
 
