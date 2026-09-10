@@ -17,5 +17,5 @@ Pod::Spec.new do |s|
 
   install_modules_dependencies(s)
 
-  s.dependency "AmazonPublisherServicesSDK", "5.3.1"
+  s.dependency "AmazonPublisherServicesSDK", "5.6.4"
 end

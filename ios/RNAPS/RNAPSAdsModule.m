@@ -39,4 +39,6 @@ RCT_EXTERN_METHOD(addCustomAttribute : (nonnull NSString *)key value : (nonnull 
 
 RCT_EXTERN_METHOD(removeCustomAttribute : (nonnull NSString *)key)
 
+RCT_EXTERN_METHOD(setExternalUserIds : (nonnull NSArray *)externalUserIds)
+
 @end

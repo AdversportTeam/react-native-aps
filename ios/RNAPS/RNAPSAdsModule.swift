@@ -98,6 +98,18 @@ class RNAPSAdsModule: NSObject {
     DTBAds.sharedInstance().testMode = enabled
   }
 
+  // The setters below still go through the deprecated DTBAds singleton on purpose.
+  //
+  // Their replacements are not setters at all: APS 5.6.4 moved testMode, useGeolocation,
+  // mraidPolicy and mraidSupportedVersions onto APSInitConfig, an object handed once to
+  // +[APS initializeWithAppKey:config:completion:]. Adopting them means reshaping this
+  // bridge's contract — JS calls initialize() first and these setters afterwards, which
+  // the config model cannot express — so it belongs in its own change, not here.
+  //
+  // Do not trust the deprecation text: it points at +[APS setTestMode:] and friends, which
+  // are declared nowhere in APS.h (the selectors do exist in the binary). Read APSInitConfig.h.
+  //
+  // removeCustomAttribute has no replacement at all, on APS or on APSInitConfig.
   @objc(setUseGeoLocation:)
   func setUseGeoLocation(enabled: Bool) -> Void {
     DTBAds.sharedInstance().useGeoLocation = enabled
@@ -105,12 +117,34 @@ class RNAPSAdsModule: NSObject {
 
   @objc(addCustomAttribute:value:)
   func addCustomAttribute(key: String, value: String) {
-    DTBAds.sharedInstance().addCustomAttribute(key, value: value)
+    APS.setCustomAttribute(value, forKey: key)
   }
 
   @objc(removeCustomAttribute:)
   func removeCustomAttribute(key: String) {
     DTBAds.sharedInstance().removeCustomAttribute(key)
+  }
+
+  // Third-party identifiers (ID5, LiveRamp...), forwarded by Amazon to the TAM/UAM bidders
+  // the publisher has enabled. Set once per user session; call again when an id changes.
+  // Passing an empty array clears them, which is what a consent withdrawal must do.
+  @objc(setExternalUserIds:)
+  func setExternalUserIds(externalUserIds: [[String: Any]]) {
+    let ids: [APSExternalUserId] = externalUserIds.compactMap { entry in
+      guard let source = entry["source"] as? String,
+            let uids = entry["uids"] as? [[String: Any]], !uids.isEmpty else {
+        return nil
+      }
+      // Swift imports the +builder factory as an initializer, so `.builder()` does not exist here.
+      let builder = APSExternalUserIdBuilder()
+      _ = builder.addSource(source)
+      for uid in uids {
+        guard let id = uid["id"] as? String else { continue }
+        _ = builder.addUniqueId(id, atype: uid["atype"] as? NSNumber, ext: uid["ext"] as? [String: String])
+      }
+      return builder.build()
+    }
+    APS.setExternalUserIds(ids)
   }
 
 }

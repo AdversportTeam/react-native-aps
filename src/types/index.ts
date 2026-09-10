@@ -23,3 +23,4 @@ export { AdNetwork } from './AdNetwork';
 export type { AdNetworkInfo } from './AdNetworkInfo';
 export { AdType } from './AdType';
 export { MRAIDPolicy } from './MRAIDPolicy';
+export * from './ExternalUserId';

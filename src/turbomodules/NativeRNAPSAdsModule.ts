@@ -45,6 +45,8 @@ export interface Spec extends TurboModule {
   addCustomAttribute: (key: string, value: string) => void;
 
   removeCustomAttribute: (key: string) => void;
+
+  setExternalUserIds: (externalUserIds: Object[]) => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('RNAPSAdsModule');

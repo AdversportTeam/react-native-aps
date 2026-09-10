@@ -18,6 +18,7 @@ package com.adversport.rnaps;
  * along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import com.amazon.aps.ads.common.ApsExternalUserId;
 import com.amazon.device.ads.AdRegistration;
 import com.amazon.device.ads.DTBAdNetwork;
 import com.amazon.device.ads.DTBAdNetworkInfo;
@@ -25,6 +26,9 @@ import com.amazon.device.ads.MRAIDPolicy;
 import com.facebook.react.bridge.*;
 import com.facebook.react.module.annotations.ReactModule;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @ReactModule(name = RNAPSAdsModule.MODULE_NAME)
 public class RNAPSAdsModule extends ReactContextBaseJavaModule {
@@ -152,5 +156,73 @@ public class RNAPSAdsModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void removeCustomAttribute(String key) {
     AdRegistration.removeCustomAttribute(key);
+  }
+
+  /**
+   * Third-party identifiers (ID5, LiveRamp...), forwarded by Amazon to the TAM/UAM bidders the
+   * publisher has enabled. Set once per user session; call again when an id changes. Passing an
+   * empty array clears them, which is what a consent withdrawal must do.
+   */
+  @ReactMethod
+  public void setExternalUserIds(ReadableArray externalUserIds) {
+    List<ApsExternalUserId> ids = new ArrayList<>();
+
+    for (int i = 0; i < externalUserIds.size(); i++) {
+      ReadableMap entry = externalUserIds.getMap(i);
+      if (entry == null || !entry.hasKey("source")) {
+        continue;
+      }
+      String source = entry.getString("source");
+      ReadableArray uids = entry.hasKey("uids") ? entry.getArray("uids") : null;
+      if (source == null || uids == null || uids.size() == 0) {
+        continue;
+      }
+
+      ApsExternalUserId.Builder builder = ApsExternalUserId.Companion.builder().addSource(source);
+      boolean hasUid = false;
+
+      for (int j = 0; j < uids.size(); j++) {
+        ReadableMap uid = uids.getMap(j);
+        if (uid == null || !uid.hasKey("id")) {
+          continue;
+        }
+        String id = uid.getString("id");
+        if (id == null) {
+          continue;
+        }
+        Integer atype = uid.hasKey("atype") ? uid.getInt("atype") : null;
+        builder.addUniqueId(id, atype, readStringMap(uid, "ext"));
+        hasUid = true;
+      }
+
+      if (hasUid) {
+        ids.add(builder.build());
+      }
+    }
+
+    AdRegistration.setExternalUserIds(ids);
+  }
+
+  /**
+   * Reads a nested string map, skipping any non-string value rather than failing the whole call.
+   */
+  private static Map<String, String> readStringMap(ReadableMap parent, String key) {
+    if (!parent.hasKey(key)) {
+      return null;
+    }
+    ReadableMap map = parent.getMap(key);
+    if (map == null) {
+      return null;
+    }
+    Map<String, String> out = new HashMap<>();
+    ReadableMapKeySetIterator iterator = map.keySetIterator();
+    while (iterator.hasNextKey()) {
+      String k = iterator.nextKey();
+      String v = map.getString(k);
+      if (v != null) {
+        out.put(k, v);
+      }
+    }
+    return out.isEmpty() ? null : out;
   }
 }

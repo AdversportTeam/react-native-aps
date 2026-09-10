@@ -257,7 +257,7 @@ public class RNAPSAdLoaderModule extends ReactContextBaseJavaModule {
     // NOTE: options.contentUrl is intentionally ignored here.
     //
     // Amazon DSP asks for the public web URL of the content being viewed, but
-    // the Android APS SDK (com.amazon.android:aps-sdk 11.1.1) exposes no
+    // the Android APS SDK (com.amazon.android:aps-sdk 12.0.1) exposes no
     // equivalent of the iOS +[APS setContentUrl:] — verified by inspecting every
     // public member of AdRegistration and DTBAdRequest. There is no supported
     // way to attach it to an Android bid request today.
