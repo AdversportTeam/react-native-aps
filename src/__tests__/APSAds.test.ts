@@ -15,6 +15,71 @@ describe('APSAds', function () {
     it('returns Promise of void', async function () {
       await expect(APSAds.initialize('appKey')).resolves.toBeUndefined();
     });
+    it('passes an empty options object to the native module by default', async function () {
+      await APSAds.initialize('appKey');
+      expect(AdsModule.initialize).toHaveBeenLastCalledWith('appKey', {});
+    });
+    it('forwards bidRequestConcurrency to the native module', async function () {
+      await APSAds.initialize('appKey', { bidRequestConcurrency: 3 });
+      expect(AdsModule.initialize).toHaveBeenLastCalledWith('appKey', {
+        bidRequestConcurrency: 3,
+      });
+    });
+    it('throws if options is not an object', function () {
+      // @ts-ignore
+      expect(() => APSAds.initialize('appKey', 3)).toThrowError(
+        "APSAds.initialize(_, *) 'options' expected an object value"
+      );
+    });
+    it.each([0, 17, 1.5, '3', NaN])(
+      'throws if bidRequestConcurrency is %p',
+      function (value) {
+        expect(() =>
+          // @ts-ignore
+          APSAds.initialize('appKey', { bidRequestConcurrency: value })
+        ).toThrowError(
+          "APSAds.initialize(_, *) 'options.bidRequestConcurrency' expected an integer between 1 and 16"
+        );
+      }
+    );
+  });
+  describe('getBidRequestExecutorStatus', function () {
+    it('returns the native status', async function () {
+      (
+        AdsModule.getBidRequestExecutorStatus as jest.Mock
+      ).mockResolvedValueOnce({
+        concurrency: 3,
+        widened: true,
+      });
+      await expect(APSAds.getBidRequestExecutorStatus()).resolves.toEqual({
+        concurrency: 3,
+        widened: true,
+      });
+    });
+    it('maps a non-positive concurrency (iOS) to Infinity', async function () {
+      (
+        AdsModule.getBidRequestExecutorStatus as jest.Mock
+      ).mockResolvedValueOnce({
+        concurrency: -1,
+        widened: false,
+        detail: 'ios',
+      });
+      await expect(APSAds.getBidRequestExecutorStatus()).resolves.toEqual({
+        concurrency: Number.POSITIVE_INFINITY,
+        widened: false,
+        detail: 'ios',
+      });
+    });
+    it('falls back to the SDK default when the native module answers nothing', async function () {
+      (
+        AdsModule.getBidRequestExecutorStatus as jest.Mock
+      ).mockResolvedValueOnce(null);
+      await expect(APSAds.getBidRequestExecutorStatus()).resolves.toEqual({
+        concurrency: 1,
+        widened: false,
+        detail: 'no status from the native module',
+      });
+    });
   });
   describe('setAdNetworkInfo', function () {
     it('throws if adNetworkInfo is invalid', function () {

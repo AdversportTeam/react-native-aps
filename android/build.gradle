@@ -32,6 +32,12 @@ android {
   buildFeatures {
     buildConfig true
   }
+
+  testOptions {
+    // ApsBidRequestExecutorTest exercises the real SDK class on the JVM; android.util.Log
+    // must return instead of throwing there.
+    unitTests.returnDefaultValues = true
+  }
 }
 
 repositories {
@@ -47,6 +53,7 @@ dependencies {
   }
   implementation("com.amazon.android:aps-sdk:12.0.1")
   implementation("com.iabtcf:iabtcf-decoder:2.0.10")
+  testImplementation("junit:junit:4.13.2")
 }
 
 if (isNewArchitectureEnabled()) {

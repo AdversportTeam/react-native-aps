@@ -30,7 +30,9 @@ interface AdNetworkInfo {
  * @internal
  */
 export interface Spec extends TurboModule {
-  initialize: (appKey: string) => Promise<void>;
+  initialize: (appKey: string, options: Object) => Promise<void>;
+
+  getBidRequestExecutorStatus: () => Promise<Object>;
 
   setAdNetworkInfo: (adNetworkInfo: AdNetworkInfo) => void;
 

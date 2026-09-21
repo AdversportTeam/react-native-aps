@@ -51,9 +51,25 @@ public class RNAPSAdsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void initialize(String appKey, Promise promise) {
+  public void initialize(String appKey, ReadableMap options, Promise promise) {
+    // Before AdRegistration: nothing must be queued on the SDK executor when it is swapped.
+    if (options != null && options.hasKey("bidRequestConcurrency")) {
+      ApsBidRequestExecutor.widen(options.getInt("bidRequestConcurrency"));
+    }
     AdRegistration.getInstance(appKey, getReactApplicationContext());
     promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void getBidRequestExecutorStatus(Promise promise) {
+    WritableMap status = Arguments.createMap();
+    status.putInt("concurrency", ApsBidRequestExecutor.getConcurrency());
+    status.putBoolean("widened", ApsBidRequestExecutor.isWidened());
+    String detail = ApsBidRequestExecutor.getDetail();
+    if (detail != null) {
+      status.putString("detail", detail);
+    }
+    promise.resolve(status);
   }
 
   @ReactMethod

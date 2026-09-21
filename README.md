@@ -59,6 +59,39 @@ Two caveats worth knowing on iOS:
 
 Both the Android gap and the iOS stickiness have been raised with Amazon APS.
 
+## Bid request concurrency (Android)
+
+The APS Android SDK runs every bid request, blocking HTTP call included, on a
+single thread: concurrent `loadAd()` calls are answered one after another, in
+call order. On a screen with several slots, the last one waits for the sum of
+the previous latencies and can miss its render deadline while its answer is
+still in the queue.
+
+`initialize` accepts an option that widens the SDK executor before anything
+is queued:
+
+```js
+await APSAds.initialize(APS_APP_KEY, { bidRequestConcurrency: 3 });
+```
+
+- Android only; ignored on iOS, whose SDK does not serialise requests.
+- Integer between 1 and 16. Default 1 keeps the SDK behaviour.
+- The executor is swapped by reflection, the SDK exposing no API for it. On
+  any failure the SDK default is kept and the reason is reported, never thrown.
+- Verified against aps-sdk 11.1.1, 12.0.1 and 12.0.2; a JVM unit test in the
+  module pins the SDK members it relies on, so a bump that renames them fails
+  `./gradlew :react-native-aps:testDebugUnitTest`.
+
+Read back what the SDK really serves, for instance to cap your own scheduling:
+
+```js
+const { concurrency, widened, detail } =
+  await APSAds.getBidRequestExecutorStatus();
+// Android: { concurrency: 3, widened: true } once widened,
+//          { concurrency: 1, widened: false, detail: '...' } otherwise.
+// iOS:     { concurrency: Infinity, widened: false, detail: '...' }.
+```
+
 ## Contributing
 
 See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.

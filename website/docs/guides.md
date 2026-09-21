@@ -37,6 +37,17 @@ First, you need to initialize SDK with your APS app id/key by calling `APSAds.in
 APSAds.initialize(TestIds.APS_APP_KEY);
 ```
 
+On Android the SDK answers bid requests one at a time, on a single thread. If
+your screens request several slots at once, widen that executor so they are
+served in parallel (ignored on iOS, which does not serialise requests):
+
+```js
+APSAds.initialize(TestIds.APS_APP_KEY, { bidRequestConcurrency: 3 });
+```
+
+`APSAds.getBidRequestExecutorStatus()` tells you what the SDK really serves
+(`concurrency`, `widened`, and a `detail` when it could not be widened).
+
 #### Ad server/mediator identifier
 
 Then, you must pass your primary ad server or mediator information with `APSAds.setAdNetworkInfo`.
