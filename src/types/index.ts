@@ -24,3 +24,7 @@ export type { AdNetworkInfo } from './AdNetworkInfo';
 export { AdType } from './AdType';
 export { MRAIDPolicy } from './MRAIDPolicy';
 export * from './ExternalUserId';
+export type {
+  APSAdsInitOptions,
+  BidRequestExecutorStatus,
+} from './BidRequestExecutor';

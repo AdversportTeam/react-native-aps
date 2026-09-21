@@ -28,10 +28,23 @@ class RNAPSAdsModule: NSObject {
     return false
   }
 
-  @objc(initialize:withResolver:withRejecter:)
-  func initialize(appKey: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
+  // `options` carries Android-only settings (bidRequestConcurrency): DTBiOSSDK issues its
+  // bid requests asynchronously through NSURLSession and does not serialise them, so there
+  // is nothing to widen here. Accepted so both platforms share one JS signature.
+  @objc(initialize:options:withResolver:withRejecter:)
+  func initialize(appKey: String, options: Dictionary<String, Any>, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
     DTBAds.sharedInstance().setAppKey(appKey)
     resolve(nil)
+  }
+
+  // A concurrency below 1 means "not bounded"; the JS side maps it to Infinity.
+  @objc(getBidRequestExecutorStatus:withRejecter:)
+  func getBidRequestExecutorStatus(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
+    resolve([
+      "concurrency": -1,
+      "widened": false,
+      "detail": "iOS: DTBiOSSDK issues bid requests asynchronously (NSURLSession), nothing to widen",
+    ])
   }
 
   @objc(setAdNetworkInfo:)

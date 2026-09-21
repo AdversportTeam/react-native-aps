@@ -26,18 +26,49 @@ import {
   type ExternalUserId,
   validateExternalUserIds,
 } from './types/ExternalUserId';
+import {
+  type APSAdsInitOptions,
+  type BidRequestExecutorStatus,
+  toBidRequestExecutorStatus,
+  validateInitOptions,
+} from './types/BidRequestExecutor';
 
 export class APSAds {
   private static _nativeModule = AdsModule;
 
   /**
    * Initializes the APSAds SDK.
+   *
+   * `options.bidRequestConcurrency` (Android only) widens the SDK bid executor, which
+   * serves requests one at a time by default; see {@link APSAdsInitOptions}.
    */
-  static initialize(appKey: string): Promise<void> {
+  static initialize(
+    appKey: string,
+    options?: APSAdsInitOptions
+  ): Promise<void> {
     if (typeof appKey !== 'string') {
       throw new Error("APSAds.initialze(*) 'appKey' expected a string value");
     }
-    return this._nativeModule.initialize(appKey);
+    let validated: APSAdsInitOptions;
+    try {
+      validated = validateInitOptions(options);
+    } catch (e) {
+      throw new Error(
+        `APSAds.initialize(_, *) ${e instanceof Error ? e.message : String(e)}`
+      );
+    }
+    return this._nativeModule.initialize(appKey, validated);
+  }
+
+  /**
+   * How many bid requests the native SDK processes concurrently, and whether the
+   * Android executor was widened by `initialize`. Lets a caller cap its own
+   * concurrency to what the SDK really serves.
+   */
+  static async getBidRequestExecutorStatus(): Promise<BidRequestExecutorStatus> {
+    return toBidRequestExecutorStatus(
+      await this._nativeModule.getBidRequestExecutorStatus()
+    );
   }
 
   /**
