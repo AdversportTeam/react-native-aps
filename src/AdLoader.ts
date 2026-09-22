@@ -28,6 +28,18 @@ import {
   validateBannerAdLoaderOptions,
 } from './types/AdLoaderOptions';
 import { AdType } from './types';
+import {
+  abortQueuedBidRequests,
+  BID_REQUEST_NO_RESPONSE_MS,
+  DEFAULT_BID_REQUEST_PRIORITY,
+  enqueueBidRequest,
+  getBidRequestQueueStats,
+} from './internal/BidRequestQueue';
+import type { BidRequestQueueStats } from './types/BidRequestQueueStats';
+import {
+  type LoadAdOptions,
+  validateLoadAdOptions,
+} from './types/LoadAdOptions';
 
 export class AdLoader {
   private static readonly _nativeModule = AdLoaderModule;
@@ -113,15 +125,54 @@ export class AdLoader {
    * Request APS for a bid. Only a single ad size and slotUUID is supported per bid request.
    * This method will return a promise that resolves a bid response requested by this call.
    * In order to receive further bid responses returned by auto refresh, you must register listeners via `addListener()`.
+   *
+   * Requests go through a queue bounded by what the native SDK serves
+   * concurrently (the Android SDK answers one request at a time unless
+   * `bidRequestConcurrency` widened it; iOS is unbounded). While queued, a
+   * request can be aborted through `options.signal` and is ordered by
+   * `options.priority`. The promise always settles: an emitted request the
+   * native side never answers is rejected with an AdError `no_response` after
+   * `AdLoader.NO_RESPONSE_MS` at least (`getQueueStats().noResponseMs` is the
+   * delay in force). Auto-refresh re-requests are issued by the SDK itself and
+   * do not go through the queue.
    */
-  async loadAd() {
+  loadAd(options?: LoadAdOptions): Promise<{ [key: string]: string }> {
+    let validated: LoadAdOptions;
     try {
-      return await AdLoader._nativeModule.loadAd(
-        this.loaderId,
-        this.adType,
-        this.adLoaderOptions
+      validated = validateLoadAdOptions(options);
+    } catch (e) {
+      throw new Error(
+        `AdLoader.loadAd(*) ${e instanceof Error ? e.message : String(e)}`
       );
+    }
+    return this.loadAdQueued(validated);
+  }
+
+  private async loadAdQueued(
+    options: LoadAdOptions
+  ): Promise<{ [key: string]: string }> {
+    try {
+      return await enqueueBidRequest({
+        loaderId: this.loaderId,
+        priority: options.priority ?? DEFAULT_BID_REQUEST_PRIORITY,
+        signal: options.signal,
+        run: () =>
+          AdLoader._nativeModule.loadAd(
+            this.loaderId,
+            this.adType,
+            this.adLoaderOptions
+          ),
+      });
     } catch (error) {
+      if (
+        error instanceof AdError &&
+        error.code === 'no_response' &&
+        !(this.adLoaderOptions as BannerAdLoaderOptions).autoRefresh
+      ) {
+        // The native side keeps a one-shot request until its callback, which
+        // will not come: drop it (stop() is a no-op on a one-shot request).
+        AdLoader._nativeModule.stopAutoRefresh(this.loaderId);
+      }
       if ((error as any).userInfo) {
         throw AdError.fromNativeError(error);
       } else {
@@ -131,12 +182,33 @@ export class AdLoader {
   }
 
   /**
-   * Stop the auto refresh of the ad.
-   *
+   * Stop the auto refresh of the ad. A request of this loader still waiting in
+   * the queue is dropped (its promise rejects with an AdError `aborted`).
    */
   stopAutoRefresh() {
+    abortQueuedBidRequests(
+      this.loaderId,
+      'stopAutoRefresh() called before the request was emitted'
+    );
     AdLoader._nativeModule.stopAutoRefresh(this.loaderId);
   }
+
+  /**
+   * Counters of the bid request queue: what the native SDK serves
+   * concurrently, what is in flight or waiting, and what the queue cost
+   * (requests aborted before emission, requests the native side never
+   * answered).
+   */
+  static getQueueStats(): BidRequestQueueStats {
+    return getBidRequestQueueStats();
+  }
+
+  /**
+   * Floor of the delay after which an emitted request with no native answer is
+   * rejected; raised to the SDK bid timeout plus a margin when the SDK reports
+   * it (see `getQueueStats().noResponseMs`).
+   */
+  static readonly NO_RESPONSE_MS = BID_REQUEST_NO_RESPONSE_MS;
 
   /**
    * In order for SKAdNetwork to work, pass the app event.

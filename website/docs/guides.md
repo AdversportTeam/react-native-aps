@@ -48,6 +48,12 @@ APSAds.initialize(TestIds.APS_APP_KEY, { bidRequestConcurrency: 3 });
 `APSAds.getBidRequestExecutorStatus()` tells you what the SDK really serves
 (`concurrency`, `widened`, and a `detail` when it could not be widened).
 
+`loadAd()` queues requests beyond that concurrency instead of piling them on
+the SDK. A queued request accepts `{ priority, signal }` (lower priority
+first, an aborted signal drops it with an AdError `aborted`), and every
+request settles: no native answer within `AdLoader.getQueueStats().noResponseMs`
+(8 s at least) rejects with `no_response`.
+
 #### Ad server/mediator identifier
 
 Then, you must pass your primary ad server or mediator information with `APSAds.setAdNetworkInfo`.

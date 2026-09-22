@@ -4,6 +4,11 @@ import { AdError } from '../AdError';
 import { AdLoader } from '../AdLoader';
 import { TestIds } from '../TestIds';
 import { AdLoaderEvent } from '../types/AdLoaderEvent';
+import AdLoaderModule from '../internal/AdLoaderModule';
+import {
+  resetBidRequestQueue,
+  setBidRequestConcurrency,
+} from '../internal/BidRequestQueue';
 
 jest.mock('../internal/AdLoaderModule');
 
@@ -149,6 +154,122 @@ describe('AdLoader', function () {
   });
 
   describe('loadAd', function () {
+    beforeEach(function () {
+      resetBidRequestQueue();
+      (AdLoaderModule.loadAd as jest.Mock).mockClear();
+      (AdLoaderModule.stopAutoRefresh as jest.Mock).mockClear();
+    });
+    it('throws if options is invalid', function () {
+      const adLoader = AdLoader.createBannerAdLoader({
+        slotUUID: TestIds.APS_SLOT_BANNER_320x50,
+        size: '320x50',
+      });
+      // @ts-ignore
+      expect(() => adLoader.loadAd(123)).toThrowError(
+        "AdLoader.loadAd(*) 'options' expected an object value"
+      );
+      // @ts-ignore
+      expect(() => adLoader.loadAd({ priority: 'high' })).toThrowError(
+        "AdLoader.loadAd(*) 'options.priority' expected a finite number"
+      );
+      // @ts-ignore
+      expect(() => adLoader.loadAd({ signal: {} })).toThrowError(
+        "AdLoader.loadAd(*) 'options.signal' expected an AbortSignal"
+      );
+      expect(() =>
+        adLoader.loadAd({
+          // @ts-ignore
+          signal: { aborted: false, addEventListener: () => {} },
+        })
+      ).toThrowError(
+        "AdLoader.loadAd(*) 'options.signal' expected an AbortSignal"
+      );
+    });
+    it('rejects with an AdError aborted when the signal fires while queued', async function () {
+      setBidRequestConcurrency(1);
+      const blocking = AdLoader.createBannerAdLoader({
+        slotUUID: TestIds.APS_SLOT_BANNER_320x50,
+        size: '320x50',
+      });
+      const queued = AdLoader.createBannerAdLoader({
+        slotUUID: TestIds.APS_SLOT_BANNER_320x50,
+        size: '320x50',
+      });
+      let release!: (v: { [key: string]: string }) => void;
+      (AdLoaderModule.loadAd as jest.Mock).mockImplementationOnce(
+        () =>
+          new Promise((res) => {
+            release = res;
+          })
+      );
+      const first = blocking.loadAd();
+      const controller = new AbortController();
+      const second = queued.loadAd({ priority: 1, signal: controller.signal });
+      controller.abort();
+      await expect(second).rejects.toMatchObject({
+        name: 'AdError',
+        code: 'aborted',
+      });
+      release({ key: 'value' });
+      await expect(first).resolves.toEqual({ key: 'value' });
+      expect(AdLoaderModule.loadAd).toHaveBeenCalledTimes(1);
+    });
+    it('stopAutoRefresh drops a request still queued', async function () {
+      setBidRequestConcurrency(1);
+      const blocking = AdLoader.createBannerAdLoader({
+        slotUUID: TestIds.APS_SLOT_BANNER_320x50,
+        size: '320x50',
+      });
+      const queued = AdLoader.createBannerAdLoader({
+        slotUUID: TestIds.APS_SLOT_BANNER_320x50,
+        size: '320x50',
+        autoRefresh: true,
+      });
+      let release!: (v: { [key: string]: string }) => void;
+      (AdLoaderModule.loadAd as jest.Mock).mockImplementationOnce(
+        () =>
+          new Promise((res) => {
+            release = res;
+          })
+      );
+      const first = blocking.loadAd();
+      const second = queued.loadAd();
+      queued.stopAutoRefresh();
+      await expect(second).rejects.toMatchObject({ code: 'aborted' });
+      release({ key: 'value' });
+      await first;
+      expect(AdLoaderModule.loadAd).toHaveBeenCalledTimes(1);
+      expect(AdLoaderModule.stopAutoRefresh).toHaveBeenCalled();
+    });
+    it('exposes the queue stats', function () {
+      expect(AdLoader.getQueueStats()).toMatchObject({
+        concurrency: 1,
+        noResponseMs: 8000,
+        inFlight: 0,
+        queued: 0,
+      });
+      expect(AdLoader.NO_RESPONSE_MS).toBe(8000);
+    });
+    it('drops the native one-shot request when it never answers', async function () {
+      (jest.useFakeTimers as unknown as (config: object) => void)({
+        doNotFake: ['performance'],
+      });
+      try {
+        const adLoader = AdLoader.createBannerAdLoader({
+          slotUUID: TestIds.APS_SLOT_BANNER_320x50,
+          size: '320x50',
+        });
+        (AdLoaderModule.loadAd as jest.Mock).mockImplementationOnce(
+          () => new Promise(() => {})
+        );
+        const pending = adLoader.loadAd();
+        jest.advanceTimersByTime(AdLoader.NO_RESPONSE_MS);
+        await expect(pending).rejects.toMatchObject({ code: 'no_response' });
+        expect(AdLoaderModule.stopAutoRefresh).toHaveBeenCalledTimes(1);
+      } finally {
+        jest.useRealTimers();
+      }
+    });
     it('throws AdError if got native Error', async function () {
       const adLoader = AdLoader.createBannerAdLoader({
         slotUUID: 'ad-error-throwing-slot-uuid',

@@ -1,6 +1,10 @@
 import { APSAds } from '../APSAds';
 import AdsModule from '../internal/AdsModule';
 import { AdNetwork, MRAIDPolicy } from '../types';
+import {
+  getBidRequestQueueStats,
+  resetBidRequestQueue,
+} from '../internal/BidRequestQueue';
 
 jest.mock('../internal/AdsModule');
 
@@ -18,6 +22,29 @@ describe('APSAds', function () {
     it('passes an empty options object to the native module by default', async function () {
       await APSAds.initialize('appKey');
       expect(AdsModule.initialize).toHaveBeenLastCalledWith('appKey', {});
+    });
+    it('sizes the bid request queue on what the native side reports', async function () {
+      resetBidRequestQueue();
+      (
+        AdsModule.getBidRequestExecutorStatus as jest.Mock
+      ).mockResolvedValueOnce({
+        concurrency: 3,
+        widened: true,
+        bidTimeoutMs: 9000,
+      });
+      await APSAds.initialize('appKey', { bidRequestConcurrency: 3 });
+      expect(getBidRequestQueueStats()).toMatchObject({
+        concurrency: 3,
+        noResponseMs: 12000,
+      });
+    });
+    it('keeps the queue default when the status cannot be read', async function () {
+      resetBidRequestQueue();
+      (
+        AdsModule.getBidRequestExecutorStatus as jest.Mock
+      ).mockRejectedValueOnce(new Error('bridge'));
+      await expect(APSAds.initialize('appKey')).resolves.toBeUndefined();
+      expect(getBidRequestQueueStats().concurrency).toBe(1);
     });
     it('forwards bidRequestConcurrency to the native module', async function () {
       await APSAds.initialize('appKey', { bidRequestConcurrency: 3 });
@@ -50,10 +77,12 @@ describe('APSAds', function () {
       ).mockResolvedValueOnce({
         concurrency: 3,
         widened: true,
+        bidTimeoutMs: 5000,
       });
       await expect(APSAds.getBidRequestExecutorStatus()).resolves.toEqual({
         concurrency: 3,
         widened: true,
+        bidTimeoutMs: 5000,
       });
     });
     it('maps a non-positive concurrency (iOS) to Infinity', async function () {
