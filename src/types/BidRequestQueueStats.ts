@@ -16,17 +16,21 @@
  * along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export { AdLoaderEvent } from './AdLoaderEvent';
-export type { AdLoaderListener } from './AdLoaderListener';
-export type { AdLoaderOptions, BannerAdLoaderOptions } from './AdLoaderOptions';
-export { AdNetwork } from './AdNetwork';
-export type { AdNetworkInfo } from './AdNetworkInfo';
-export { AdType } from './AdType';
-export { MRAIDPolicy } from './MRAIDPolicy';
-export * from './ExternalUserId';
-export type {
-  APSAdsInitOptions,
-  BidRequestExecutorStatus,
-} from './BidRequestExecutor';
-export type { LoadAdOptions } from './LoadAdOptions';
-export type { BidRequestQueueStats } from './BidRequestQueueStats';
+/**
+ * Counters of the bid request queue, see `AdLoader.getQueueStats`.
+ */
+export interface BidRequestQueueStats {
+  /** Bid requests the native SDK is allowed to have in flight. */
+  concurrency: number;
+  /** Delay after which an emitted request with no native answer is rejected. */
+  noResponseMs: number;
+  inFlight: number;
+  queued: number;
+  /** Requests handed to the native side since startup. */
+  emitted: number;
+  /** Requests aborted (signal, stopAutoRefresh) while still queued: never emitted. */
+  abortedBeforeEmit: number;
+  /** Emitted requests the native side had not answered within `noResponseMs`. */
+  unanswered: number;
+  maxQueueDepth: number;
+}

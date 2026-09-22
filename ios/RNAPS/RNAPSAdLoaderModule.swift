@@ -26,8 +26,29 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
   static let EVENT_SUCCESS = "onSuccess"
   static let EVENT_FAILURE = "onFailure"
   static let ERROR_DOMAIN = "RNAPS"
+  // Loaders the SDK may still call back or refresh. Accessed from the module
+  // queue (loadAd, stopAutoRefresh) and from the SDK callbacks: keep every
+  // access under `adLoadersLock`. A one-shot loader (no auto-refresh) leaves
+  // the dictionary on its first callback; an auto-refreshing one stays until
+  // stopAutoRefresh().
   var adLoaders = Dictionary<NSNumber, DTBAdLoader>()
+  private let adLoadersLock = NSLock()
   var hasListeners = false;
+
+  private func withAdLoaders<T>(_ body: (inout Dictionary<NSNumber, DTBAdLoader>) -> T) -> T {
+    adLoadersLock.lock()
+    defer { adLoadersLock.unlock() }
+    return body(&adLoaders)
+  }
+
+  // Drops the loader unless the id was reused for a newer one in the meantime.
+  fileprivate func forgetAdLoader(_ loaderId: NSNumber, ifStill adLoader: DTBAdLoader) {
+    _ = withAdLoaders { dict in
+      if dict[loaderId] === adLoader {
+        dict.removeValue(forKey: loaderId)
+      }
+    }
+  }
 
   //MARK: - Native Module Setup
 
@@ -41,10 +62,14 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
 
   @objc override func invalidate() {
     super.invalidate()
-    for adLoader in adLoaders.values {
+    let loaders: [DTBAdLoader] = withAdLoaders { dict in
+      let values = Array(dict.values)
+      dict.removeAll()
+      return values
+    }
+    for adLoader in loaders {
       adLoader.stop()
     }
-    adLoaders.removeAll()
   }
 
   @objc override func startObserving() {
@@ -75,13 +100,24 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
   private class AdLoadCallback: DTBAdCallback {
     let adLoaderModule: RNAPSAdLoaderModule
     let loaderId: NSNumber
+    let adLoader: DTBAdLoader
+    let autoRefresh: Bool
     var resolve: RCTPromiseResolveBlock?
     var reject: RCTPromiseRejectBlock?
-    init(adLoaderModule: RNAPSAdLoaderModule, loaderId: NSNumber, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    init(adLoaderModule: RNAPSAdLoaderModule, loaderId: NSNumber, adLoader: DTBAdLoader, autoRefresh: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
       self.adLoaderModule = adLoaderModule
       self.loaderId = loaderId
+      self.adLoader = adLoader
+      self.autoRefresh = autoRefresh
       self.resolve = resolve
       self.reject = reject
+    }
+
+    // A one-shot request is done after its first callback: drop our reference.
+    private func forgetIfOneShot() {
+      if !autoRefresh {
+        adLoaderModule.forgetAdLoader(loaderId, ifStill: adLoader)
+      }
     }
     func onSuccess(_ adResponse: DTBAdResponse!) {
       // Using original optional handling which defaults to empty Dict if nil
@@ -95,6 +131,7 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
         self.resolve = nil
         self.reject = nil
       }
+      forgetIfOneShot()
     }
 
     func onFailure(_ error: DTBAdError) {
@@ -143,6 +180,7 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
         self.resolve = nil
         self.reject = nil
       }
+      forgetIfOneShot()
     }
   }
 
@@ -211,15 +249,14 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
       APS.setContentUrl(contentUrl)
     }
 
-    adLoaders.updateValue(adLoader, forKey: loaderId)
-    adLoader.loadAd(AdLoadCallback(adLoaderModule: self, loaderId: loaderId, resolve: resolve, reject: reject))
+    _ = withAdLoaders { $0.updateValue(adLoader, forKey: loaderId) }
+    adLoader.loadAd(AdLoadCallback(adLoaderModule: self, loaderId: loaderId, adLoader: adLoader, autoRefresh: autoRefresh, resolve: resolve, reject: reject))
   }
 
   @objc(stopAutoRefresh:)
   func stopAutoRefresh(loaderId: NSNumber) {
-    // Original optional chaining is fine
-    adLoaders[loaderId]?.stop()
-    adLoaders.removeValue(forKey: loaderId)
+    let adLoader: DTBAdLoader? = withAdLoaders { $0.removeValue(forKey: loaderId) }
+    adLoader?.stop()
   }
 
   @objc(skadnHelper:withInfo:)

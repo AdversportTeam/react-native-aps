@@ -35,6 +35,10 @@ public class RNAPSAdLoaderModule extends ReactContextBaseJavaModule {
   public static final String EVENT_SUCCESS = "onSuccess";
   public static final String EVENT_FAILURE = "onFailure";
 
+  // Requests the SDK may still call back or refresh. Guarded by its own monitor:
+  // loadAd/stopAutoRefresh run on the native modules thread, the SDK callbacks on
+  // the main thread. A one-shot request (no auto-refresh) leaves the map on its
+  // first callback; an auto-refreshing one stays until stopAutoRefresh().
   private static final SparseArray<DTBAdRequest> adLoaders = new SparseArray<>();
   private final ReactApplicationContext reactContext;
 
@@ -64,11 +68,29 @@ public class RNAPSAdLoaderModule extends ReactContextBaseJavaModule {
 
   private class AdCallback implements DTBAdCallback {
     private final int loaderId;
+    private final DTBAdRequest request;
+    private final boolean autoRefresh;
     private Promise promise;
 
-    public AdCallback(int loaderId, Promise promise) {
+    public AdCallback(int loaderId, DTBAdRequest request, boolean autoRefresh, Promise promise) {
       this.loaderId = loaderId;
+      this.request = request;
+      this.autoRefresh = autoRefresh;
       this.promise = promise;
+    }
+
+    /**
+     * A one-shot request is done after its first callback: drop our reference, unless the loader id
+     * was reused for a newer request in the meantime.
+     */
+    private void forgetIfOneShot() {
+      if (!autoRefresh) {
+        synchronized (adLoaders) {
+          if (adLoaders.get(loaderId) == request) {
+            adLoaders.remove(loaderId);
+          }
+        }
+      }
     }
 
     @Override
@@ -139,6 +161,7 @@ public class RNAPSAdLoaderModule extends ReactContextBaseJavaModule {
         promise.reject(code, composedMessage, userInfoCopy);
         promise = null;
       }
+      forgetIfOneShot();
     }
 
     @Override
@@ -180,6 +203,7 @@ public class RNAPSAdLoaderModule extends ReactContextBaseJavaModule {
         promise.resolve(responseCopy);
         promise = null;
       }
+      forgetIfOneShot();
     }
   }
 
@@ -253,7 +277,9 @@ public class RNAPSAdLoaderModule extends ReactContextBaseJavaModule {
       adLoader.setAutoRefresh(refreshInterval);
     }
 
-    adLoaders.put(loaderId, adLoader);
+    synchronized (adLoaders) {
+      adLoaders.put(loaderId, adLoader);
+    }
     // NOTE: options.contentUrl is intentionally ignored here.
     //
     // Amazon DSP asks for the public web URL of the content being viewed, but
@@ -266,15 +292,18 @@ public class RNAPSAdLoaderModule extends ReactContextBaseJavaModule {
     // bidding chain for callers that legitimately pass the option for iOS. The
     // limitation has been raised with Amazon APS; revisit when they ship an API.
 
-    adLoader.loadAd(new AdCallback(loaderId, promise));
+    adLoader.loadAd(new AdCallback(loaderId, adLoader, autoRefresh, promise));
   }
 
   @ReactMethod
   public void stopAutoRefresh(int loaderId) {
-    DTBAdRequest adLoader = adLoaders.get(loaderId);
+    DTBAdRequest adLoader;
+    synchronized (adLoaders) {
+      adLoader = adLoaders.get(loaderId);
+      adLoaders.remove(loaderId);
+    }
     if (adLoader != null) {
       adLoader.stop();
-      adLoaders.remove(loaderId);
     }
   }
 }

@@ -32,6 +32,10 @@ import {
   toBidRequestExecutorStatus,
   validateInitOptions,
 } from './types/BidRequestExecutor';
+import {
+  setBidRequestConcurrency,
+  setBidRequestTimeout,
+} from './internal/BidRequestQueue';
 
 export class APSAds {
   private static _nativeModule = AdsModule;
@@ -40,7 +44,9 @@ export class APSAds {
    * Initializes the APSAds SDK.
    *
    * `options.bidRequestConcurrency` (Android only) widens the SDK bid executor, which
-   * serves requests one at a time by default; see {@link APSAdsInitOptions}.
+   * serves requests one at a time by default; see {@link APSAdsInitOptions}. Resolves
+   * once the bid request queue of `AdLoader.loadAd` is sized on what the SDK reports
+   * (`getBidRequestExecutorStatus`).
    */
   static initialize(
     appKey: string,
@@ -57,7 +63,24 @@ export class APSAds {
         `APSAds.initialize(_, *) ${e instanceof Error ? e.message : String(e)}`
       );
     }
-    return this._nativeModule.initialize(appKey, validated);
+    return this._nativeModule
+      .initialize(appKey, validated)
+      .then(() => this.sizeBidRequestQueue());
+  }
+
+  /**
+   * Sizes the bid request queue on what the SDK really serves (see
+   * `AdLoader.loadAd`). A failure to read it keeps the safe default: 1 on
+   * Android, unbounded on iOS.
+   */
+  private static async sizeBidRequestQueue(): Promise<void> {
+    try {
+      const status = await this.getBidRequestExecutorStatus();
+      setBidRequestConcurrency(status.concurrency);
+      setBidRequestTimeout(status.bidTimeoutMs);
+    } catch (e) {
+      // Keep the default.
+    }
   }
 
   /**

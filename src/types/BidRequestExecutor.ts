@@ -50,6 +50,11 @@ export interface BidRequestExecutorStatus {
   widened: boolean;
   /** Android: why the executor is not widened (not requested, reflection error...). */
   detail?: string;
+  /**
+   * Android: the bid timeout the SDK applies to its HTTP call, in ms (5000 by
+   * default, server-configurable and persisted by the SDK). Absent on iOS.
+   */
+  bidTimeoutMs?: number;
 }
 
 export const MAX_BID_REQUEST_CONCURRENCY = 16;
@@ -91,7 +96,12 @@ export function toBidRequestExecutorStatus(
   status: unknown
 ): BidRequestExecutorStatus {
   const raw = status as
-    | { concurrency?: unknown; widened?: unknown; detail?: unknown }
+    | {
+        concurrency?: unknown;
+        widened?: unknown;
+        detail?: unknown;
+        bidTimeoutMs?: unknown;
+      }
     | null
     | undefined;
   if (!raw || typeof raw.concurrency !== 'number') {
@@ -107,6 +117,9 @@ export function toBidRequestExecutorStatus(
     widened: raw.widened === true,
     ...(typeof raw.detail === 'string' && raw.detail
       ? { detail: raw.detail }
+      : {}),
+    ...(typeof raw.bidTimeoutMs === 'number' && raw.bidTimeoutMs > 0
+      ? { bidTimeoutMs: raw.bidTimeoutMs }
       : {}),
   };
 }

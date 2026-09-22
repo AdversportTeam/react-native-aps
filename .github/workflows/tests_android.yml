@@ -1,0 +1,64 @@
+name: Testing Android
+
+on:
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - 'android/**'
+      - 'src/turbomodules/**'
+      - 'example/android/**'
+      - 'example/package.json'
+      - 'example/yarn.lock'
+      - '.github/workflows/tests_android.yml'
+  push:
+    branches:
+      - master
+    paths:
+      - 'android/**'
+      - 'src/turbomodules/**'
+      - 'example/android/**'
+      - 'example/package.json'
+      - 'example/yarn.lock'
+      - '.github/workflows/tests_android.yml'
+
+concurrency:
+  group: android-jvm-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  jvm-unit-tests:
+    # The Android module is not buildable on its own: the example app is what
+    # links it, so its Gradle project is the runner for the module's JVM tests.
+    # These tests pin the aps-sdk members ApsBidRequestExecutor relies on; a
+    # bump that renames them must fail here, not silently in production.
+    name: Android JVM unit tests
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enable Corepack
+        run: corepack enable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+      # The example links the library (node_modules/react-native-aps -> ../..)
+      # and brings the React Native Gradle plugin and codegen; the library's
+      # own node_modules are not needed.
+      - name: Yarn install (example app)
+        run: yarn install --immutable
+        working-directory: example
+      - name: Run the module's JVM unit tests
+        run: ./gradlew :react-native-aps:testDebugUnitTest --no-daemon --console=plain
+        working-directory: example/android
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-jvm-test-results
+          path: android/build/test-results/testDebugUnitTest/

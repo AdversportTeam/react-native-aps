@@ -22,6 +22,7 @@ import com.amazon.aps.ads.common.ApsExternalUserId;
 import com.amazon.device.ads.AdRegistration;
 import com.amazon.device.ads.DTBAdNetwork;
 import com.amazon.device.ads.DTBAdNetworkInfo;
+import com.amazon.device.ads.DtbSharedPreferences;
 import com.amazon.device.ads.MRAIDPolicy;
 import com.facebook.react.bridge.*;
 import com.facebook.react.module.annotations.ReactModule;
@@ -68,6 +69,14 @@ public class RNAPSAdsModule extends ReactContextBaseJavaModule {
     String detail = ApsBidRequestExecutor.getDetail();
     if (detail != null) {
       status.putString("detail", detail);
+    }
+    // The bid timeout the SDK applies to its HTTP read: 5000 by default, the server
+    // value once a device registration has persisted it. Lets the JS queue size its
+    // no-response delay above it.
+    try {
+      status.putInt("bidTimeoutMs", DtbSharedPreferences.getInstance().getBidTimeout());
+    } catch (Throwable t) {
+      // Not registered yet or SDK internals changed: the JS side keeps its floor.
     }
     promise.resolve(status);
   }
