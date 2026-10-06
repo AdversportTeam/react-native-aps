@@ -35,6 +35,15 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
   private let adLoadersLock = NSLock()
   var hasListeners = false;
 
+  // DTBiOSSDK delivers every callback on the main queue. The callbacks leave
+  // it at once and settle the promise from this queue, so a slot's answer does
+  // not hold the main thread (nor wait for it longer than the hop). Serial, so
+  // answers keep their arrival order.
+  fileprivate static let callbackQueue = DispatchQueue(
+    label: "com.adversport.rnaps.callbacks",
+    qos: .userInitiated
+  )
+
   private func withAdLoaders<T>(_ body: (inout Dictionary<NSNumber, DTBAdLoader>) -> T) -> T {
     adLoadersLock.lock()
     defer { adLoadersLock.unlock() }
@@ -132,21 +141,33 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
       }
     }
     func onSuccess(_ adResponse: DTBAdResponse!) {
+      // Read on the SDK's thread (main), then leave it: see callbackQueue.
       // Using original optional handling which defaults to empty Dict if nil
       let response = adResponse.customTargeting() ?? [:]
-      adLoaderModule.sendEvent(name: RNAPSAdLoaderModule.EVENT_SUCCESS, body: [
-        "loaderId": loaderId,
-        "response": response
-      ])
-      if let resolve = resolve {
-        resolve(response)
-        self.resolve = nil
-        self.reject = nil
+      let resolve = self.resolve
+      self.resolve = nil
+      self.reject = nil
+      RNAPSAdLoaderModule.callbackQueue.async {
+        self.adLoaderModule.sendEvent(name: RNAPSAdLoaderModule.EVENT_SUCCESS, body: [
+          "loaderId": self.loaderId,
+          "response": response
+        ])
+        resolve?(response)
+        self.forgetIfOneShot()
       }
-      forgetIfOneShot()
     }
 
     func onFailure(_ error: DTBAdError) {
+      let reject = self.reject
+      self.resolve = nil
+      self.reject = nil
+      // Nothing below needs the main thread: see callbackQueue.
+      RNAPSAdLoaderModule.callbackQueue.async {
+        self.fail(error, reject: reject)
+      }
+    }
+
+    private func fail(_ error: DTBAdError, reject: RCTPromiseRejectBlock?) {
       var code = ""
       // Using original switch without @unknown default
       switch error {
@@ -189,8 +210,6 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
         // Using original Int conversion and error code
         let nsError = NSError.init(domain: RNAPSAdLoaderModule.ERROR_DOMAIN, code: Int(error.rawValue), userInfo: userInfo)
         reject(code, message, nsError)
-        self.resolve = nil
-        self.reject = nil
       }
       forgetIfOneShot()
     }
