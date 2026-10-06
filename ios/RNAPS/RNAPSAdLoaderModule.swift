@@ -67,8 +67,20 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
       dict.removeAll()
       return values
     }
-    for adLoader in loaders {
-      adLoader.stop()
+    RNAPSAdLoaderModule.stopOnMain(loaders)
+  }
+
+  // -[DTBAdLoader stop] invalidates the auto-refresh NSTimer, which must happen
+  // on the thread that armed it: the main thread (see loadAd). Also keeps stop
+  // serialised with the SDK callbacks, which the SDK delivers on main.
+  private static func stopOnMain(_ loaders: [DTBAdLoader]) {
+    if loaders.isEmpty {
+      return
+    }
+    if Thread.isMainThread {
+      loaders.forEach { $0.stop() }
+    } else {
+      DispatchQueue.main.async { loaders.forEach { $0.stop() } }
     }
   }
 
@@ -188,6 +200,18 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
 
   @objc(loadAd:forAdType:withOptions:withResolver:withRejecter:)
   func loadAd(loaderId: NSNumber, adType: String, options: Dictionary<String, Any>, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
+    let autoRefresh = options["autoRefresh"] as? Bool ?? false
+
+    // The module runs on a private serial queue (RNAPSAdLoaderModule.m), but an
+    // auto-refreshing loader arms an NSTimer on the calling thread's run loop,
+    // and only the main thread runs one: keep those requests on the main queue.
+    if autoRefresh && !Thread.isMainThread {
+      DispatchQueue.main.async {
+        self.loadAd(loaderId: loaderId, adType: adType, options: options, resolve: resolve, reject: reject)
+      }
+      return
+    }
+
     stopAutoRefresh(loaderId: loaderId)
 
     let slotUUID = options["slotUUID"] as! String
@@ -222,8 +246,6 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
       }
     }
 
-    let autoRefresh = options["autoRefresh"] as? Bool ?? false
-
     let refreshInterval = options["refreshInterval"] as? Int32 ?? 60
 
     if (autoRefresh) {
@@ -235,8 +257,9 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
     //
     // +[APS setContentUrl:] is a CLASS method, i.e. process-global state. We set
     // it here, immediately before loadAd and inside the same native call, so it
-    // cannot be overwritten by another slot between the two — React Native
-    // serialises module methods on a single queue.
+    // cannot be overwritten by another slot between the two — every one-shot
+    // request runs on the module's serial queue (auto-refresh ones run on main,
+    // which is serial too).
     //
     // Empty or nil is skipped on purpose: the SDK header states it "will throw
     // an NSException in development" in that case. Callers with no reliable URL
@@ -255,12 +278,17 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
 
   @objc(stopAutoRefresh:)
   func stopAutoRefresh(loaderId: NSNumber) {
-    let adLoader: DTBAdLoader? = withAdLoaders { $0.removeValue(forKey: loaderId) }
-    adLoader?.stop()
+    if let adLoader = withAdLoaders({ $0.removeValue(forKey: loaderId) }) {
+      RNAPSAdLoaderModule.stopOnMain([adLoader])
+    }
   }
 
   @objc(skadnHelper:withInfo:)
   func skadnHelper(name: String, info: String) {
-    DTBAdHelper.skadnHelper(name, withInfo: info)
+    // Unchanged behaviour: this used to run on the main queue with the rest
+    // of the module, and nothing here is time-critical.
+    DispatchQueue.main.async {
+      DTBAdHelper.skadnHelper(name, withInfo: info)
+    }
   }
 }

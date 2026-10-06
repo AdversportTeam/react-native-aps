@@ -21,8 +21,25 @@
 
 @interface RCT_EXTERN_MODULE (RNAPSAdLoaderModule, RCTEventEmitter)
 
+// Bid requests leave from a private serial queue, not from the main queue.
+// -[DTBAdLoader loadAd:] registers the device and builds the bid payload
+// synchronously on the calling thread: on the main queue, every slot first
+// waited for the main thread to be free, then did that work on it, behind
+// whatever UI work was running (Fabric mounts, GAM banner requests, creative
+// rendering). DTBiOSSDK 5.6.4 supports off-main callers: it hops to the main
+// queue itself for the UIKit/WebKit reads it needs (user agent, orientation)
+// and still delivers every callback on the main queue.
+// Serial on purpose: +[APS setContentUrl:] is process-global and must pair
+// with the loadAd of the same call.
 - (dispatch_queue_t)methodQueue {
-  return dispatch_get_main_queue();
+  static dispatch_queue_t queue;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    dispatch_queue_attr_t attr =
+        dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INITIATED, 0);
+    queue = dispatch_queue_create("com.adversport.rnaps.adloader", attr);
+  });
+  return queue;
 }
 
 RCT_EXTERN_METHOD(loadAd
