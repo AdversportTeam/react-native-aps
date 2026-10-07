@@ -35,6 +35,15 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
   private let adLoadersLock = NSLock()
   var hasListeners = false;
 
+  // DTBiOSSDK delivers every callback on the main queue. The callbacks leave
+  // it at once and settle the promise from this queue, so a slot's answer does
+  // not hold the main thread (nor wait for it longer than the hop). Serial, so
+  // answers keep their arrival order.
+  fileprivate static let callbackQueue = DispatchQueue(
+    label: "com.adversport.rnaps.callbacks",
+    qos: .userInitiated
+  )
+
   private func withAdLoaders<T>(_ body: (inout Dictionary<NSNumber, DTBAdLoader>) -> T) -> T {
     adLoadersLock.lock()
     defer { adLoadersLock.unlock() }
@@ -67,8 +76,20 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
       dict.removeAll()
       return values
     }
-    for adLoader in loaders {
-      adLoader.stop()
+    RNAPSAdLoaderModule.stopOnMain(loaders)
+  }
+
+  // -[DTBAdLoader stop] invalidates the auto-refresh NSTimer, which must happen
+  // on the thread that armed it: the main thread (see loadAd). Also keeps stop
+  // serialised with the SDK callbacks, which the SDK delivers on main.
+  private static func stopOnMain(_ loaders: [DTBAdLoader]) {
+    if loaders.isEmpty {
+      return
+    }
+    if Thread.isMainThread {
+      loaders.forEach { $0.stop() }
+    } else {
+      DispatchQueue.main.async { loaders.forEach { $0.stop() } }
     }
   }
 
@@ -120,21 +141,33 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
       }
     }
     func onSuccess(_ adResponse: DTBAdResponse!) {
+      // Read on the SDK's thread (main), then leave it: see callbackQueue.
       // Using original optional handling which defaults to empty Dict if nil
       let response = adResponse.customTargeting() ?? [:]
-      adLoaderModule.sendEvent(name: RNAPSAdLoaderModule.EVENT_SUCCESS, body: [
-        "loaderId": loaderId,
-        "response": response
-      ])
-      if let resolve = resolve {
-        resolve(response)
-        self.resolve = nil
-        self.reject = nil
+      let resolve = self.resolve
+      self.resolve = nil
+      self.reject = nil
+      RNAPSAdLoaderModule.callbackQueue.async {
+        self.adLoaderModule.sendEvent(name: RNAPSAdLoaderModule.EVENT_SUCCESS, body: [
+          "loaderId": self.loaderId,
+          "response": response
+        ])
+        resolve?(response)
+        self.forgetIfOneShot()
       }
-      forgetIfOneShot()
     }
 
     func onFailure(_ error: DTBAdError) {
+      let reject = self.reject
+      self.resolve = nil
+      self.reject = nil
+      // Nothing below needs the main thread: see callbackQueue.
+      RNAPSAdLoaderModule.callbackQueue.async {
+        self.fail(error, reject: reject)
+      }
+    }
+
+    private func fail(_ error: DTBAdError, reject: RCTPromiseRejectBlock?) {
       var code = ""
       // Using original switch without @unknown default
       switch error {
@@ -177,8 +210,6 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
         // Using original Int conversion and error code
         let nsError = NSError.init(domain: RNAPSAdLoaderModule.ERROR_DOMAIN, code: Int(error.rawValue), userInfo: userInfo)
         reject(code, message, nsError)
-        self.resolve = nil
-        self.reject = nil
       }
       forgetIfOneShot()
     }
@@ -188,6 +219,18 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
 
   @objc(loadAd:forAdType:withOptions:withResolver:withRejecter:)
   func loadAd(loaderId: NSNumber, adType: String, options: Dictionary<String, Any>, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
+    let autoRefresh = options["autoRefresh"] as? Bool ?? false
+
+    // The module runs on a private serial queue (RNAPSAdLoaderModule.m), but an
+    // auto-refreshing loader arms an NSTimer on the calling thread's run loop,
+    // and only the main thread runs one: keep those requests on the main queue.
+    if autoRefresh && !Thread.isMainThread {
+      DispatchQueue.main.async {
+        self.loadAd(loaderId: loaderId, adType: adType, options: options, resolve: resolve, reject: reject)
+      }
+      return
+    }
+
     stopAutoRefresh(loaderId: loaderId)
 
     let slotUUID = options["slotUUID"] as! String
@@ -222,8 +265,6 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
       }
     }
 
-    let autoRefresh = options["autoRefresh"] as? Bool ?? false
-
     let refreshInterval = options["refreshInterval"] as? Int32 ?? 60
 
     if (autoRefresh) {
@@ -235,8 +276,9 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
     //
     // +[APS setContentUrl:] is a CLASS method, i.e. process-global state. We set
     // it here, immediately before loadAd and inside the same native call, so it
-    // cannot be overwritten by another slot between the two — React Native
-    // serialises module methods on a single queue.
+    // cannot be overwritten by another slot between the two — every one-shot
+    // request runs on the module's serial queue (auto-refresh ones run on main,
+    // which is serial too).
     //
     // Empty or nil is skipped on purpose: the SDK header states it "will throw
     // an NSException in development" in that case. Callers with no reliable URL
@@ -255,12 +297,17 @@ class RNAPSAdLoaderModule: RCTEventEmitter {
 
   @objc(stopAutoRefresh:)
   func stopAutoRefresh(loaderId: NSNumber) {
-    let adLoader: DTBAdLoader? = withAdLoaders { $0.removeValue(forKey: loaderId) }
-    adLoader?.stop()
+    if let adLoader = withAdLoaders({ $0.removeValue(forKey: loaderId) }) {
+      RNAPSAdLoaderModule.stopOnMain([adLoader])
+    }
   }
 
   @objc(skadnHelper:withInfo:)
   func skadnHelper(name: String, info: String) {
-    DTBAdHelper.skadnHelper(name, withInfo: info)
+    // Unchanged behaviour: this used to run on the main queue with the rest
+    // of the module, and nothing here is time-critical.
+    DispatchQueue.main.async {
+      DTBAdHelper.skadnHelper(name, withInfo: info)
+    }
   }
 }
